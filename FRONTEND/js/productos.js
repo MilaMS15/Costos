@@ -1,5 +1,6 @@
 // Configuración de la API
-const API_URL = 'http://localhost:5000/api';
+// API_URL se toma de config.js
+
 
 // Elementos del DOM
 let modalProducto;
