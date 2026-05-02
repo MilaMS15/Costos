@@ -5,6 +5,7 @@ services:
   - type: web
     name: costos-backend
     env: python
+    plan: free
     rootDir: BACKEND
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
@@ -24,6 +25,7 @@ services:
   - type: web
     name: costos-frontend
     env: static
+    plan: free
     staticPublishPath: FRONTEND
     routes:
       - type: rewrite
