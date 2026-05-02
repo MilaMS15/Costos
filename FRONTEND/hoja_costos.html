@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Unik'a | Hoja de Costos</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "secondary": "#415A77",
+                        "secondary-container": "#c2dcff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9fafb",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#1B263B",
+                        "surface-tint": "#1B263B",
+                        "inverse-primary": "#ffb86b",
+                        "primary-fixed": "#ffdcbc",
+                        "primary": "#1B263B",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "surface-dim": "#d9dad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "tertiary": "#545e76",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "surface-container-low": "#d1d5db",
+                        "surface-container": "#d1d5db",
+                        "on-surface-variant": "#415A77",
+                        "on-surface": "#1B263B",
+                        "inverse-surface": "#2f312e",
+                        "primary-container": "#FF9F1C",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed": "#101b30",
+                        "surface-container-high": "#e8e8e4",
+                        "on-background": "#1B263B",
+                        "surface-bright": "#f9fafb",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f1ed",
+                        "surface-container-highest": "#e2e3df",
+                        "surface-variant": "#e2e3df",
+                        "tertiary-container": "#aab5d0",
+                        "primary-fixed-dim": "#ffb86b",
+                        "on-tertiary-fixed-variant": "#3c475d",
+                        "on-secondary-container": "#415A77",
+                        "outline-variant": "#dac2ae",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9fafb",
+                        "tertiary-fixed-dim": "#bbc6e2",
+                        "on-primary": "#ffffff",
+                        "outline": "#415A77",
+                        "on-primary-fixed": "#2c1700",
+                        "on-primary-fixed-variant": "#683d00",
+                        "tertiary-fixed": "#d7e2ff",
+                        "error-container": "#ffdad6",
+                        "unik-navy": "#1B263B"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5 { font-family: 'Manrope', sans-serif; }
+        
+        @media print {
+            aside, header, .no-print { display: none !important; }
+            main { margin: 0 !important; width: 100% !important; padding: 0 !important; }
+            .print-area { border: none !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; }
+        }
+    </style>
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <script src="js/config.js"></script>
+</head>
+<body class="bg-surface font-body text-on-surface">
+    <script>
+        if (!localStorage.getItem('usuario')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- SideNavBar -->
+        <aside class="hidden md:flex flex-col h-full py-8 space-y-2 bg-surface-container-low w-72 shrink-0 border-r border-outline-variant/10 no-print">
+            <div class="px-8 mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white shadow-sm">
+                        <span class="material-symbols-outlined">architecture</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-unik-navy leading-tight">Unik'a</h1>
+                        <p class="text-[10px] uppercase tracking-[0.1em] text-secondary opacity-70 font-bold">Atelier Financiero</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 space-y-1 overflow-y-auto sidebar-scroll">
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mb-2">Principal</p>
+                <a href="index.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-medium tracking-wide">Panel de Control</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Gestión</p>
+                <a href="materiales.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-sm font-medium tracking-wide">Materiales</span>
+                </a>
+                <a href="productos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">label</span>
+                    <span class="text-sm font-medium tracking-wide">Productos</span>
+                </a>
+                <a href="trabajadores.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">groups</span>
+                    <span class="text-sm font-medium tracking-wide">Trabajadores</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Producción</p>
+                <a href="plan_produccion.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">assignment</span>
+                    <span class="text-sm font-medium tracking-wide">Plan Producción</span>
+                </a>
+                <a href="receta_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">build</span>
+                    <span class="text-sm font-medium tracking-wide">Receta x Producto</span>
+                </a>
+                <a href="mod_cif_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-sm font-medium tracking-wide">MOD y CIF</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Órdenes</p>
+                <a href="ordenes_trabajo.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">description</span>
+                    <span class="text-sm font-medium tracking-wide">Órdenes de Trabajo</span>
+                </a>
+                <a href="hoja_costos.html" class="bg-white text-unik-navy rounded-r-full py-3 px-8 shadow-sm flex items-center gap-4 transition-all border-l-4 border-primary-container font-bold">
+                    <span class="material-symbols-outlined text-primary-container">receipt_long</span>
+                    <span class="text-sm font-medium tracking-wide">Hoja de Costos</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Finanzas</p>
+                <a href="estado_resultados.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    <span class="text-sm font-medium tracking-wide">Estado de Resultados</span>
+                </a>
+            </nav>
+            <div class="px-8 mt-auto pt-4 border-t border-primary/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary-container font-bold border-2 border-white shadow-sm" id="userInitialSidebar">U</div>
+                    <div class="overflow-hidden text-left">
+                        <p class="text-xs font-bold text-unik-navy truncate" id="userNameSidebar">Usuario</p>
+                        <p class="text-[10px] text-secondary truncate" id="userEmailSidebar">correo@ejemplo.com</p>
+                    </div>
+                </div>
+                <button onclick="cerrarSesion()" class="w-full py-3 bg-unik-navy text-white rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">logout</span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- TopAppBar -->
+            <header class="flex justify-between items-center w-full px-12 py-6 bg-surface z-40 border-b border-outline-variant/10 no-print">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl font-headline font-black tracking-tight text-unik-navy">Hoja de Costos por Orden</h2>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <button onclick="window.print()" class="bg-unik-navy text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">print</span> Imprimir
+                    </button>
+                    <a href="ordenes_trabajo.html" class="bg-white border-2 border-primary-container text-primary-container px-6 py-2 rounded-xl font-bold text-xs hover:bg-primary-container hover:text-white transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xs">arrow_back</span> Volver
+                    </a>
+                </div>
+            </header>
+
+            <!-- Sheet Content -->
+            <div class="flex-1 overflow-y-auto p-12 bg-surface-container-lowest/50 flex justify-center">
+                <div id="hojaCostosContent" class="w-full max-w-4xl bg-white rounded-[2rem] shadow-2xl shadow-unik-navy/5 border border-outline-variant/10 p-16 print-area relative overflow-hidden">
+                    <!-- Placeholder/Empty State -->
+                    <div class="flex flex-col items-center justify-center py-32 opacity-20 text-center">
+                        <span class="material-symbols-outlined text-7xl">description</span>
+                        <h3 class="text-2xl font-black mt-4 text-unik-navy">Seleccione una Orden</h3>
+                        <p class="text-sm font-medium mt-2">Navegue a la sección de Órdenes y seleccione el icono de hoja 📋</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /* API_URL definido en js/config.js */
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idOrden = urlParams.get('id');
+            if (idOrden) cargarHojaCostos(idOrden);
+        });
+        
+        async function cargarHojaCostos(id) {
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (usuario.user) {
+                document.getElementById('userNameSidebar').textContent = usuario.user.split('@')[0];
+                document.getElementById('userEmailSidebar').textContent = usuario.user;
+                document.getElementById('userInitialSidebar').textContent = usuario.user.charAt(0).toUpperCase();
+            }
+
+            try {
+                const result = await fetch(`${API_URL}/ordenes-trabajo/${id}`).then(r => r.json());
+                if (result.success) renderizarHojaCostos(result.data);
+            } catch (e) { console.error(e); }
+        }
+        
+        function renderizarHojaCostos(o) {
+            const container = document.getElementById('hojaCostosContent');
+            const total = o.costo_total || 0;
+            const mp = total * 0.55;
+            const mod = total * 0.28;
+            const cif = total * 0.17;
+            const unit = total / (o.cantidad_solicitada || 1);
+
+            container.innerHTML = `
+                <!-- Decorative background elements -->
+                <div class="absolute -right-20 -top-20 w-80 h-80 bg-primary-container/5 rounded-full blur-3xl no-print"></div>
+                <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-unik-navy/5 rounded-full blur-3xl no-print"></div>
+
+                <div class="relative z-10">
+                    <!-- Header -->
+                    <div class="flex justify-between items-start border-b-4 border-unik-navy pb-10 mb-12">
+                        <div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 bg-unik-navy rounded-xl flex items-center justify-center text-white">
+                                    <span class="material-symbols-outlined text-2xl">architecture</span>
+                                </div>
+                                <div>
+                                    <h1 class="text-2xl font-black text-unik-navy leading-none">Unik'a</h1>
+                                    <p class="text-[10px] font-black text-primary-container uppercase tracking-widest mt-1">Atelier Financiero</p>
+                                </div>
+                            </div>
+                            <h2 class="text-4xl font-headline font-black text-unik-navy mt-8 uppercase tracking-tighter">Hoja de Costos</h2>
+                            <p class="text-xs text-secondary font-bold mt-2">Reporte de Auditoría de Producción</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-block px-6 py-2 bg-primary-container text-white rounded-full text-[10px] font-black uppercase tracking-widest mb-6">${o.estado || 'PENDIENTE'}</span>
+                            <div class="space-y-1">
+                                <p class="text-[10px] font-black text-secondary uppercase tracking-widest">Orden Número</p>
+                                <p class="text-2xl font-black text-unik-navy">${o.numero_orden || 'S/N'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Client & Product Info -->
+                    <div class="grid grid-cols-2 gap-12 mb-16">
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-[9px] font-black text-secondary uppercase tracking-widest mb-1">Cliente / Solicitante</p>
+                                <p class="text-lg font-bold text-unik-navy border-b border-outline-variant pb-2">${o.cliente || 'CLIENTE FINAL'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-black text-secondary uppercase tracking-widest mb-1">Producto a Manufacturar</p>
+                                <p class="text-lg font-bold text-unik-navy border-b border-outline-variant pb-2">${o.producto_nombre || 'No identificado'}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-[9px] font-black text-secondary uppercase tracking-widest mb-1">Fecha de Registro</p>
+                                <p class="text-lg font-bold text-unik-navy border-b border-outline-variant pb-2">${o.fecha_emision || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-black text-secondary uppercase tracking-widest mb-1">Volumen de Producción</p>
+                                <p class="text-lg font-bold text-unik-navy border-b border-outline-variant pb-2">${o.cantidad_solicitada || 0} Unidades</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost Breakdown Grid -->
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="p-8 bg-surface-container-low/30 rounded-3xl border border-outline-variant/10">
+                            <span class="material-symbols-outlined text-primary-container mb-3">inventory_2</span>
+                            <p class="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">Materia Prima (MP)</p>
+                            <h3 class="text-2xl font-black text-unik-navy">S/ ${mp.toLocaleString('es-PE', {minimumFractionDigits: 2})}</h3>
+                            <p class="text-[10px] text-secondary/60 mt-1 font-bold">Base proyectada: 55.0%</p>
+                        </div>
+                        <div class="p-8 bg-surface-container-low/30 rounded-3xl border border-outline-variant/10">
+                            <span class="material-symbols-outlined text-blue-600 mb-3">engineering</span>
+                            <p class="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">Mano de Obra (MOD)</p>
+                            <h3 class="text-2xl font-black text-unik-navy">S/ ${mod.toLocaleString('es-PE', {minimumFractionDigits: 2})}</h3>
+                            <p class="text-[10px] text-secondary/60 mt-1 font-bold">Base proyectada: 28.0%</p>
+                        </div>
+                        <div class="p-8 bg-surface-container-low/30 rounded-3xl border border-outline-variant/10">
+                            <span class="material-symbols-outlined text-green-600 mb-3">factory</span>
+                            <p class="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">Indirectos (CIF)</p>
+                            <h3 class="text-2xl font-black text-unik-navy">S/ ${cif.toLocaleString('es-PE', {minimumFractionDigits: 2})}</h3>
+                            <p class="text-[10px] text-secondary/60 mt-1 font-bold">Base proyectada: 17.0%</p>
+                        </div>
+                        <div class="p-8 bg-unik-navy rounded-3xl shadow-xl shadow-unik-navy/20 flex flex-col justify-center">
+                            <p class="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">Costo Unitario Proyectado</p>
+                            <h3 class="text-3xl font-black text-white">S/ ${unit.toLocaleString('es-PE', {minimumFractionDigits: 2})}</h3>
+                            <p class="text-[10px] text-primary-container mt-1 font-bold">Final por unidad producida</p>
+                        </div>
+                    </div>
+
+                    <!-- Total Banner -->
+                    <div class="bg-primary-container p-10 rounded-3xl flex justify-between items-center shadow-xl shadow-orange-500/20">
+                        <div>
+                            <p class="text-[11px] font-black text-white uppercase tracking-widest">Inversión Total de Producción</p>
+                            <p class="text-xs text-white/70 font-medium mt-1">Cálculo consolidado de todos los rubros operativos</p>
+                        </div>
+                        <div class="text-right">
+                            <h2 class="text-5xl font-headline font-black text-white">S/ ${total.toLocaleString('es-PE', {minimumFractionDigits: 2})}</h2>
+                        </div>
+                    </div>
+
+                    <!-- Footer Signature -->
+                    <div class="mt-24 pt-12 border-t border-outline-variant/10 flex justify-between">
+                        <div class="w-64 border-t border-unik-navy pt-4 text-center">
+                            <p class="text-[10px] font-black text-unik-navy uppercase tracking-widest">Departamento de Costos</p>
+                            <p class="text-[9px] text-secondary font-medium">Control Interno</p>
+                        </div>
+                        <div class="w-64 border-t border-unik-navy pt-4 text-center">
+                            <p class="text-[10px] font-black text-unik-navy uppercase tracking-widest">Gerencia de Producción</p>
+                            <p class="text-[9px] text-secondary font-medium">Visto Bueno Operativo</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-[8px] text-secondary/40 text-center mt-12 italic uppercase tracking-widest">Este documento es una representación digital generada por el sistema Unik'a. Todos los valores están sujetos a auditoría final de inventarios.</p>
+                </div>
+            `;
+        }
+
+        function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = 'login.html'; }
+    </script>
+    <script src="js/theme-manager.js"></script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Unik'a - Cálculo y Reportes</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "secondary": "#415A77",
+                        "secondary-container": "#c2dcff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9fafb",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#1B263B",
+                        "surface-tint": "#1B263B",
+                        "inverse-primary": "#ffb86b",
+                        "primary-fixed": "#ffdcbc",
+                        "primary": "#1B263B",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "surface-dim": "#d9dad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "tertiary": "#545e76",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "surface-container-low": "#f3f4f0",
+                        "surface-container": "#edeeea",
+                        "on-surface-variant": "#415A77",
+                        "on-surface": "#1B263B",
+                        "inverse-surface": "#2f312e",
+                        "primary-container": "#FF9F1C",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed": "#101b30",
+                        "surface-container-high": "#e8e8e4",
+                        "on-background": "#1B263B",
+                        "surface-bright": "#f9fafb",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f1ed",
+                        "surface-container-highest": "#e2e3df",
+                        "surface-variant": "#e2e3df",
+                        "tertiary-container": "#aab5d0",
+                        "primary-fixed-dim": "#ffb86b",
+                        "on-tertiary-fixed-variant": "#3c475d",
+                        "on-secondary-container": "#415A77",
+                        "outline-variant": "#dac2ae",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9fafb",
+                        "tertiary-fixed-dim": "#bbc6e2",
+                        "on-primary": "#ffffff",
+                        "outline": "#415A77",
+                        "on-primary-fixed": "#2c1700",
+                        "on-primary-fixed-variant": "#683d00",
+                        "tertiary-fixed": "#d7e2ff",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Manrope', sans-serif;
+            color: #1B263B;
+        }
+
+        .text-secondary {
+            color: #415A77;
+        }
+
+        .bg-soft-orange {
+            background-color: #FF9F1C;
+        }
+    </style>
+    <link rel="stylesheet" href="../FRONTEND/css/theme-dark.css">
+    <script src="../FRONTEND/js/config.js"></script>
+</head>
+
+<body class="bg-surface text-on-surface flex min-h-screen">
+    <!-- SideNavBar -->
+    <aside
+        class="hidden md:flex flex-col h-screen w-72 bg-surface-container-low docked left-0 sticky top-0 overflow-y-auto border-r border-surface-variant">
+        <div class="flex flex-col h-full py-8 space-y-2">
+            <div class="px-8 mb-8">
+                <h1 class="text-xl font-extrabold text-primary tracking-tighter">Unik'a</h1>
+                <p class="text-[10px] font-bold tracking-widest text-secondary uppercase opacity-80">Financial Atelier
+                </p>
+            </div>
+            <nav class="flex-1 space-y-1">
+                <a class="flex items-center text-secondary py-3 px-6 hover:bg-surface-container transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+                    <span class="font-medium">Tablero</span>
+                </a>
+                <a class="flex items-center text-secondary py-3 px-6 hover:bg-surface-container transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined mr-3" data-icon="analytics">analytics</span>
+                    <span class="font-medium">Monitoreo de Costos</span>
+                </a>
+                <!-- Active Item -->
+                <a class="flex items-center bg-surface-container-lowest text-primary rounded-r-full py-3 px-6 shadow-sm font-bold"
+                    href="#">
+                    <span class="material-symbols-outlined mr-3 text-secondary" data-icon="calculate"
+                        style="font-variation-settings: 'FILL' 1;">calculate</span>
+                    <span class="font-medium">Herramientas de Cálculo</span>
+                </a>
+                <a class="flex items-center text-secondary py-3 px-6 hover:bg-surface-container transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined mr-3" data-icon="inventory_2">inventory_2</span>
+                    <span class="font-medium">Inventario</span>
+                </a>
+                <a class="flex items-center text-secondary py-3 px-6 hover:bg-surface-container transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined mr-3" data-icon="fact_check">fact_check</span>
+                    <span class="font-medium">Auditorías</span>
+                </a>
+            </nav>
+            <div class="px-6 mt-auto">
+                <button
+                    class="w-full bg-soft-orange text-white py-3 rounded-lg shadow-md font-bold hover:brightness-95 transition-all text-sm uppercase tracking-wider">
+                    Calcular Costos
+                </button>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content Canvas -->
+    <main class="flex-1 flex flex-col bg-surface min-h-screen">
+        <!-- TopAppBar -->
+        <header
+            class="flex justify-between items-center w-full px-8 py-4 bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-surface-variant/30">
+            <div class="flex items-center space-x-6">
+                <div class="relative">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary opacity-50"
+                        data-icon="search">search</span>
+                    <input
+                        class="bg-surface-container border-none rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-secondary/20 transition-all"
+                        placeholder="Buscar cálculos..." type="text" />
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="p-2 text-secondary hover:bg-surface-container rounded-full transition-all">
+                    <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                </button>
+                <button class="p-2 text-secondary hover:bg-surface-container rounded-full transition-all">
+                    <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                </button>
+                <div
+                    class="h-8 w-8 rounded-full bg-surface-container-highest overflow-hidden border border-surface-variant">
+                    <img alt="Perfil de contador" class="h-full w-full object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV7vp7woHPAuNzgPNlg2htdevUkqamBnO83NPDY-AaRHZMsDCagzuJSLstLAlhzIhK59xoRWWcyVn4jbY5HtGtouFOV7HCNtBmWGBHicDgMgSYM-xjt0NGLXSaNcZFmd3BASZpm__UNXcct12hzXvJqKZNoNGWty7dT1fjLlVuMIygZqZuTYQVWcc-1oH8HiWTw1Kta4dfCNiN07_tK-hElTg7c6Hf-UDlZ40aMnsKUKQWK2UjMyv1DTQBcL3Q8wKAN4SHkHVTIfg7" />
+                </div>
+            </div>
+        </header>
+        <div class="px-10 py-8 space-y-8 overflow-x-hidden">
+            <!-- Breadcrumbs & Header -->
+            <div class="flex flex-col space-y-1">
+                <span class="text-[0.6875rem] font-label tracking-widest text-secondary uppercase font-bold">Taller /
+                    Simulaciones</span>
+                <h2 class="text-3xl font-extrabold text-primary tracking-tight">Herramientas de Cálculo</h2>
+            </div>
+            <!-- Main Layout -->
+            <div class="grid grid-cols-12 gap-6">
+                <!-- Left: Configuration Form -->
+                <section class="col-span-12 lg:col-span-4 space-y-6">
+                    <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-surface-variant/50">
+                        <h3 class="text-lg font-bold text-primary mb-6 flex items-center">
+                            <span class="material-symbols-outlined mr-2 text-secondary" data-icon="tune">tune</span>
+                            Parámetros de Simulación
+                        </h3>
+                        <div class="space-y-5">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Costo de
+                                    Material Base (USD)</label>
+                                <input
+                                    class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-secondary/20 py-3 px-4 rounded-lg text-on-surface font-medium transition-all"
+                                    type="number" value="12450.00" />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Horas de
+                                    Trabajo (Estimadas)</label>
+                                <input
+                                    class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-secondary/20 py-3 px-4 rounded-lg text-on-surface font-medium transition-all"
+                                    type="number" value="340" />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Gastos
+                                    Indirectos Variables (%)</label>
+                                <div class="flex items-center space-x-4">
+                                    <input class="flex-1 accent-secondary" max="100" min="0" type="range" value="15" />
+                                    <span class="text-sm font-bold text-primary w-8">15%</span>
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Región
+                                    Logística</label>
+                                <select
+                                    class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-secondary/20 py-3 px-4 rounded-lg text-on-surface font-medium appearance-none">
+                                    <option>Unión Europea (Schengen)</option>
+                                    <option>Norteamérica (T-MEC)</option>
+                                    <option>Asia-Pacífico</option>
+                                </select>
+                            </div>
+                            <div class="pt-4">
+                                <button
+                                    class="w-full bg-soft-orange text-white py-4 rounded-xl font-extrabold text-sm uppercase tracking-widest shadow-lg shadow-orange-500/20 hover:scale-[0.98] transition-transform duration-150">
+                                    Calcular Costos Finales
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-surface-container-high/40 p-6 rounded-2xl border border-surface-variant/30">
+                        <h3 class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-4">Escenarios
+                            Guardados</h3>
+                        <div class="space-y-2">
+                            <div
+                                class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl hover:shadow-md cursor-pointer transition-all border border-transparent hover:border-surface-variant/50 group">
+                                <span class="text-sm font-semibold text-primary">Alta Demanda Q4</span>
+                                <span
+                                    class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity"
+                                    data-icon="chevron_right">chevron_right</span>
+                            </div>
+                            <div
+                                class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl hover:shadow-md cursor-pointer transition-all border border-transparent hover:border-surface-variant/50 group">
+                                <span class="text-sm font-semibold text-primary">Tejido Externo</span>
+                                <span
+                                    class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity"
+                                    data-icon="chevron_right">chevron_right</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Right: Results & Report -->
+                <section class="col-span-12 lg:col-span-8 space-y-6">
+                    <!-- Summary Ribbon -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div
+                            class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-l-4 border-secondary/30">
+                            <p class="text-[10px] font-bold text-secondary uppercase tracking-widest">Costo Unitario
+                                Total</p>
+                            <h4 class="text-2xl font-black text-primary mt-2">$284.15</h4>
+                        </div>
+                        <div
+                            class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-l-4 border-soft-orange/30">
+                            <p class="text-[10px] font-bold text-secondary uppercase tracking-widest">Margen Bruto</p>
+                            <h4 class="text-2xl font-black text-primary mt-2">42.8%</h4>
+                        </div>
+                        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-l-4 border-primary/30">
+                            <p class="text-[10px] font-bold text-secondary uppercase tracking-widest">Punto de
+                                Equilibrio</p>
+                            <h4 class="text-2xl font-black text-primary mt-2">1,450 unidades</h4>
+                        </div>
+                    </div>
+                    <!-- Main Report Canvas -->
+                    <div
+                        class="bg-surface-container-lowest rounded-2xl shadow-sm min-h-[500px] overflow-hidden flex flex-col border border-surface-variant/50">
+                        <div
+                            class="p-8 border-b border-surface-variant/50 flex justify-between items-center bg-surface-container-lowest">
+                            <div>
+                                <h3 class="text-xl font-bold text-primary">Reporte de Simulación #88412</h3>
+                                <p class="text-xs font-medium text-secondary mt-1">Generado el 24 de mayo, 2024 •
+                                    Proyecto: Colección Terciopelo</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button
+                                    class="flex items-center px-4 py-2 text-xs font-bold text-secondary hover:bg-surface-container-low rounded-lg border border-surface-variant/50 transition-all">
+                                    <span class="material-symbols-outlined text-sm mr-2"
+                                        data-icon="file_download">file_download</span>
+                                    Exportar PDF
+                                </button>
+                                <button
+                                    class="flex items-center px-4 py-2 text-xs font-bold text-secondary hover:bg-surface-container-low rounded-lg border border-surface-variant/50 transition-all">
+                                    <span class="material-symbols-outlined text-sm mr-2" data-icon="share">share</span>
+                                    Compartir
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-8 flex-1 space-y-8">
+                            <div>
+                                <h4 class="text-[10px] font-bold text-secondary uppercase tracking-[0.2em] mb-4">Costos
+                                    Directos de Producción</h4>
+                                <div class="space-y-2">
+                                    <div
+                                        class="flex justify-between items-center py-3 px-4 bg-surface-container-low/50 rounded-xl">
+                                        <span class="text-sm font-medium text-primary">Textiles Premium
+                                            (Terciopelo)</span>
+                                        <span class="text-sm font-bold text-primary">$4,850.00</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-3 px-4">
+                                        <span class="text-sm font-medium text-primary">Sastrería Artesanal
+                                            (Interna)</span>
+                                        <span class="text-sm font-bold text-primary">$3,120.00</span>
+                                    </div>
+                                    <div
+                                        class="flex justify-between items-center py-3 px-4 bg-surface-container-low/50 rounded-xl">
+                                        <span class="text-sm font-medium text-primary">Cierres y Forros</span>
+                                        <span class="text-sm font-bold text-primary">$945.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-bold text-secondary uppercase tracking-[0.2em] mb-4">
+                                    Asignación Indirecta</h4>
+                                <div class="space-y-2">
+                                    <div
+                                        class="flex justify-between items-center py-3 px-4 bg-surface-container-low/50 rounded-xl">
+                                        <span class="text-sm font-medium text-primary">Alquiler y Servicios
+                                            Públicos</span>
+                                        <span class="text-sm font-bold text-primary">$1,240.00</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-3 px-4">
+                                        <span class="text-sm font-medium text-primary">Depreciación de Maquinaria</span>
+                                        <span class="text-sm font-bold text-primary">$600.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Projection Chart -->
+                            <div class="pt-4">
+                                <h4 class="text-[10px] font-bold text-secondary uppercase tracking-[0.2em] mb-8">
+                                    Proyección de Costos Mensuales</h4>
+                                <div class="w-full h-40 relative flex items-end justify-between space-x-2 px-4">
+                                    <div class="h-1/2 w-full max-w-[40px] bg-secondary/20 rounded-t-lg" title="Ene">
+                                    </div>
+                                    <div class="h-2/3 w-full max-w-[40px] bg-secondary/40 rounded-t-lg" title="Feb">
+                                    </div>
+                                    <div class="h-full w-full max-w-[40px] bg-soft-orange rounded-t-lg" title="Mar">
+                                    </div>
+                                    <div class="h-3/4 w-full max-w-[40px] bg-secondary/30 rounded-t-lg"></div>
+                                    <div class="h-2/3 w-full max-w-[40px] bg-secondary/40 rounded-t-lg"></div>
+                                    <div class="h-1/3 w-full max-w-[40px] bg-secondary/10 rounded-t-lg"></div>
+                                    <div class="h-1/2 w-full max-w-[40px] bg-secondary/50 rounded-t-lg"></div>
+                                    <div class="h-3/4 w-full max-w-[40px] bg-secondary/20 rounded-t-lg"></div>
+                                </div>
+                                <div
+                                    class="flex justify-between px-4 mt-4 text-[9px] text-secondary font-bold uppercase tracking-widest">
+                                    <span>Ene</span>
+                                    <span>Feb</span>
+                                    <span>Mar (Est)</span>
+                                    <span>Abr</span>
+                                    <span>May</span>
+                                    <span>Jun</span>
+                                    <span>Jul</span>
+                                    <span>Ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Footer -->
+                        <div
+                            class="bg-surface-container-low p-6 flex justify-between items-center border-t border-surface-variant/50">
+                            <div class="flex items-center space-x-8">
+                                <div>
+                                    <p class="text-[9px] text-secondary font-bold uppercase tracking-widest">Índice de
+                                        Confianza</p>
+                                    <div class="flex items-center space-x-1 mt-1">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                                        <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                                        <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                                        <span class="h-1.5 w-1.5 rounded-full bg-soft-orange"></span>
+                                        <span class="h-1.5 w-1.5 rounded-full bg-surface-dim"></span>
+                                        <span class="text-[10px] font-bold ml-2 text-primary">Alta</span>
+                                    </div>
+                                </div>
+                                <div class="h-8 w-px bg-surface-variant/50"></div>
+                                <div>
+                                    <p class="text-[9px] text-secondary font-bold uppercase tracking-widest">Varianza
+                                        vs. Presupuesto</p>
+                                    <p class="text-[10px] font-bold text-error mt-1">+2.4% sobre el límite</p>
+                                </div>
+                            </div>
+                            <span
+                                class="px-4 py-1.5 bg-secondary/10 text-secondary rounded-full text-[10px] font-black uppercase tracking-wider">Sincronizado
+                                con Ledger</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    <!-- Mobile Navigation -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-surface-variant/30 shadow-2xl flex justify-around items-center py-3 z-50">
+        <button class="flex flex-col items-center space-y-1 text-secondary opacity-60">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-[9px] font-bold">Inicio</span>
+        </button>
+        <button class="flex flex-col items-center space-y-1 text-primary">
+            <span class="material-symbols-outlined" data-icon="calculate"
+                style="font-variation-settings: 'FILL' 1;">calculate</span>
+            <span class="text-[9px] font-bold">Cálculo</span>
+        </button>
+        <button class="p-3 bg-soft-orange text-white rounded-full -mt-10 shadow-xl border-4 border-surface">
+            <span class="material-symbols-outlined" data-icon="add">add</span>
+        </button>
+        <button class="flex flex-col items-center space-y-1 text-secondary opacity-60">
+            <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+            <span class="text-[9px] font-bold">Inv.</span>
+        </button>
+        <button class="flex flex-col items-center space-y-1 text-secondary opacity-60">
+            <span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+            <span class="text-[9px] font-bold">Perfil</span>
+        </button>
+    </nav>
+    <script src="../FRONTEND/js/theme-manager.js"></script>
+</body>
+
+</html>

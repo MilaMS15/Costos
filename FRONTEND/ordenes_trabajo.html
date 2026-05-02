@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Unik'a | Órdenes de Trabajo</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "secondary": "#415A77",
+                        "secondary-container": "#c2dcff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9fafb",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#1B263B",
+                        "surface-tint": "#1B263B",
+                        "inverse-primary": "#ffb86b",
+                        "primary-fixed": "#ffdcbc",
+                        "primary": "#1B263B",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "surface-dim": "#d9dad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "tertiary": "#545e76",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "surface-container-low": "#d1d5db",
+                        "surface-container": "#d1d5db",
+                        "on-surface-variant": "#415A77",
+                        "on-surface": "#1B263B",
+                        "inverse-surface": "#2f312e",
+                        "primary-container": "#FF9F1C",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed": "#101b30",
+                        "surface-container-high": "#e8e8e4",
+                        "on-background": "#1B263B",
+                        "surface-bright": "#f9fafb",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f1ed",
+                        "surface-container-highest": "#e2e3df",
+                        "surface-variant": "#e2e3df",
+                        "tertiary-container": "#aab5d0",
+                        "primary-fixed-dim": "#ffb86b",
+                        "on-tertiary-fixed-variant": "#3c475d",
+                        "on-secondary-container": "#415A77",
+                        "outline-variant": "#dac2ae",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9fafb",
+                        "tertiary-fixed-dim": "#bbc6e2",
+                        "on-primary": "#ffffff",
+                        "outline": "#415A77",
+                        "on-primary-fixed": "#2c1700",
+                        "on-primary-fixed-variant": "#683d00",
+                        "tertiary-fixed": "#d7e2ff",
+                        "error-container": "#ffdad6",
+                        "unik-navy": "#1B263B"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5 { font-family: 'Manrope', sans-serif; }
+        
+        /* Status Badges */
+        .status-PENDIENTE { background: #fef3c7; color: #d97706; }
+        .status-EN_PROCESO { background: #dbeafe; color: #2563eb; }
+        .status-COMPLETADA { background: #d1fae5; color: #059669; }
+        .status-CANCELADA { background: #fee2e2; color: #dc2626; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+
+        /* Modal Blur */
+        #modalOrden.show { display: flex; backdrop-filter: blur(4px); }
+
+        /* Toast Styles */
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #FF9F1C;
+            animation: toastSlideIn 0.3s ease-out;
+            margin-bottom: 0.5rem;
+        }
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <script src="js/config.js"></script>
+</head>
+<body class="bg-surface font-body text-on-surface">
+    <script>
+        if (!localStorage.getItem('usuario')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- SideNavBar -->
+        <aside class="hidden md:flex flex-col h-full py-8 space-y-2 bg-surface-container-low w-72 shrink-0 border-r border-outline-variant/10">
+            <div class="px-8 mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white shadow-sm">
+                        <span class="material-symbols-outlined">architecture</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-unik-navy leading-tight">Unik'a</h1>
+                        <p class="text-[10px] uppercase tracking-[0.1em] text-secondary opacity-70 font-bold">Atelier Financiero</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 space-y-1 overflow-y-auto sidebar-scroll">
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mb-2">Principal</p>
+                <a href="index.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-medium tracking-wide">Panel de Control</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Gestión</p>
+                <a href="materiales.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-sm font-medium tracking-wide">Materiales</span>
+                </a>
+                <a href="productos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">label</span>
+                    <span class="text-sm font-medium tracking-wide">Productos</span>
+                </a>
+                <a href="trabajadores.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">groups</span>
+                    <span class="text-sm font-medium tracking-wide">Trabajadores</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Producción</p>
+                <a href="plan_produccion.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">assignment</span>
+                    <span class="text-sm font-medium tracking-wide">Plan Producción</span>
+                </a>
+                <a href="receta_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">build</span>
+                    <span class="text-sm font-medium tracking-wide">Receta x Producto</span>
+                </a>
+                <a href="mod_cif_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-sm font-medium tracking-wide">MOD y CIF</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Órdenes</p>
+                <a href="ordenes_trabajo.html" class="bg-white text-unik-navy rounded-r-full py-3 px-8 shadow-sm flex items-center gap-4 transition-all border-l-4 border-primary-container font-bold">
+                    <span class="material-symbols-outlined text-primary-container">description</span>
+                    <span class="text-sm font-medium tracking-wide">Órdenes de Trabajo</span>
+                </a>
+                <a href="hoja_costos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span class="text-sm font-medium tracking-wide">Hoja de Costos</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Finanzas</p>
+                <a href="estado_resultados.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    <span class="text-sm font-medium tracking-wide">Estado de Resultados</span>
+                </a>
+            </nav>
+            <div class="px-8 mt-auto pt-4 border-t border-primary/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary-container font-bold border-2 border-white shadow-sm" id="userInitialSidebar">U</div>
+                    <div class="overflow-hidden text-left">
+                        <p class="text-xs font-bold text-unik-navy truncate" id="userNameSidebar">Usuario</p>
+                        <p class="text-[10px] text-secondary truncate" id="userEmailSidebar">correo@ejemplo.com</p>
+                    </div>
+                </div>
+                <button onclick="cerrarSesion()" class="w-full py-3 bg-unik-navy text-white rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">logout</span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- TopAppBar -->
+            <header class="flex justify-between items-center w-full px-12 py-6 bg-surface z-40 border-b border-outline-variant/10">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl font-headline font-black tracking-tight text-unik-navy">Registro de Órdenes de Trabajo</h2>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <button onclick="abrirModalNuevaOrden()" class="bg-primary-container text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-orange-500/20 hover:scale-[0.98] transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">add_circle</span> Nueva Orden
+                    </button>
+                    <div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-xs font-bold text-unik-navy" id="userName">Usuario</p>
+                            <p class="text-[10px] text-secondary" id="userEmail">correo@ejemplo.com</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary-container font-bold border-2 border-white shadow-sm" id="userInitial">U</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Table Content -->
+            <div class="flex-1 overflow-y-auto p-12 bg-surface">
+                <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden flex flex-col">
+                    <div class="p-6 border-b border-outline-variant/10 bg-surface-container-low/30 flex justify-between items-center">
+                        <h3 class="font-headline font-bold text-unik-navy flex items-center gap-2 uppercase tracking-widest text-xs">
+                            <span class="material-symbols-outlined text-primary-container">list_alt</span> Historial Operativo
+                        </h3>
+                        <button onclick="cargarOrdenes()" class="p-2 text-secondary hover:text-primary-container transition-colors">
+                            <span class="material-symbols-outlined">sync</span>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-high border-b border-outline-variant/10">
+                                    <th class="px-8 py-5 text-[10px] font-bold text-unik-navy uppercase tracking-wider">N° Orden</th>
+                                    <th class="px-6 py-5 text-[10px] font-bold text-unik-navy uppercase tracking-wider">Fecha</th>
+                                    <th class="px-6 py-5 text-[10px] font-bold text-unik-navy uppercase tracking-wider">Producto</th>
+                                    <th class="px-6 py-5 text-[10px] font-bold text-unik-navy uppercase tracking-wider">Cliente</th>
+                                    <th class="px-6 py-5 text-[10px] font-bold text-unik-navy uppercase tracking-wider text-center">Cantidad</th>
+                                    <th class="px-6 py-5 text-[10px] font-bold text-unik-navy uppercase tracking-wider text-right">Costo Estimado</th>
+                                    <th class="px-6 py-5 text-[10px] font-bold text-unik-navy uppercase tracking-wider text-center">Estado</th>
+                                    <th class="px-8 py-5 text-[10px] font-bold text-unik-navy uppercase tracking-wider text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant/10" id="ordenesTableBody">
+                                <tr>
+                                    <td colspan="8" class="py-32 text-center opacity-30 font-bold text-sm italic">Sincronizando órdenes de trabajo...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Nueva/Editar Orden -->
+    <div id="modalOrden" class="hidden fixed inset-0 z-[100] items-center justify-center p-4">
+        <div class="absolute inset-0 bg-unik-navy/60 backdrop-blur-sm" onclick="cerrarModal()"></div>
+        <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="bg-unik-navy p-8 text-white flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-headline font-black" id="modalTitle">Nueva Orden de Trabajo</h3>
+                    <p class="text-xs text-white/60 font-medium mt-1">Complete los detalles para iniciar la producción</p>
+                </div>
+                <button onclick="cerrarModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div class="p-8 space-y-6">
+                <form id="formOrden">
+                    <input type="hidden" id="editId" value="">
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-secondary uppercase tracking-widest block ml-1">N° Identificador *</label>
+                            <input type="text" id="numeroOrden" placeholder="OT-2026-000" class="w-full bg-surface-container border-none rounded-xl text-sm font-bold text-unik-navy py-3 px-4 focus:ring-2 focus:ring-primary-container/20" required>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-secondary uppercase tracking-widest block ml-1">Fecha Emisión *</label>
+                            <input type="date" id="fechaEmision" class="w-full bg-surface-container border-none rounded-xl text-sm font-bold text-unik-navy py-3 px-4 focus:ring-2 focus:ring-primary-container/20" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6 mt-6">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-secondary uppercase tracking-widest block ml-1">Producto a Fabricar *</label>
+                            <select id="productoSelect" class="w-full bg-surface-container border-none rounded-xl text-sm font-bold text-unik-navy py-3 px-4 focus:ring-2 focus:ring-primary-container/20" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-secondary uppercase tracking-widest block ml-1">Cantidad Solicitada *</label>
+                            <input type="number" id="cantidadSolicitada" min="1" class="w-full bg-surface-container border-none rounded-xl text-sm font-bold text-unik-navy py-3 px-4 focus:ring-2 focus:ring-primary-container/20" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6 mt-6">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-secondary uppercase tracking-widest block ml-1">Cliente / Destino</label>
+                            <input type="text" id="cliente" class="w-full bg-surface-container border-none rounded-xl text-sm font-bold text-unik-navy py-3 px-4 focus:ring-2 focus:ring-primary-container/20">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-secondary uppercase tracking-widest block ml-1">Estado de Orden</label>
+                            <select id="estadoOrden" class="w-full bg-surface-container border-none rounded-xl text-sm font-bold text-unik-navy py-3 px-4 focus:ring-2 focus:ring-primary-container/20">
+                                <option value="PENDIENTE">🔴 PENDIENTE</option>
+                                <option value="EN_PROCESO">🔵 EN PROCESO</option>
+                                <option value="COMPLETADA">🟢 COMPLETADA</option>
+                                <option value="CANCELADA">⚪ CANCELADA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1 mt-6">
+                        <label class="text-[10px] font-black text-secondary uppercase tracking-widest block ml-1">Observaciones Operativas</label>
+                        <textarea id="observaciones" rows="3" class="w-full bg-surface-container border-none rounded-xl text-sm font-bold text-unik-navy py-3 px-4 focus:ring-2 focus:ring-primary-container/20" placeholder="Detalles de diseño, plazos o requerimientos especiales..."></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <div class="p-8 bg-surface-container-low/30 border-t border-outline-variant/10 flex justify-end gap-3">
+                <button onclick="cerrarModal()" class="px-8 py-3 rounded-xl font-bold text-sm text-secondary hover:bg-surface-container-high transition-colors">Descartar</button>
+                <button onclick="guardarOrden()" class="bg-unik-navy text-white px-10 py-3 rounded-xl font-bold text-sm shadow-xl hover:opacity-90 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">save</span> Procesar Orden
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer" class="fixed bottom-8 right-8 z-[110] flex flex-col gap-2"></div>
+
+    <script>
+        /* API_URL definido en js/config.js */
+
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarDatosUsuario();
+            cargarOrdenes();
+            cargarProductos();
+        });
+
+        function cargarDatosUsuario() {
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (usuario.user) {
+                // (Removed old TopAppBar references)
+
+                document.getElementById('userNameSidebar').textContent = usuario.user.split('@')[0];
+                document.getElementById('userEmailSidebar').textContent = usuario.user;
+                document.getElementById('userInitialSidebar').textContent = usuario.user.charAt(0).toUpperCase();
+            }
+        }
+
+        async function cargarOrdenes() {
+            try {
+                const result = await fetch(`${API_URL}/ordenes-trabajo`).then(r => r.json());
+                if (result.success) {
+                    const tbody = document.getElementById('ordenesTableBody');
+                    if (result.data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="8" class="py-32 text-center opacity-30 font-bold text-sm">📭 No hay órdenes registradas</td></tr>`;
+                        return;
+                    }
+                    tbody.innerHTML = result.data.map(o => `
+                        <tr class="hover:bg-surface transition-colors group">
+                            <td class="px-8 py-4 font-black text-unik-navy text-sm">${o.numero_orden}</td>
+                            <td class="px-6 py-4 text-xs font-medium text-secondary">${o.fecha_emision || '-'}</td>
+                            <td class="px-6 py-4">
+                                <p class="text-xs font-bold text-unik-navy">${o.producto_nombre || 'S/D'}</p>
+                                <p class="text-[10px] text-secondary font-medium">Ref: ${o.codigo_producto}</p>
+                            </td>
+                            <td class="px-6 py-4 text-xs font-bold text-secondary">${o.cliente || '-'}</td>
+                            <td class="px-6 py-4 text-center font-black text-sm">${o.cantidad_solicitada}</td>
+                            <td class="px-6 py-4 text-right font-black text-primary-container text-sm">S/ ${(o.costo_total || 0).toLocaleString('es-PE', {minimumFractionDigits:2})}</td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="status-badge status-${o.estado} px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">${o.estado.replace('_', ' ')}</span>
+                            </td>
+                            <td class="px-8 py-4 text-right space-x-1">
+                                <button onclick="editarOrden(${o.id_orden})" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all"><span class="material-symbols-outlined text-sm">edit</span></button>
+                                <button onclick="window.location.href='hoja_costos.html?id=${o.id_orden}'" class="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all"><span class="material-symbols-outlined text-sm">description</span></button>
+                                <button onclick="eliminarOrden(${o.id_orden})" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all"><span class="material-symbols-outlined text-sm">delete</span></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) { mostrarToast('Error al cargar órdenes', 'error'); }
+        }
+
+        async function cargarProductos() {
+            try {
+                const result = await fetch(`${API_URL}/productos`).then(r => r.json());
+                if (result.success) {
+                    const select = document.getElementById('productoSelect');
+                    select.innerHTML = '<option value="">Seleccionar...</option>';
+                    result.data.forEach(p => { select.innerHTML += `<option value="${p.codigoproducto}">${p.producto}</option>`; });
+                }
+            } catch (e) {}
+        }
+
+        function abrirModalNuevaOrden() {
+            document.getElementById('modalTitle').textContent = 'Nueva Orden de Trabajo';
+            document.getElementById('editId').value = '';
+            document.getElementById('formOrden').reset();
+            document.getElementById('fechaEmision').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modalOrden').classList.add('show');
+        }
+
+        function cerrarModal() { document.getElementById('modalOrden').classList.remove('show'); }
+
+        async function editarOrden(id) {
+            try {
+                const result = await fetch(`${API_URL}/ordenes-trabajo/${id}`).then(r => r.json());
+                if (result.success) {
+                    const o = result.data;
+                    document.getElementById('modalTitle').textContent = 'Editar Orden ' + o.numero_orden;
+                    document.getElementById('editId').value = o.id_orden;
+                    document.getElementById('numeroOrden').value = o.numero_orden;
+                    document.getElementById('fechaEmision').value = o.fecha_emision;
+                    document.getElementById('productoSelect').value = o.codigo_producto;
+                    document.getElementById('cantidadSolicitada').value = o.cantidad_solicitada;
+                    document.getElementById('cliente').value = o.cliente || '';
+                    document.getElementById('estadoOrden').value = o.estado;
+                    document.getElementById('observaciones').value = o.observaciones || '';
+                    document.getElementById('modalOrden').classList.add('show');
+                }
+            } catch (e) { mostrarToast('Error al cargar datos', 'error'); }
+        }
+
+        async function guardarOrden() {
+            const id = document.getElementById('editId').value;
+            const datos = {
+                numero_orden: document.getElementById('numeroOrden').value,
+                fecha_emision: document.getElementById('fechaEmision').value,
+                codigo_producto: parseInt(document.getElementById('productoSelect').value),
+                cantidad_solicitada: parseInt(document.getElementById('cantidadSolicitada').value),
+                cliente: document.getElementById('cliente').value,
+                estado: document.getElementById('estadoOrden').value,
+                observaciones: document.getElementById('observaciones').value
+            };
+            if (!datos.numero_orden || !datos.codigo_producto || !datos.cantidad_solicitada) {
+                mostrarToast('Complete los campos obligatorios', 'error');
+                return;
+            }
+            try {
+                const url = id ? `${API_URL}/ordenes-trabajo/${id}` : `${API_URL}/ordenes-trabajo`;
+                const result = await fetch(url, {
+                    method: id ? 'PUT' : 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(datos)
+                }).then(r => r.json());
+                if (result.success) {
+                    mostrarToast(id ? 'Orden actualizada correctamente' : 'Nueva orden registrada');
+                    cerrarModal(); cargarOrdenes();
+                } else { mostrarToast(result.error, 'error'); }
+            } catch (e) { mostrarToast('Error en la operación', 'error'); }
+        }
+
+        async function eliminarOrden(id) {
+            if (confirm('¿Confirma la eliminación de esta orden? Esta acción no se puede deshacer.')) {
+                try {
+                    const result = await fetch(`${API_URL}/ordenes-trabajo/${id}`, { method: 'DELETE' }).then(r => r.json());
+                    if (result.success) { mostrarToast('Orden eliminada'); cargarOrdenes(); }
+                } catch (e) { mostrarToast('Error al eliminar', 'error'); }
+            }
+        }
+
+        function mostrarToast(m, t='info') {
+            const c = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${t}`;
+            toast.innerHTML = `<p class="text-sm font-bold">${m}</p>`;
+            toast.onclick = () => toast.remove();
+            c.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+        function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = 'login.html'; }
+    </script>
+    <script src="js/theme-manager.js"></script>
+</body>
+</html>

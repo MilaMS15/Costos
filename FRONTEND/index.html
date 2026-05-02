@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Unik'a | Panel de Control</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#1B263B",
+                        "secondary": "#415A77",
+                        "accent": "#FF9F1C",
+                        "surface": "#F9FAF5",
+                        "card": "#E0E1DD",
+                        "on-surface": "#1B263B",
+                        "on-card": "#1B263B",
+                        "surface-container-low": "#d1d5db"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #E0E1DD; border-radius: 10px; }
+        
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <script src="js/config.js"></script>
+</head>
+<body class="bg-surface text-on-surface selection:bg-accent/30">
+    <script>
+        if (!localStorage.getItem('usuario')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="flex min-h-screen">
+        <!-- SideNavBar -->
+        <!-- SideNavBar -->
+        <aside class="hidden md:flex flex-col h-full py-8 space-y-2 bg-surface-container-low w-72 shrink-0 border-r border-outline-variant/10 fixed h-screen z-50">
+            <div class="px-8 mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-accent rounded-lg flex items-center justify-center text-white shadow-sm">
+                        <span class="material-symbols-outlined">architecture</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-primary leading-tight">Unik'a</h1>
+                        <p class="text-[10px] uppercase tracking-[0.1em] text-secondary opacity-70 font-bold">Atelier Financiero</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="flex-1 space-y-1 overflow-y-auto">
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mb-2">Principal</p>
+                <a href="index.html" class="bg-white text-primary rounded-r-full py-3 px-8 shadow-sm flex items-center gap-4 transition-all border-l-4 border-accent font-bold">
+                    <span class="material-symbols-outlined text-accent">dashboard</span>
+                    <span class="text-sm font-medium tracking-wide">Panel de Control</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Gestión</p>
+                <a href="materiales.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-sm font-medium tracking-wide">Materiales</span>
+                </a>
+                <a href="productos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">label</span>
+                    <span class="text-sm font-medium tracking-wide">Productos</span>
+                </a>
+                <a href="trabajadores.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">groups</span>
+                    <span class="text-sm font-medium tracking-wide">Trabajadores</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Producción</p>
+                <a href="plan_produccion.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">assignment</span>
+                    <span class="text-sm font-medium tracking-wide">Plan Producción</span>
+                </a>
+                <a href="receta_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">build</span>
+                    <span class="text-sm font-medium tracking-wide">Receta x Producto</span>
+                </a>
+                <a href="mod_cif_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-sm font-medium tracking-wide">MOD y CIF</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Órdenes</p>
+                <a href="ordenes_trabajo.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">description</span>
+                    <span class="text-sm font-medium tracking-wide">Órdenes de Trabajo</span>
+                </a>
+                <a href="hoja_costos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span class="text-sm font-medium tracking-wide">Hoja de Costos</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Finanzas</p>
+                <a href="estado_resultados.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    <span class="text-sm font-medium tracking-wide">Estado de Resultados</span>
+                </a>
+            </nav>
+
+            <div class="px-8 mt-auto pt-4 border-t border-primary/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold border-2 border-white shadow-sm" id="userInitialSidebar">U</div>
+                    <div class="overflow-hidden text-left">
+                        <p class="text-xs font-bold text-primary truncate" id="userNameSidebar">Usuario</p>
+                        <p class="text-[10px] text-secondary truncate" id="userEmailSidebar">correo@ejemplo.com</p>
+                    </div>
+                </div>
+                <button onclick="cerrarSesion()" class="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">logout</span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Canvas -->
+        <main class="flex-1 ml-72">
+            <!-- TopAppBar -->
+            <header class="bg-surface flex justify-between items-center w-full px-12 py-6 sticky top-0 z-40 border-b border-card">
+                <div>
+                    <h2 class="text-2xl font-['Manrope'] font-extrabold text-primary tracking-tight">Panel de Control General</h2>
+                    <p class="text-sm text-secondary font-medium" id="currentDate">Monitoreo de Desempeño</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex flex-col text-right">
+                        <p class="text-[10px] uppercase font-bold text-secondary opacity-60">Estado Conexión</p>
+                        <p class="text-xs font-bold text-primary" id="estadoConexion">Cargando...</p>
+                    </div>
+                    <button class="p-2 hover:bg-card rounded-full transition-all" title="Actualizar" onclick="location.reload()">
+                        <span class="material-symbols-outlined text-secondary">refresh</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="px-12 py-8">
+                
+                <!-- Row 1: Hero Graph & Stats -->
+                <div class="grid grid-cols-12 gap-6 mb-8">
+                    <!-- Main Production Chart -->
+                    <div class="col-span-8 bg-card p-8 rounded-xl shadow-sm flex flex-col min-h-[400px]">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-primary opacity-60" id="mesActualCosto">Rendimiento Mensual</span>
+                                <h3 class="text-4xl font-extrabold text-primary mt-1" id="costoTotalMensual">S/ 0.00</h3>
+                                <p class="text-sm text-secondary font-semibold flex items-center gap-1 mt-2">
+                                    <span class="material-symbols-outlined text-sm">payments</span>
+                                    <span id="badgeCostoTotal">Actualizando...</span>
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-primary opacity-60">Unidades Producidas</span>
+                                <p class="text-2xl font-extrabold text-primary" id="unidadesProducidas">0</p>
+                            </div>
+                        </div>
+                        <div class="flex-1 relative">
+                            <canvas id="produccionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Main KPIs -->
+                    <div class="col-span-4 flex flex-col gap-6">
+                        <div class="bg-card p-6 rounded-xl flex-1 flex flex-col justify-center border border-white/20">
+                            <span class="material-symbols-outlined text-secondary mb-3">inventory_2</span>
+                            <span class="text-xs font-semibold text-primary opacity-70 uppercase tracking-tighter">Materiales</span>
+                            <div class="text-3xl font-bold mt-1 text-primary" id="heroMateriales">--</div>
+                            <div class="w-full bg-white/50 h-2 rounded-full mt-4 overflow-hidden">
+                                <div class="bg-secondary h-full w-[65%]"></div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-6 rounded-xl flex-1 flex flex-col justify-center border border-white/20">
+                            <span class="material-symbols-outlined text-secondary mb-3">label</span>
+                            <span class="text-xs font-semibold text-primary opacity-70 uppercase tracking-tighter">Productos</span>
+                            <div class="text-3xl font-bold mt-1 text-primary" id="heroProductos">--</div>
+                        </div>
+                        <div class="bg-card p-6 rounded-xl flex-1 flex flex-col justify-center border border-white/20">
+                            <span class="material-symbols-outlined text-secondary mb-3">groups</span>
+                            <span class="text-xs font-semibold text-primary opacity-70 uppercase tracking-tighter">Trabajadores</span>
+                            <div class="text-3xl font-bold mt-1 text-primary" id="heroTrabajadores">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Efficiency & Recent Orders -->
+                <div class="grid grid-cols-12 gap-6 mb-8">
+                    <!-- Efficiency Indicators -->
+                    <div class="col-span-4 bg-card p-8 rounded-xl">
+                        <h4 class="text-lg font-bold mb-6 text-primary">Eficiencia de Producción</h4>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-bold text-primary">Eficiencia Global</span>
+                                    <span class="text-sm font-bold text-primary" id="kpiEficiencia">--</span>
+                                </div>
+                                <div class="h-2 bg-white/50 rounded-full overflow-hidden">
+                                    <div class="h-full bg-accent" id="barEficiencia" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-bold text-primary">% Materia Prima</span>
+                                    <span class="text-sm font-bold text-primary" id="kpiPorcentajeMP">--</span>
+                                </div>
+                                <div class="h-2 bg-white/50 rounded-full overflow-hidden">
+                                    <div class="h-full bg-secondary" id="barMP" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-bold text-primary">% Mano de Obra</span>
+                                    <span class="text-sm font-bold text-primary" id="kpiPorcentajeMOD">--</span>
+                                </div>
+                                <div class="h-2 bg-white/50 rounded-full overflow-hidden">
+                                    <div class="h-full bg-primary" id="barMOD" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-bold text-primary">% CIF</span>
+                                    <span class="text-sm font-bold text-primary" id="kpiPorcentajeCIF">--</span>
+                                </div>
+                                <div class="h-2 bg-white/50 rounded-full overflow-hidden">
+                                    <div class="h-full bg-accent/60" id="barCIF" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div class="col-span-8 bg-white p-8 rounded-xl shadow-sm border border-card">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-lg font-bold text-primary">Últimas Órdenes de Trabajo</h4>
+                            <a href="ordenes_trabajo.html" class="text-xs font-bold text-accent hover:underline">Ver todas →</a>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-[10px] uppercase tracking-widest text-secondary/60 border-b border-card">
+                                        <th class="pb-4">N° Orden</th>
+                                        <th class="pb-4">Producto</th>
+                                        <th class="pb-4">Cliente</th>
+                                        <th class="pb-4">Cantidad</th>
+                                        <th class="pb-4">Estado</th>
+                                        <th class="pb-4">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm" id="ultimasOrdenesBody">
+                                    <tr><td colspan="6" class="py-8 text-center text-secondary">Cargando datos...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Timeline & Distribution -->
+                <div class="grid grid-cols-12 gap-6 mb-8">
+                    <!-- Recent Activity Timeline -->
+                    <div class="col-span-4 bg-card p-8 rounded-xl">
+                        <h4 class="text-lg font-bold mb-6 text-primary">Actividad Reciente</h4>
+                        <div class="space-y-4" id="timelineOrdenes">
+                            <!-- Dinámico -->
+                        </div>
+                    </div>
+
+                    <!-- Cost Distribution Chart -->
+                    <div class="col-span-8 bg-white p-8 rounded-xl shadow-sm border border-card flex flex-col">
+                        <h4 class="text-lg font-bold mb-6 text-primary">Distribución de Costos Globales</h4>
+                        <div class="flex-1 relative min-h-[300px]">
+                            <canvas id="distribucionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 4: Costs per OT -->
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-card mb-8">
+                    <h4 class="text-lg font-bold mb-6 text-primary">Costos por Orden de Trabajo</h4>
+                    <div class="h-[400px] relative">
+                        <canvas id="costosOrdenChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Row 5: Quick Actions -->
+                <div class="bg-card p-8 rounded-xl mb-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <h4 class="text-lg font-bold text-primary">⚡ Acciones Rápidas</h4>
+                        <span class="px-3 py-1 bg-white/50 text-primary rounded-full text-[10px] font-bold">Sistema Operativo</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-6">
+                        <a href="materiales.html" class="bg-white p-6 rounded-xl shadow-sm hover:scale-[1.02] transition-all border border-transparent hover:border-accent">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4 text-2xl">📦</div>
+                            <h5 class="font-bold text-primary">Materiales</h5>
+                            <p class="text-xs text-secondary mt-1">Gestionar inventario de materias primas</p>
+                        </a>
+                        <a href="productos.html" class="bg-white p-6 rounded-xl shadow-sm hover:scale-[1.02] transition-all border border-transparent hover:border-accent">
+                            <div class="w-12 h-12 bg-green-50 text-green-600 rounded-lg flex items-center justify-center mb-4 text-2xl">🏷️</div>
+                            <h5 class="font-bold text-primary">Productos</h5>
+                            <p class="text-xs text-secondary mt-1">Administrar catálogo y recetas</p>
+                        </a>
+                        <a href="trabajadores.html" class="bg-white p-6 rounded-xl shadow-sm hover:scale-[1.02] transition-all border border-transparent hover:border-accent">
+                            <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-lg flex items-center justify-center mb-4 text-2xl">👥</div>
+                            <h5 class="font-bold text-primary">Trabajadores</h5>
+                            <p class="text-xs text-secondary mt-1">Control de personal y sueldos</p>
+                        </a>
+                        <a href="plan_produccion.html" class="bg-white p-6 rounded-xl shadow-sm hover:scale-[1.02] transition-all border border-transparent hover:border-accent">
+                            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center mb-4 text-2xl">📋</div>
+                            <h5 class="font-bold text-primary">Plan Producción</h5>
+                            <p class="text-xs text-secondary mt-1">Ver planificación mensual</p>
+                        </a>
+                        <a href="receta_producto.html" class="bg-white p-6 rounded-xl shadow-sm hover:scale-[1.02] transition-all border border-transparent hover:border-accent">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4 text-2xl">🔧</div>
+                            <h5 class="font-bold text-primary">Recetas</h5>
+                            <p class="text-xs text-secondary mt-1">Materias primas por producto</p>
+                        </a>
+                        <a href="mod_cif_producto.html" class="bg-white p-6 rounded-xl shadow-sm hover:scale-[1.02] transition-all border border-transparent hover:border-accent">
+                            <div class="w-12 h-12 bg-red-50 text-red-600 rounded-lg flex items-center justify-center mb-4 text-2xl">💰</div>
+                            <h5 class="font-bold text-primary">MOD y CIF</h5>
+                            <p class="text-xs text-secondary mt-1">Cálculo de costos de mano de obra</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Row 6: System Summary -->
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-card text-center">
+                        <p class="text-[10px] uppercase font-bold text-secondary opacity-60">Planes Activos</p>
+                        <p class="text-2xl font-bold text-primary" id="resumenPlanes">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-card text-center">
+                        <p class="text-[10px] uppercase font-bold text-secondary opacity-60">Mano de Obra (MOD)</p>
+                        <p class="text-2xl font-bold text-primary" id="resumenMOD">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-card text-center">
+                        <p class="text-[10px] uppercase font-bold text-secondary opacity-60">Soporte (MOI)</p>
+                        <p class="text-2xl font-bold text-primary" id="resumenMOI">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-card text-center">
+                        <p class="text-[10px] uppercase font-bold text-secondary opacity-60">Total Unidades</p>
+                        <p class="text-2xl font-bold text-primary" id="resumenUnidades">0</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-8 right-8 z-[100] flex flex-col gap-2"></div>
+
+    <!-- SCRIPTS -->
+    <script>
+        /* API_URL definido en js/config.js */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatosUsuario();
+            cargarEstadisticas();
+            cargarCostoTotalMensual();
+            cargarKPIsOrdenes();
+            // Inicializar gráficos independientemente para asegurar que carguen
+            crearGraficos();
+        });
+
+        function cargarDatosUsuario() {
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (usuario.user) {
+                // (Removed old TopAppBar references)
+                
+                document.getElementById('userNameSidebar').textContent = usuario.user.split('@')[0];
+                document.getElementById('userEmailSidebar').textContent = usuario.user;
+                document.getElementById('userInitialSidebar').textContent = usuario.user.charAt(0).toUpperCase();
+            }
+            const date = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = date.toLocaleDateString('es-ES', options);
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('usuario');
+            window.location.href = 'login.html';
+        }
+
+        async function cargarCostoTotalMensual() {
+            try {
+                const response = await fetch(`${API_URL}/costo-total-mensual`);
+                if (!response.ok) { mostrarCostoEstimado(); return; }
+                const result = await response.json();
+                if (result.success && result.data) {
+                    const data = result.data;
+                    document.getElementById('costoTotalMensual').textContent = `S/ ${data.total_costo_mensual.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+                    document.getElementById('unidadesProducidas').textContent = data.total_unidades_producidas;
+                    document.getElementById('resumenUnidades').textContent = data.total_unidades_producidas;
+                    
+                    const [anio, mes] = data.mes.split('-');
+                    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+                    document.getElementById('mesActualCosto').textContent = `Rendimiento de ${meses[parseInt(mes)-1]} ${anio}`;
+                    document.getElementById('badgeCostoTotal').textContent = 'Datos en tiempo real';
+                    document.getElementById('estadoConexion').textContent = '✅ Conectado';
+                } else { mostrarCostoEstimado(); }
+            } catch (error) { mostrarCostoEstimado(); }
+        }
+
+        function mostrarCostoEstimado() {
+            document.getElementById('costoTotalMensual').textContent = 'S/ 85,450.00';
+            document.getElementById('unidadesProducidas').textContent = '3,670';
+            document.getElementById('badgeCostoTotal').textContent = 'Modo Demo';
+            document.getElementById('estadoConexion').textContent = '⚠️ Modo Demo';
+        }
+
+        async function cargarEstadisticas() {
+            try {
+                const [matRes, prodRes, trabRes] = await Promise.all([
+                    fetch(`${API_URL}/materiales`).then(r => r.json()).catch(() => null),
+                    fetch(`${API_URL}/productos`).then(r => r.json()).catch(() => null),
+                    fetch(`${API_URL}/trabajadores`).then(r => r.json()).catch(() => null)
+                ]);
+
+                if (matRes && matRes.success) document.getElementById('heroMateriales').textContent = matRes.data.length;
+                if (prodRes && prodRes.success) document.getElementById('heroProductos').textContent = prodRes.data.length;
+                if (trabRes && trabRes.success) {
+                    document.getElementById('heroTrabajadores').textContent = trabRes.data.length;
+                    document.getElementById('resumenMOD').textContent = trabRes.data.filter(t => t.tipotrabajo === 'MOD').length;
+                    document.getElementById('resumenMOI').textContent = trabRes.data.filter(t => t.tipotrabajo === 'MOI').length;
+                }
+            } catch (e) { console.log('Error stats'); }
+        }
+
+        async function cargarKPIsOrdenes() {
+            try {
+                const response = await fetch(`${API_URL}/dashboard/kpis`);
+                const result = await response.json();
+                if (result.success && result.data) {
+                    const kpi = result.data;
+                    document.getElementById('kpiOrdenesActivas').textContent = kpi.ordenes_activas;
+                    document.getElementById('resumenPlanes').textContent = kpi.ordenes_activas;
+                    document.getElementById('kpiEficiencia').textContent = `${kpi.eficiencia_global}%`;
+                    document.getElementById('kpiPorcentajeMP').textContent = `${kpi.porcentaje_mp}%`;
+                    document.getElementById('kpiPorcentajeMOD').textContent = `${kpi.porcentaje_mod}%`;
+                    document.getElementById('kpiPorcentajeCIF').textContent = `${kpi.porcentaje_cif}%`;
+
+                    document.getElementById('barEficiencia').style.width = `${kpi.eficiencia_global}%`;
+                    document.getElementById('barMP').style.width = `${kpi.porcentaje_mp}%`;
+                    document.getElementById('barMOD').style.width = `${kpi.porcentaje_mod}%`;
+                    document.getElementById('barCIF').style.width = `${kpi.porcentaje_cif}%`;
+                }
+
+                const ordenesResponse = await fetch(`${API_URL}/ordenes-trabajo`);
+                const oResult = await ordenesResponse.json();
+                if (oResult.success && oResult.data.length > 0) {
+                    const ordenes = oResult.data.slice(0, 5);
+                    document.getElementById('ultimasOrdenesBody').innerHTML = ordenes.map(o => `
+                        <tr class="hover:bg-card/30 transition-colors border-b border-card/50">
+                            <td class="py-4 font-bold text-primary">${o.numero_orden}</td>
+                            <td class="py-4 text-secondary">${o.producto_nombre || 'N/A'}</td>
+                            <td class="py-4 text-secondary">${o.cliente || '-'}</td>
+                            <td class="py-4 text-secondary">${o.cantidad_solicitada}</td>
+                            <td class="py-4">
+                                <span class="status-badge" style="background: ${o.estado === 'COMPLETADA' ? '#ecfdf5' : '#fffbeb'}; color: ${o.estado === 'COMPLETADA' ? '#059669' : '#d97706'};">${o.estado}</span>
+                            </td>
+                            <td class="py-4 text-secondary">${o.fecha_emision || '-'}</td>
+                        </tr>
+                    `).join('');
+
+                    document.getElementById('timelineOrdenes').innerHTML = ordenes.slice(0, 3).map(o => `
+                        <div class="flex items-start gap-3 p-3 bg-white/40 rounded-lg">
+                            <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent">
+                                <span class="material-symbols-outlined text-sm">history</span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-primary">${o.numero_orden} - ${o.estado}</p>
+                                <p class="text-[10px] text-secondary">${o.producto_nombre}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    mostrarDatosDemo();
+                }
+                
+                // Inicializar gráficos
+                crearGraficos();
+            } catch (e) { 
+                console.log('Error KPIs:', e); 
+                mostrarDatosDemo();
+            }
+        }
+
+        function mostrarDatosDemo() {
+            // Valores por defecto para KPIs
+            document.getElementById('kpiEficiencia').textContent = '85%';
+            document.getElementById('kpiPorcentajeMP').textContent = '52%';
+            document.getElementById('kpiPorcentajeMOD').textContent = '25%';
+            document.getElementById('kpiPorcentajeCIF').textContent = '14%';
+            document.getElementById('resumenPlanes').textContent = '5';
+
+            // Datos demo para la tabla
+            const demoOrdenes = [
+                { numero_orden: 'OT-9021', producto_nombre: 'Polos Premium', cliente: 'Cliente A', cantidad_solicitada: 500, estado: 'COMPLETADA', fecha_emision: '2023-10-12' },
+                { numero_orden: 'OT-8945', producto_nombre: 'Bermudas Chino', cliente: 'Cliente B', cantidad_solicitada: 300, estado: 'EN_PROCESO', fecha_emision: '2023-10-10' },
+                { numero_orden: 'OT-8832', producto_nombre: 'Casacas Jean', cliente: 'Cliente C', cantidad_solicitada: 150, estado: 'PENDIENTE', fecha_emision: '2023-10-08' }
+            ];
+
+            document.getElementById('ultimasOrdenesBody').innerHTML = demoOrdenes.map(o => `
+                <tr class="even:bg-surface-container-low/20 hover:bg-primary/5 transition-colors border-b border-card/50">
+                    <td class="py-4 font-bold text-primary">${o.numero_orden}</td>
+                    <td class="py-4 text-secondary">${o.producto_nombre}</td>
+                    <td class="py-4 text-secondary">${o.cliente}</td>
+                    <td class="py-4 text-secondary">${o.cantidad_solicitada}</td>
+                    <td class="py-4">
+                        <span class="status-badge" style="background: ${o.estado === 'COMPLETADA' ? '#ecfdf5' : '#fffbeb'}; color: ${o.estado === 'COMPLETADA' ? '#059669' : '#d97706'};">${o.estado}</span>
+                    </td>
+                    <td class="py-4 text-secondary">${o.fecha_emision}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('timelineOrdenes').innerHTML = demoOrdenes.map(o => `
+                <div class="flex items-start gap-3 p-3 bg-white/40 rounded-lg">
+                    <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent">
+                        <span class="material-symbols-outlined text-sm">history</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-primary">${o.numero_orden} - ${o.estado}</p>
+                        <p class="text-[10px] text-secondary">${o.producto_nombre}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function crearGraficos() {
+            // Producción (Line)
+            const canvas1 = document.getElementById('produccionChart');
+            if (canvas1) {
+                const ctx1 = canvas1.getContext('2d');
+                new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Órdenes', data: [5, 8, 6, 10, 7, 9],
+                            borderColor: '#1B263B', backgroundColor: 'rgba(27, 38, 59, 0.1)', fill: true, tension: 0.4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            // Distribución (Doughnut)
+            const canvas2 = document.getElementById('distribucionChart');
+            if (canvas2) {
+                const ctx2 = canvas2.getContext('2d');
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Materia Prima', 'Mano de Obra', 'CIF', 'Gastos'],
+                        datasets: [{
+                            data: [45000, 22000, 12000, 6450],
+                            backgroundColor: ['#1B263B', '#415A77', '#FF9F1C', '#E0E1DD']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+                });
+            }
+
+            // Costos Orden (Bar)
+            const canvas3 = document.getElementById('costosOrdenChart');
+            if (canvas3) {
+                const ctx3 = canvas3.getContext('2d');
+                new Chart(ctx3, {
+                    type: 'bar',
+                    data: {
+                        labels: ['OT-001', 'OT-002', 'OT-003', 'OT-004', 'OT-005'],
+                        datasets: [
+                            { label: 'MP', data: [1500, 2200, 1800, 3000, 1200], backgroundColor: '#1B263B' },
+                            { label: 'MOD', data: [800, 1000, 900, 1200, 600], backgroundColor: '#415A77' },
+                            { label: 'CIF', data: [400, 500, 450, 600, 300], backgroundColor: '#FF9F1C' }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
+                });
+            }
+        }
+    </script>
+    <script src="js/theme-manager.js"></script>
+</body>
+</html>

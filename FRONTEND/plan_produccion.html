@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Unik'a | Plan de Producción</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "secondary": "#415A77",
+                        "secondary-container": "#c2dcff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9fafb",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#1B263B",
+                        "surface-tint": "#1B263B",
+                        "inverse-primary": "#ffb86b",
+                        "primary-fixed": "#ffdcbc",
+                        "primary": "#1B263B",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "surface-dim": "#d9dad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "tertiary": "#545e76",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "surface-container-low": "#d1d5db",
+                        "surface-container": "#d1d5db",
+                        "on-surface-variant": "#415A77",
+                        "on-surface": "#1B263B",
+                        "inverse-surface": "#2f312e",
+                        "primary-container": "#FF9F1C",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed": "#101b30",
+                        "surface-container-high": "#e8e8e4",
+                        "on-background": "#1B263B",
+                        "surface-bright": "#f9fafb",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f1ed",
+                        "surface-container-highest": "#e2e3df",
+                        "surface-variant": "#e2e3df",
+                        "tertiary-container": "#aab5d0",
+                        "primary-fixed-dim": "#ffb86b",
+                        "on-tertiary-fixed-variant": "#3c475d",
+                        "on-secondary-container": "#415A77",
+                        "outline-variant": "#dac2ae",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9fafb",
+                        "tertiary-fixed-dim": "#bbc6e2",
+                        "on-primary": "#ffffff",
+                        "outline": "#415A77",
+                        "on-primary-fixed": "#2c1700",
+                        "on-primary-fixed-variant": "#683d00",
+                        "tertiary-fixed": "#d7e2ff",
+                        "error-container": "#ffdad6",
+                        "unik-navy": "#1B263B"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5 { font-family: 'Manrope', sans-serif; }
+        
+        .row-total {
+            background-color: #1B263B !important;
+            color: white !important;
+            font-weight: 800;
+        }
+        .row-total td { color: white !important; }
+
+        @media print {
+            aside, header, .no-print { display: none !important; }
+            main { margin-left: 0 !important; width: 100% !important; }
+            .print-full { width: 100% !important; border: 1px solid #ddd !important; }
+        }
+
+        /* Toast Styles */
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #FF9F1C;
+            animation: toastSlideIn 0.3s ease-out;
+            margin-bottom: 0.5rem;
+        }
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <script src="js/config.js"></script>
+</head>
+<body class="bg-surface font-body text-on-surface">
+    <script>
+        if (!localStorage.getItem('usuario')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- SideNavBar -->
+        <aside class="hidden md:flex flex-col h-full py-8 space-y-2 bg-surface-container-low w-72 shrink-0 border-r border-outline-variant/10">
+            <div class="px-8 mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white shadow-sm">
+                        <span class="material-symbols-outlined">architecture</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-unik-navy leading-tight">Unik'a</h1>
+                        <p class="text-[10px] uppercase tracking-[0.1em] text-secondary opacity-70 font-bold">Atelier Financiero</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 space-y-1 overflow-y-auto sidebar-scroll">
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mb-2">Principal</p>
+                <a href="index.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-medium tracking-wide">Panel de Control</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Gestión</p>
+                <a href="materiales.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-sm font-medium tracking-wide">Materiales</span>
+                </a>
+                <a href="productos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">label</span>
+                    <span class="text-sm font-medium tracking-wide">Productos</span>
+                </a>
+                <a href="trabajadores.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">groups</span>
+                    <span class="text-sm font-medium tracking-wide">Trabajadores</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Producción</p>
+                <a href="plan_produccion.html" class="bg-white text-unik-navy rounded-r-full py-3 px-8 shadow-sm flex items-center gap-4 transition-all border-l-4 border-primary-container font-bold">
+                    <span class="material-symbols-outlined text-primary-container">assignment</span>
+                    <span class="text-sm font-medium tracking-wide">Plan Producción</span>
+                </a>
+                <a href="receta_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">build</span>
+                    <span class="text-sm font-medium tracking-wide">Receta x Producto</span>
+                </a>
+                <a href="mod_cif_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-sm font-medium tracking-wide">MOD y CIF</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Órdenes</p>
+                <a href="ordenes_trabajo.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">description</span>
+                    <span class="text-sm font-medium tracking-wide">Órdenes de Trabajo</span>
+                </a>
+                <a href="hoja_costos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span class="text-sm font-medium tracking-wide">Hoja de Costos</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Finanzas</p>
+                <a href="estado_resultados.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    <span class="text-sm font-medium tracking-wide">Estado de Resultados</span>
+                </a>
+            </nav>
+            <div class="px-8 mt-auto pt-4 border-t border-primary/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary-container font-bold border-2 border-white shadow-sm" id="userInitialSidebar">U</div>
+                    <div class="overflow-hidden text-left">
+                        <p class="text-xs font-bold text-unik-navy truncate" id="userNameSidebar">Usuario</p>
+                        <p class="text-[10px] text-secondary truncate" id="userEmailSidebar">correo@ejemplo.com</p>
+                    </div>
+                </div>
+                <button onclick="cerrarSesion()" class="w-full py-3 bg-unik-navy text-white rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">logout</span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- TopAppBar -->
+            <header class="flex justify-between items-center w-full px-12 py-6 bg-surface z-40 border-b border-outline-variant/10 no-print">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl font-headline font-black tracking-tight text-unik-navy">Plan de Producción Mensual</h2>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center bg-surface-container px-4 py-2 rounded-full border border-outline-variant/10">
+                        <span class="material-symbols-outlined text-green-600 mr-2 text-sm" id="conexionIcon">circle</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-secondary" id="conexionIndicator">Conectado</span>
+                    </div>
+                    <div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-xs font-bold text-unik-navy" id="userName">Usuario</p>
+                            <p class="text-[10px] text-secondary" id="userEmail">correo@ejemplo.com</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary-container font-bold border-2 border-white shadow-sm" id="userInitial">U</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-12 bg-surface space-y-8">
+                <!-- Stats Row -->
+                <div class="grid grid-cols-4 gap-6 no-print">
+                    <div class="bg-card p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col justify-center">
+                        <span class="material-symbols-outlined text-secondary mb-2">inventory</span>
+                        <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Unidades Proyectadas</span>
+                        <div class="text-3xl font-black text-unik-navy mt-1" id="totalVV">0</div>
+                    </div>
+                    <div class="bg-card p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col justify-center border-l-4 border-l-primary-container">
+                        <span class="material-symbols-outlined text-primary-container mb-2">payments</span>
+                        <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Total Ventas Estimadas</span>
+                        <div class="text-3xl font-black text-primary-container mt-1" id="totalVentas">S/ 0</div>
+                    </div>
+                    <div class="bg-card p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col justify-center">
+                        <span class="material-symbols-outlined text-blue-600 mb-2">check_circle</span>
+                        <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Variedades Activas</span>
+                        <div class="text-3xl font-black text-blue-600 mt-1" id="productosActivos">0</div>
+                    </div>
+                    <div class="bg-card p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col justify-center">
+                        <span class="material-symbols-outlined text-green-600 mb-2">trending_up</span>
+                        <span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Precio Promedio Unit.</span>
+                        <div class="text-3xl font-black text-green-600 mt-1" id="precioPromedio">S/ 0</div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-outline-variant/10 flex justify-between items-center no-print">
+                    <div class="flex items-center gap-6">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-secondary uppercase tracking-widest block ml-1">Periodo de Análisis</label>
+                            <select id="mesSelect" onchange="cargarPlan()" class="bg-surface-container border-none rounded-xl text-sm font-bold text-unik-navy py-3 px-6 min-w-[250px] focus:ring-2 focus:ring-primary-container/20 cursor-pointer">
+                                <option value="">Cargando meses...</option>
+                            </select>
+                        </div>
+                        <button onclick="cargarPlan()" class="mt-5 bg-unik-navy text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">refresh</span> Actualizar
+                        </button>
+                    </div>
+                    <button onclick="exportarPDF()" class="bg-white border-2 border-primary-container text-primary-container px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary-container hover:text-white transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">picture_as_pdf</span> Descargar Reporte
+                    </button>
+                </div>
+
+                <!-- Main Table Section -->
+                <section class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden flex flex-col print-full">
+                    <div class="px-8 py-6 bg-surface-container-low/30 border-b border-outline-variant/10 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-headline font-bold text-unik-navy text-xl">Distribución de Producción y Ventas</h3>
+                            <p class="text-xs text-secondary font-medium tracking-wide">Análisis porcentual por línea de producto</p>
+                        </div>
+                        <span class="px-4 py-1.5 bg-primary-container/10 text-primary-container rounded-full text-[10px] font-black uppercase tracking-wider no-print">Auditoría en Tiempo Real</span>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse" id="planTable">
+                            <thead>
+                                <tr class="bg-unik-navy">
+                                    <th onclick="ordenar('producto')" class="px-8 py-5 text-[10px] font-bold text-white uppercase tracking-wider cursor-pointer hover:text-primary-container transition-colors">Producto <span class="text-[8px]">▼</span></th>
+                                    <th onclick="ordenar('vv')" class="px-6 py-5 text-[10px] font-bold text-white uppercase tracking-wider text-center cursor-pointer hover:text-primary-container transition-colors">Cant. Mes (Uds) <span class="text-[8px]">▼</span></th>
+                                    <th onclick="ordenar('pct_vv')" class="px-6 py-5 text-[10px] font-bold text-white uppercase tracking-wider text-center cursor-pointer hover:text-primary-container transition-colors">% Producción <span class="text-[8px]">▼</span></th>
+                                    <th onclick="ordenar('vv_mes')" class="px-6 py-5 text-[10px] font-bold text-white uppercase tracking-wider text-right cursor-pointer hover:text-primary-container transition-colors">Precio Ref. (S/) <span class="text-[8px]">▼</span></th>
+                                    <th onclick="ordenar('ventas')" class="px-6 py-5 text-[10px] font-bold text-white uppercase tracking-wider text-right cursor-pointer hover:text-primary-container transition-colors">Ingresos Est. (S/) <span class="text-[8px]">▼</span></th>
+                                    <th onclick="ordenar('pct_venta')" class="px-8 py-5 text-[10px] font-bold text-white uppercase tracking-wider text-center cursor-pointer hover:text-primary-container transition-colors">% Part. Ventas <span class="text-[8px]">▼</span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant/10" id="planTableBody">
+                                <tr>
+                                    <td colspan="6" class="py-32 text-center opacity-30">
+                                        <div class="flex flex-col items-center">
+                                            <span class="material-symbols-outlined text-6xl animate-pulse">analytics</span>
+                                            <h3 class="text-xl font-bold mt-4">Analizando periodos...</h3>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer" class="fixed bottom-8 right-8 z-[110] flex flex-col gap-2"></div>
+
+    <script>
+        /* API_URL definido en js/config.js */
+        let filasActuales = [];
+        let totalesActuales = {};
+        let sortCol = null;
+        let sortRev = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarDatosUsuario();
+            cargarMeses();
+            verificarConexion();
+        });
+
+        function cargarDatosUsuario() {
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (usuario.user) {
+                // (Removed old TopAppBar references)
+
+                document.getElementById('userNameSidebar').textContent = usuario.user.split('@')[0];
+                document.getElementById('userEmailSidebar').textContent = usuario.user;
+                document.getElementById('userInitialSidebar').textContent = usuario.user.charAt(0).toUpperCase();
+            }
+        }
+
+        async function verificarConexion() {
+            try {
+                const response = await fetch(`${API_URL}/productos`);
+                const result = await response.json();
+                const indicator = document.getElementById('conexionIndicator');
+                const icon = document.getElementById('conexionIcon');
+                
+                if (result.success && result.data.length > 0) {
+                    indicator.textContent = 'Conectado a Cloud';
+                    icon.className = 'material-symbols-outlined text-green-600 mr-2 text-sm';
+                } else {
+                    indicator.textContent = 'Modo Local / Demo';
+                    icon.className = 'material-symbols-outlined text-orange-600 mr-2 text-sm';
+                }
+            } catch (error) {
+                document.getElementById('conexionIndicator').textContent = 'Modo Desconectado';
+                document.getElementById('conexionIcon').className = 'material-symbols-outlined text-error mr-2 text-sm';
+            }
+        }
+
+        async function cargarMeses() {
+            try {
+                const response = await fetch(`${API_URL}/plan-produccion/meses`);
+                const result = await response.json();
+                if (result.success) {
+                    const select = document.getElementById('mesSelect');
+                    select.innerHTML = '<option value="">-- Seleccione un periodo --</option>';
+                    result.data.meses.forEach((mes, index) => {
+                        select.innerHTML += `<option value="${mes}">${result.data.meses_formato[index]}</option>`;
+                    });
+                    if (result.data.meses.length > 0) {
+                        select.value = result.data.meses[0];
+                        cargarPlan();
+                    }
+                }
+            } catch (e) { mostrarToast('Error al sincronizar meses', 'error'); }
+        }
+
+        async function cargarPlan() {
+            const mes = document.getElementById('mesSelect').value;
+            if (!mes) return;
+            try {
+                const result = await fetch(`${API_URL}/plan-produccion/${mes}`).then(r => r.json());
+                if (result.success) {
+                    filasActuales = result.data.filas;
+                    totalesActuales = result.data.totales;
+                    renderizarTabla(filasActuales, totalesActuales);
+                    actualizarEstadisticas();
+                }
+            } catch (e) { mostrarToast('Error al generar plan', 'error'); }
+        }
+
+        function actualizarEstadisticas() {
+            document.getElementById('totalVV').textContent = (totalesActuales.vv || 0).toLocaleString();
+            document.getElementById('totalVentas').textContent = `S/ ${(totalesActuales.ventas || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            const activos = filasActuales.filter(f => f.vv > 0).length;
+            document.getElementById('productosActivos').textContent = activos;
+            if (activos > 0) {
+                const avg = filasActuales.filter(f => f.vv > 0).reduce((s, f) => s + f.vv_mes, 0) / activos;
+                document.getElementById('precioPromedio').textContent = `S/ ${avg.toFixed(2)}`;
+            }
+        }
+
+        function renderizarTabla(filas, totales) {
+            const tbody = document.getElementById('planTableBody');
+            if (filas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-20 text-center opacity-30 font-bold">No se detectaron transacciones</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = filas.map((f, i) => `
+                <tr class="hover:bg-surface transition-colors group">
+                    <td class="px-8 py-4 font-black text-unik-navy">${f.producto}</td>
+                    <td class="px-6 py-4 text-center font-bold text-secondary">${f.vv.toLocaleString()}</td>
+                    <td class="px-6 py-4 text-center font-medium">
+                        <div class="flex items-center justify-center gap-2">
+                            <div class="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                                <div class="bg-primary-container h-full" style="width: ${f.pct_vv}%"></div>
+                            </div>
+                            <span class="text-[10px]">${f.pct_vv.toFixed(1)}%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-right font-medium text-secondary italic">S/ ${f.vv_mes.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-right font-black text-unik-navy">S/ ${f.ventas.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td class="px-8 py-4 text-center">
+                        <span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-black text-unik-navy">${f.pct_venta.toFixed(1)}%</span>
+                    </td>
+                </tr>
+            `).join('') + `
+                <tr class="row-total border-t-2 border-primary-container shadow-lg">
+                    <td class="px-8 py-6 text-sm">CONSOLIDADO TOTAL</td>
+                    <td class="px-6 py-6 text-center text-lg">${totales.vv.toLocaleString()}</td>
+                    <td class="px-6 py-6 text-center">100.0%</td>
+                    <td class="px-6 py-6 text-right opacity-50">—</td>
+                    <td class="px-6 py-6 text-right text-lg">S/ ${totales.ventas.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td class="px-8 py-6 text-center text-lg">100.0%</td>
+                </tr>
+            `;
+        }
+
+        function ordenar(col) {
+            if (sortCol === col) sortRev = !sortRev;
+            else { sortCol = col; sortRev = false; }
+            const sorted = [...filasActuales].sort((a, b) => {
+                let vA = a[col], vB = b[col];
+                if (typeof vA === 'string') { vA = vA.toLowerCase(); vB = vB.toLowerCase(); }
+                return sortRev ? (vA < vB ? 1 : -1) : (vA > vB ? 1 : -1);
+            });
+            renderizarTabla(sorted, totalesActuales);
+        }
+
+        function exportarPDF() { window.print(); }
+        function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = 'login.html'; }
+        function mostrarToast(m, t='info') {
+            const c = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${t}`;
+            toast.innerHTML = `<p class="text-sm font-bold">${m}</p>`;
+            toast.onclick = () => toast.remove();
+            c.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+    </script>
+    <script src="js/theme-manager.js"></script>
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Unik'a - Gestión de Costos Iniciar Sesión</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "secondary": "#415a77",
+                        "secondary-container": "#c2dcff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#E0E1DD",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#3c475d",
+                        "surface-tint": "#895100",
+                        "inverse-primary": "#ffb86b",
+                        "primary-fixed": "#ffdcbc",
+                        "primary": "#FF9F1C",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "surface-dim": "#d9dad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "tertiary": "#545e76",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "surface-container-low": "#E0E1DD",
+                        "surface-container": "#edeeea",
+                        "on-surface-variant": "#544434",
+                        "on-surface": "#1B263B",
+                        "inverse-surface": "#2f312e",
+                        "primary-container": "#FF9F1C",
+                        "on-primary-container": "#683c00",
+                        "on-tertiary-fixed": "#101b30",
+                        "surface-container-high": "#e8e8e4",
+                        "on-background": "#1B263B",
+                        "surface-bright": "#f9faf5",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f1ed",
+                        "surface-container-highest": "#e2e3df",
+                        "surface-variant": "#E0E1DD",
+                        "tertiary-container": "#aab5d0",
+                        "primary-fixed-dim": "#ffb86b",
+                        "on-tertiary-fixed-variant": "#3c475d",
+                        "on-secondary-container": "#48617e",
+                        "outline-variant": "#dac2ae",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#E0E1DD",
+                        "tertiary-fixed-dim": "#bbc6e2",
+                        "on-primary": "#ffffff",
+                        "outline": "#877462",
+                        "on-primary-fixed": "#2c1700",
+                        "on-primary-fixed-variant": "#683d00",
+                        "tertiary-fixed": "#d7e2ff",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .cta-gradient {
+            background: #FF9F1C;
+        }
+
+        .cta-gradient:hover {
+            background: #e68a00;
+        }
+
+        input:focus {
+            outline: none !important;
+            border-bottom: 2px solid #FF9F1C !important;
+            box-shadow: none !important;
+        }
+
+        .alert {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+    </style>
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <script src="js/config.js"></script>
+</head>
+
+<body class="bg-surface font-body text-on-surface antialiased h-screen overflow-hidden">
+    <main class="h-screen flex items-center justify-center p-4 md:p-6">
+        <!-- Asymmetric Bento Grid Auth Layout -->
+        <div
+            class="max-w-6xl w-full h-full max-h-[850px] grid grid-cols-1 md:grid-cols-12 gap-0 overflow-hidden rounded-xl bg-surface-container-low shadow-sm">
+            <!-- Left Narrative Side (The Atelier Visual) -->
+            <div
+                class="hidden md:flex md:col-span-7 relative bg-[#1B263B] overflow-hidden flex-col justify-end p-8 lg:p-12 text-white">
+                <img alt="Espacio de trabajo financiero"
+                    class="absolute inset-0 w-full h-full object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-700"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyH05Kv4rwg1J0tn7QKtbMeQL8eWQEvzbScDtVi3Rdyt7Ni9BnO45feDMNIS2G-q0VlDZHyg0vHteLH6igGLaOfAkWzQnvaIKNsjmcIHwUKxHtS_27LlxpsQ9bkIdWGe3cUw6xKhQm7hKMwAeelcl1_gr5Y-GwBi43mMppUWDPN3WoXAzo8hZkpOJ9FmKIQ5KVanaBcs29oGlm1IHfCRG8cwGonxVVi6YKC1lzWI5n6O25NiAAFgXzhp8lEnmGnIkQkBjkXMUKMv7M" />
+                <div class="relative z-10 space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="material-symbols-outlined text-primary"
+                            style="font-variation-settings: 'FILL' 1;">diamond</span>
+                        <span class="font-headline font-black tracking-tighter text-2xl uppercase">Unik'a</span>
+                    </div>
+                    <h2 class="font-headline text-4xl font-extrabold tracking-tight leading-tight max-w-md">
+                        El Atelier Financiero para el Artesano Moderno.
+                    </h2>
+                    <p class="text-slate-300 font-body text-lg leading-relaxed max-w-sm">
+                        Contabilidad de precisión diseñada con sofisticación editorial. Sastrería para su futuro
+                        financiero.
+                    </p>
+                </div>
+                <!-- Floating Detail Card -->
+                <div
+                    class="absolute top-12 right-12 bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/10 hidden lg:block">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[#1B263B]"
+                                style="font-variation-settings: 'FILL' 1;">monitoring</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-label uppercase tracking-widest text-slate-300">Auditoría de
+                                Inventario</p>
+                            <p class="text-white font-bold">98.2% Precisión</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content Side (Forms) -->
+            <div class="md:col-span-5 bg-white p-6 lg:p-10 flex flex-col justify-center">
+
+                <!-- Formulario de Login -->
+                <div id="loginForm">
+                    <div class="mb-4 lg:mb-6">
+                        <h1 class="font-headline text-2xl lg:text-3xl font-bold text-[#1B263B] mb-1">Bienvenido de nuevo
+                        </h1>
+                        <p class="text-slate-500 font-medium text-xs lg:text-sm">Acceda a su panel financiero</p>
+                    </div>
+
+                    <div class="alert alert-error" id="errorMsg"></div>
+                    <div class="alert alert-success" id="successMsg"></div>
+
+                    <div class="space-y-4 lg:space-y-6">
+                        <!-- Input Group: Username -->
+                        <div class="relative">
+                            <label
+                                class="block text-[0.625rem] font-label font-semibold text-slate-500 uppercase tracking-widest mb-1 px-1"
+                                for="email">
+                                Correo electrónico
+                            </label>
+                            <div class="group">
+                                <input
+                                    class="w-full bg-[#F5F5F5] border-0 border-b-2 border-transparent py-2 lg:py-3 px-4 text-[#1B263B] font-medium transition-all placeholder:text-slate-400 rounded-t-lg text-sm"
+                                    id="email" placeholder="contador@atelier.com" type="email" autocomplete="email" />
+                            </div>
+                        </div>
+                        <!-- Input Group: Password -->
+                        <div class="relative">
+                            <div class="flex justify-between items-center mb-1 px-1">
+                                <label
+                                    class="block text-[0.625rem] font-label font-semibold text-slate-500 uppercase tracking-widest"
+                                    for="password">
+                                    Contraseña
+                                </label>
+                                <a class="text-[0.625rem] font-label font-semibold text-[#FF9F1C] uppercase tracking-widest hover:text-[#e68a00] transition-colors"
+                                    href="#">
+                                    ¿Olvidaste?
+                                </a>
+                            </div>
+                            <div class="relative group">
+                                <input
+                                    class="w-full bg-[#F5F5F5] border-0 border-b-2 border-transparent py-2 lg:py-3 px-4 text-[#1B263B] font-medium transition-all placeholder:text-slate-400 rounded-t-lg text-sm"
+                                    id="password" placeholder="••••••••" type="password"
+                                    autocomplete="current-password" />
+                                <button
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    type="button"
+                                    onclick="const p = document.getElementById('password'); p.type = p.type === 'password' ? 'text' : 'password'">
+                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Actions -->
+                        <div class="pt-1 space-y-3 lg:space-y-4">
+                            <button
+                                class="cta-gradient w-full py-2 lg:py-3 rounded-lg text-white font-bold text-sm lg:text-base shadow-sm hover:scale-[1.01] active:scale-95 transition-all duration-200 flex items-center justify-center space-x-2"
+                                onclick="iniciarSesion()">
+                                <span>Iniciar Sesión</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </button>
+
+                            <div class="relative flex items-center py-1">
+                                <div class="flex-grow border-t border-slate-200"></div>
+                                <span
+                                    class="flex-shrink mx-4 text-[9px] font-label text-slate-400 uppercase tracking-widest">O
+                                    continuar con</span>
+                                <div class="flex-grow border-t border-slate-200"></div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <button
+                                    class="flex items-center justify-center py-2 px-3 bg-[#F5F5F5] rounded-lg hover:bg-slate-100 transition-colors text-slate-600 font-semibold text-[10px] lg:text-xs"
+                                    type="button">
+                                    <img alt="Google" class="w-3 h-3 mr-2"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA99i3JlY0yKdN_sySMQiA42BjkhYRfh_vOkIgF6FVzfEFNmzFKIolFKJ7XtCAtT4eUbCLQ6hZZQYwjgp67YmO3iePdNGu40-adasjDWoQbzR0rk03MyYMk8WE3n_-8EY_hd8nX2Hz2A2_LWAFJYedMZu4_KAWAfQm-f_n7q8j9yKtNx2E_k5gxa7Zk4hVjGS6cS9dM97AI4pmOmtiGGK9HX7_osIPFku_Yke3gmRvYVgisk6Jk1HsxEjsNEdEWuiLRwTNY6bOInqTp" />
+                                    Google
+                                </button>
+                                <button
+                                    class="flex items-center justify-center py-2 px-3 bg-[#F5F5F5] rounded-lg hover:bg-slate-100 transition-colors text-slate-600 font-semibold text-[10px] lg:text-xs"
+                                    type="button">
+                                    <span class="material-symbols-outlined text-xs mr-2"
+                                        style="font-variation-settings: 'FILL' 1;">ios</span>
+                                    Apple
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 lg:mt-6 text-center">
+                        <p class="text-slate-500 text-[10px] lg:text-xs font-medium">
+                            ¿Aún no tienes cuenta?
+                            <a class="text-[#FF9F1C] font-bold hover:underline ml-1 cursor-pointer"
+                                onclick="mostrarRegistro()">Crear cuenta</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Formulario de Registro -->
+                <div id="registerForm" style="display: none;">
+                    <div class="mb-4 lg:mb-6">
+                        <h1 class="font-headline text-2xl lg:text-3xl font-bold text-[#1B263B] mb-1">Crear Cuenta</h1>
+                        <p class="text-slate-500 font-medium text-xs lg:text-sm">Regístrate para gestionar tus costos
+                        </p>
+                    </div>
+
+                    <div class="alert alert-error" id="regErrorMsg"></div>
+                    <div class="alert alert-success" id="regSuccessMsg"></div>
+
+                    <div class="space-y-4 lg:space-y-6">
+                        <!-- Input Group: Email -->
+                        <div class="relative">
+                            <label
+                                class="block text-[0.625rem] font-label font-semibold text-slate-500 uppercase tracking-widest mb-1 px-1"
+                                for="regEmail">
+                                Correo electrónico
+                            </label>
+                            <div class="group">
+                                <input
+                                    class="w-full bg-[#F5F5F5] border-0 border-b-2 border-transparent py-2 lg:py-3 px-4 text-[#1B263B] font-medium transition-all placeholder:text-slate-400 rounded-t-lg text-sm"
+                                    id="regEmail" placeholder="tu@correo.com" type="email" />
+                            </div>
+                        </div>
+                        <!-- Input Group: Password -->
+                        <div class="relative">
+                            <label
+                                class="block text-[0.625rem] font-label font-semibold text-slate-500 uppercase tracking-widest mb-1 px-1"
+                                for="regPassword">
+                                Contraseña
+                            </label>
+                            <div class="relative group">
+                                <input
+                                    class="w-full bg-[#F5F5F5] border-0 border-b-2 border-transparent py-2 lg:py-3 px-4 text-[#1B263B] font-medium transition-all placeholder:text-slate-400 rounded-t-lg text-sm"
+                                    id="regPassword" placeholder="Mínimo 6 caracteres" type="password" />
+                                <button
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    type="button"
+                                    onclick="const p = document.getElementById('regPassword'); p.type = p.type === 'password' ? 'text' : 'password'">
+                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Actions -->
+                        <div class="pt-1 space-y-4 lg:space-y-6">
+                            <button
+                                class="cta-gradient w-full py-2 lg:py-3 rounded-lg text-white font-bold text-sm lg:text-base shadow-sm hover:scale-[1.01] active:scale-95 transition-all duration-200 flex items-center justify-center space-x-2"
+                                onclick="registrar()">
+                                <span>Crear Cuenta</span>
+                                <span class="material-symbols-outlined text-sm">person_add</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-4 lg:mt-6 text-center">
+                        <p class="text-slate-500 text-[10px] lg:text-xs font-medium">
+                            ¿Ya tienes cuenta?
+                            <a class="text-[#FF9F1C] font-bold hover:underline ml-1 cursor-pointer"
+                                onclick="mostrarLogin()">Iniciar Sesión</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer Metadata -->
+                <div class="mt-auto pt-4 lg:pt-6 flex justify-center space-x-6">
+                    <a class="text-[0.5625rem] font-label text-slate-400 uppercase tracking-widest hover:text-[#FF9F1C] transition-colors"
+                        href="#">Privacidad</a>
+                    <a class="text-[0.5625rem] font-label text-slate-400 uppercase tracking-widest hover:text-[#FF9F1C] transition-colors"
+                        href="#">Términos</a>
+                    <a class="text-[0.5625rem] font-label text-slate-400 uppercase tracking-widest hover:text-[#FF9F1C] transition-colors"
+                        href="#">Soporte</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Visual Embellishment: Subtle Ambient Texture -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none opacity-[0.03] z-[-1]"
+        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAttWQWfCN-paHOzp_OpxfUoBi3IZdKJh2UukNCIM0u7Vn2e39xxGM3RAdhdi3tsZKvCs7padvdywpdnczQbqpDPtggLthNxS_rUONC4bSZEeuSz12TiUQlKK72TEIVkP6Tyjoj1l0d5krmnaTAU2lHxwvSeeA2LWdh1zN9KlqJl0-k-9QoTTp3tx8xaQ4PsPxQrMz4ywnrWKFE1k-sQecovWzk3u5dWJ6ezk0eFIzYz8LY_MbAGRxW1Tzp_oHaR-sJOYbe7f0bZgvJ');">
+    </div>
+
+    <script>
+        /* API_URL definido en js/config.js */
+
+        function mostrarError(msg, isRegister = false) {
+            const el = document.getElementById(isRegister ? 'regErrorMsg' : 'errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function mostrarExito(msg, isRegister = false) {
+            const el = document.getElementById(isRegister ? 'regSuccessMsg' : 'successMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function mostrarRegistro() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function mostrarLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        async function iniciarSesion() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                mostrarError('Por favor completa todos los campos');
+                return;
+            }
+
+            const btn = document.querySelector('#loginForm button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Iniciando sesión...</span>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    localStorage.setItem('usuario', JSON.stringify(result.data));
+                    window.location.href = 'index.html';
+                } else {
+                    mostrarError(result.error || 'Credenciales inválidas');
+                }
+            } catch (error) {
+                mostrarError('Error de conexión con el servidor');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function registrar() {
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            if (!email || !password) {
+                mostrarError('Por favor completa todos los campos', true);
+                return;
+            }
+
+            if (password.length < 6) {
+                mostrarError('La contraseña debe tener al menos 6 caracteres', true);
+                return;
+            }
+
+            const btn = document.querySelector('#registerForm button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Creando cuenta...</span>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/registro`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    mostrarExito('✅ Cuenta creada exitosamente. Revisa tu correo.', true);
+                    setTimeout(mostrarLogin, 2000);
+                } else {
+                    mostrarError(result.error || 'Error al registrar', true);
+                }
+            } catch (error) {
+                mostrarError('Error de conexión con el servidor', true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Permitir Enter para enviar formularios
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') iniciarSesion();
+        });
+
+        document.getElementById('regPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') registrar();
+        });
+    </script>
+    <script src="js/theme-manager.js"></script>
+</body>
+
+</html>

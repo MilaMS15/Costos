@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Unik'a | Estado de Resultados</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "secondary": "#415A77",
+                        "secondary-container": "#c2dcff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9fafb",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#1B263B",
+                        "surface-tint": "#1B263B",
+                        "inverse-primary": "#ffb86b",
+                        "primary-fixed": "#ffdcbc",
+                        "primary": "#1B263B",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "surface-dim": "#d9dad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "tertiary": "#545e76",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "surface-container-low": "#d1d5db",
+                        "surface-container": "#d1d5db",
+                        "on-surface-variant": "#415A77",
+                        "on-surface": "#1B263B",
+                        "inverse-surface": "#2f312e",
+                        "primary-container": "#FF9F1C",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed": "#101b30",
+                        "surface-container-high": "#e8e8e4",
+                        "on-background": "#1B263B",
+                        "surface-bright": "#f9fafb",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f1ed",
+                        "surface-container-highest": "#e2e3df",
+                        "surface-variant": "#e2e3df",
+                        "tertiary-container": "#aab5d0",
+                        "primary-fixed-dim": "#ffb86b",
+                        "on-tertiary-fixed-variant": "#3c475d",
+                        "on-secondary-container": "#415A77",
+                        "outline-variant": "#dac2ae",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9fafb",
+                        "tertiary-fixed-dim": "#bbc6e2",
+                        "on-primary": "#ffffff",
+                        "outline": "#415A77",
+                        "on-primary-fixed": "#2c1700",
+                        "on-primary-fixed-variant": "#683d00",
+                        "tertiary-fixed": "#d7e2ff",
+                        "error-container": "#ffdad6",
+                        "unik-navy": "#1B263B"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5 { font-family: 'Manrope', sans-serif; }
+        
+        @media print {
+            aside, header, .no-print { display: none !important; }
+            main { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
+            .print-grid { grid-template-columns: 1fr !important; }
+        }
+    </style>
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <script src="js/config.js"></script>
+</head>
+<body class="bg-surface font-body text-on-surface">
+    <script>
+        if (!localStorage.getItem('usuario')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- SideNavBar -->
+        <aside class="hidden md:flex flex-col h-full py-8 space-y-2 bg-surface-container-low w-72 shrink-0 border-r border-outline-variant/10 no-print">
+            <div class="px-8 mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white shadow-sm">
+                        <span class="material-symbols-outlined">architecture</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-unik-navy leading-tight">Unik'a</h1>
+                        <p class="text-[10px] uppercase tracking-[0.1em] text-secondary opacity-70 font-bold">Atelier Financiero</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 space-y-1 overflow-y-auto sidebar-scroll">
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mb-2">Principal</p>
+                <a href="index.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-medium tracking-wide">Panel de Control</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Gestión</p>
+                <a href="materiales.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-sm font-medium tracking-wide">Materiales</span>
+                </a>
+                <a href="productos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">label</span>
+                    <span class="text-sm font-medium tracking-wide">Productos</span>
+                </a>
+                <a href="trabajadores.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">groups</span>
+                    <span class="text-sm font-medium tracking-wide">Trabajadores</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Producción</p>
+                <a href="plan_produccion.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">assignment</span>
+                    <span class="text-sm font-medium tracking-wide">Plan Producción</span>
+                </a>
+                <a href="receta_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">build</span>
+                    <span class="text-sm font-medium tracking-wide">Receta x Producto</span>
+                </a>
+                <a href="mod_cif_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-sm font-medium tracking-wide">MOD y CIF</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Órdenes</p>
+                <a href="ordenes_trabajo.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">description</span>
+                    <span class="text-sm font-medium tracking-wide">Órdenes de Trabajo</span>
+                </a>
+                <a href="hoja_costos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary-container transition-all">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span class="text-sm font-medium tracking-wide">Hoja de Costos</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Finanzas</p>
+                <a href="estado_resultados.html" class="bg-white text-unik-navy rounded-r-full py-3 px-8 shadow-sm flex items-center gap-4 transition-all border-l-4 border-primary-container font-bold">
+                    <span class="material-symbols-outlined text-primary-container">monitoring</span>
+                    <span class="text-sm font-medium tracking-wide">Estado de Resultados</span>
+                </a>
+            </nav>
+            <div class="px-8 mt-auto pt-4 border-t border-primary/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary-container font-bold border-2 border-white shadow-sm" id="userInitialSidebar">U</div>
+                    <div class="overflow-hidden text-left">
+                        <p class="text-xs font-bold text-unik-navy truncate" id="userNameSidebar">Usuario</p>
+                        <p class="text-[10px] text-secondary truncate" id="userEmailSidebar">correo@ejemplo.com</p>
+                    </div>
+                </div>
+                <button onclick="cerrarSesion()" class="w-full py-3 bg-unik-navy text-white rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">logout</span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- TopAppBar -->
+            <header class="flex justify-between items-center w-full px-12 py-6 bg-surface z-40 border-b border-outline-variant/10 no-print">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl font-headline font-black tracking-tight text-unik-navy text-center sm:text-left">Estado de Resultados Consolidado</h2>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center bg-surface-container px-4 py-2 rounded-xl border border-outline-variant/10 gap-3">
+                        <span class="material-symbols-outlined text-secondary text-sm">calendar_month</span>
+                        <select id="mesSelect" onchange="cargarEstadoResultados()" class="bg-transparent border-none focus:ring-0 text-sm font-bold text-unik-navy py-0 cursor-pointer">
+                            <option value="">Sincronizando...</option>
+                        </select>
+                    </div>
+                    <button onclick="window.print()" class="bg-white border-2 border-primary-container text-primary-container px-6 py-2 rounded-xl font-bold text-xs hover:bg-primary-container hover:text-white transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xs">print</span> Imprimir
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="flex-1 overflow-y-auto p-12 bg-surface space-y-10">
+                
+                <!-- KPI Bento Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 no-print">
+                    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-outline-variant/10 flex flex-col items-center text-center relative overflow-hidden group hover:shadow-xl transition-all">
+                        <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined">sell</span>
+                        </div>
+                        <p class="text-[10px] font-black text-secondary uppercase tracking-[0.2em] mb-1">Ventas Netas</p>
+                        <h4 class="text-3xl font-black text-unik-navy" id="kpiVentasNetas">S/ 0.00</h4>
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/5 rounded-full blur-xl"></div>
+                    </div>
+                    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-outline-variant/10 flex flex-col items-center text-center relative overflow-hidden group hover:shadow-xl transition-all">
+                        <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined">account_balance_wallet</span>
+                        </div>
+                        <p class="text-[10px] font-black text-secondary uppercase tracking-[0.2em] mb-1">Utilidad Bruta</p>
+                        <h4 class="text-3xl font-black text-unik-navy" id="kpiUtilidadBruta">S/ 0.00</h4>
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-green-500/5 rounded-full blur-xl"></div>
+                    </div>
+                    <div class="bg-unik-navy p-8 rounded-[2rem] shadow-xl shadow-unik-navy/20 flex flex-col items-center text-center relative overflow-hidden group hover:scale-[1.02] transition-all">
+                        <div class="w-14 h-14 bg-primary-container rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-orange-500/30">
+                            <span class="material-symbols-outlined">trending_up</span>
+                        </div>
+                        <p class="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] mb-1">Margen Neto (%)</p>
+                        <h4 class="text-3xl font-black text-white" id="kpiMargenNeto">0.0%</h4>
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary-container/10 rounded-full blur-2xl"></div>
+                    </div>
+                </div>
+
+                <!-- Analysis Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 print-grid">
+                    
+                    <!-- Left Column: Detailed Report -->
+                    <div class="lg:col-span-7 space-y-8">
+                        <section class="bg-white rounded-[2.5rem] shadow-sm border border-outline-variant/10 overflow-hidden">
+                            <div class="p-10 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-low/30">
+                                <div>
+                                    <h3 class="font-headline font-black text-unik-navy text-xl">Estado de Pérdidas y Ganancias</h3>
+                                    <p class="text-xs text-secondary font-bold tracking-widest uppercase mt-1">Estructura Detallada</p>
+                                </div>
+                                <span class="px-4 py-1.5 bg-unik-navy text-white rounded-full text-[10px] font-black uppercase tracking-wider">Período Actual</span>
+                            </div>
+                            
+                            <div class="p-10 space-y-12">
+                                <!-- Ingresos -->
+                                <div>
+                                    <div class="flex items-center gap-3 mb-6">
+                                        <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                        <h4 class="text-xs font-black text-unik-navy uppercase tracking-widest">Ingresos Operacionales</h4>
+                                    </div>
+                                    <div id="seccionIngresos" class="space-y-4 px-4"></div>
+                                </div>
+
+                                <!-- Costos -->
+                                <div>
+                                    <div class="flex items-center gap-3 mb-6">
+                                        <div class="w-1.5 h-6 bg-orange-500 rounded-full"></div>
+                                        <h4 class="text-xs font-black text-unik-navy uppercase tracking-widest">Costo de Ventas (Producción)</h4>
+                                    </div>
+                                    <div id="seccionCostos" class="space-y-4 px-4 mb-6"></div>
+                                    <div class="bg-unik-navy p-6 rounded-2xl flex justify-between items-center text-white shadow-xl shadow-unik-navy/10 mx-4" id="utilidadBrutaTotal">
+                                        <span class="text-sm font-black uppercase tracking-widest">Utilidad Bruta</span>
+                                        <span class="text-2xl font-black">S/ 0.00</span>
+                                    </div>
+                                </div>
+
+                                <!-- Gastos -->
+                                <div>
+                                    <div class="flex items-center gap-3 mb-6">
+                                        <div class="w-1.5 h-6 bg-red-500 rounded-full"></div>
+                                        <h4 class="text-xs font-black text-unik-navy uppercase tracking-widest">Gastos Operativos y Administrativos</h4>
+                                    </div>
+                                    <div id="seccionGastosOperativos" class="space-y-4 px-4"></div>
+                                </div>
+
+                                <!-- Resultado Final -->
+                                <div class="pt-6 border-t border-outline-variant/10">
+                                    <div class="flex items-center gap-3 mb-8">
+                                        <div class="w-1.5 h-6 bg-primary-container rounded-full"></div>
+                                        <h4 class="text-xs font-black text-unik-navy uppercase tracking-widest">Balance del Ejercicio</h4>
+                                    </div>
+                                    <div class="space-y-4 px-4 mb-10" id="seccionResultado">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm font-bold text-secondary">Utilidad antes de Impuestos</span>
+                                            <span class="text-lg font-black text-unik-navy" id="utilidadAntesImpuestos">S/ 0.00</span>
+                                        </div>
+                                        <div class="flex justify-between items-center bg-orange-50 p-4 rounded-xl border border-orange-100">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-sm font-bold text-orange-900">Reserva de Impuesto Renta</span>
+                                                <span class="px-2 py-0.5 bg-orange-200 text-orange-900 rounded-full text-[9px] font-black">18.0%</span>
+                                            </div>
+                                            <span class="text-lg font-black text-orange-600" id="impuestoRenta">S/ 0.00</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-10 rounded-[2rem] flex justify-between items-center text-white" id="utilidadNetaTotal">
+                                        <div>
+                                            <p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Utilidad Neta Final</p>
+                                            <h2 class="text-4xl font-headline font-black mt-1 uppercase tracking-tighter">Ejercicio Positivo</h2>
+                                        </div>
+                                        <span class="text-5xl font-black">S/ 0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Right Column: Visual Analysis -->
+                    <div class="lg:col-span-5 space-y-10">
+                        <section class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-outline-variant/10">
+                            <h3 class="text-xs font-black text-secondary uppercase tracking-[0.2em] mb-10 flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary-container">stars</span> Líderes en Rentabilidad (Top 5)
+                            </h3>
+                            <div class="h-[450px] w-full">
+                                <canvas id="rentabilidadChart"></canvas>
+                            </div>
+                            <div class="mt-8 pt-8 border-t border-outline-variant/10">
+                                <p class="text-[10px] font-black text-secondary/40 uppercase tracking-widest leading-relaxed">Este gráfico correlaciona ingresos por producto vs. margen de contribución neta, identificando los SKUs con mayor impacto en el EBITDA.</p>
+                            </div>
+                        </section>
+
+                        <div class="bg-primary-container/10 p-10 rounded-[2.5rem] border-2 border-dashed border-primary-container/20 no-print">
+                            <div class="w-12 h-12 bg-primary-container rounded-2xl flex items-center justify-center text-white mb-6">
+                                <span class="material-symbols-outlined">lightbulb</span>
+                            </div>
+                            <h4 class="text-lg font-black text-unik-navy mb-2">Análisis Auditor</h4>
+                            <p class="text-sm text-secondary font-medium leading-relaxed">Recuerde que los costos de Materia Prima se calculan en base a las recetas activas y las valorizaciones de inventario PEPS actuales. Las variaciones pueden ocurrir por fluctuaciones en el mercado de hilados.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /* API_URL definido en js/config.js */
+
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarDatosUsuario();
+            cargarMeses();
+        });
+
+        function cargarDatosUsuario() {
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (usuario.user) {
+                // (Removed old TopAppBar references)
+                document.getElementById('userNameSidebar').textContent = usuario.user.split('@')[0];
+                document.getElementById('userEmailSidebar').textContent = usuario.user;
+                document.getElementById('userInitialSidebar').textContent = usuario.user.charAt(0).toUpperCase();
+            }
+        }
+
+        async function cargarMeses() {
+            try {
+                const response = await fetch(`${API_URL}/plan-produccion/meses`);
+                const result = await response.json();
+                if (result.success) {
+                    const select = document.getElementById('mesSelect');
+                    select.innerHTML = '';
+                    result.data.meses.forEach((mes, index) => {
+                        select.innerHTML += `<option value="${mes}">${result.data.meses_formato[index]}</option>`;
+                    });
+                    if (result.data.meses.length > 0) cargarEstadoResultados();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function cargarEstadoResultados() {
+            const mes = document.getElementById('mesSelect').value;
+            if (!mes) return;
+            try {
+                const result = await fetch(`${API_URL}/estado-resultados/${mes}`).then(r => r.json());
+                if (result.success) {
+                    renderizarEstadoResultados(result.data);
+                    crearGraficoRentabilidad(result.data.productos_rentabilidad);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function renderizarEstadoResultados(data) {
+            document.getElementById('kpiVentasNetas').textContent = `S/ ${data.ventas_netas.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpiUtilidadBruta').textContent = `S/ ${data.utilidad_bruta.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpiMargenNeto').textContent = `${data.margen_neto.toFixed(1)}%`;
+
+            document.getElementById('seccionIngresos').innerHTML = `
+                <div class="flex justify-between items-center group">
+                    <span class="text-sm font-bold text-secondary">Volumen de Ventas Brutas</span>
+                    <span class="text-base font-black text-unik-navy">S/ ${data.ventas_totales.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span>
+                </div>
+                <div class="flex justify-between items-center group opacity-50">
+                    <span class="text-sm font-bold text-secondary italic">Devoluciones y Descuentos</span>
+                    <span class="text-base font-black text-error">S/ 0.00</span>
+                </div>
+                <div class="flex justify-between items-center bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                    <span class="text-sm font-black text-blue-900 uppercase tracking-widest">Ventas Operativas Netas</span>
+                    <span class="text-lg font-black text-blue-900">S/ ${data.ventas_netas.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span>
+                </div>
+            `;
+
+            let costosHTML = '';
+            const cd = data.costos_detalle || {};
+            if (cd.materia_prima > 0) costosHTML += `<div class="flex justify-between items-center"><span class="text-sm font-bold text-secondary">Consumo de Materia Prima</span><span class="text-base font-black text-unik-navy">S/ ${cd.materia_prima.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span></div>`;
+            if (cd.mano_obra_directa > 0) costosHTML += `<div class="flex justify-between items-center"><span class="text-sm font-bold text-secondary">Planilla Industrial (MOD)</span><span class="text-base font-black text-unik-navy">S/ ${cd.mano_obra_directa.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span></div>`;
+            if (cd.costos_indirectos > 0) costosHTML += `<div class="flex justify-between items-center"><span class="text-sm font-bold text-secondary">Carga Fabril e Indirectos (CIF)</span><span class="text-base font-black text-unik-navy">S/ ${cd.costos_indirectos.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span></div>`;
+            document.getElementById('seccionCostos').innerHTML = costosHTML || '<p class="text-xs text-secondary italic px-4">Sin costos registrados en este periodo</p>';
+            
+            document.getElementById('utilidadBrutaTotal').innerHTML = `
+                <span class="text-sm font-black uppercase tracking-widest">Utilidad Bruta de Manufactura</span>
+                <span class="text-2xl font-black">S/ ${data.utilidad_bruta.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span>
+            `;
+
+            let gastosHTML = '';
+            if (data.gastos_administrativos > 0) gastosHTML += `<div class="flex justify-between items-center"><span class="text-sm font-bold text-secondary">Gastos Administrativos Generales</span><span class="text-base font-black text-unik-navy">S/ ${data.gastos_administrativos.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span></div>`;
+            if (data.gastos_ventas > 0) gastosHTML += `<div class="flex justify-between items-center"><span class="text-sm font-bold text-secondary">Logística y Mercadeo</span><span class="text-base font-black text-unik-navy">S/ ${data.gastos_ventas.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span></div>`;
+            gastosHTML += `<div class="flex justify-between items-center bg-red-50/50 p-4 rounded-xl border border-red-100 mt-4"><span class="text-sm font-black text-red-900 uppercase tracking-widest">Erogaciones Operativas</span><span class="text-lg font-black text-red-900">S/ ${data.total_gastos_operativos.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span></div>`;
+            document.getElementById('seccionGastosOperativos').innerHTML = gastosHTML;
+
+            document.getElementById('utilidadAntesImpuestos').textContent = `S/ ${data.utilidad_antes_impuestos.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+            document.getElementById('impuestoRenta').textContent = `S/ ${data.impuesto_renta.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+            
+            const netaEl = document.getElementById('utilidadNetaTotal');
+            netaEl.innerHTML = `
+                <div class="flex-1">
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 mb-2">Utilidad Neta Final</p>
+                    <h2 class="text-xl lg:text-2xl font-headline font-black uppercase tracking-tight leading-none">${data.utilidad_neta >= 0 ? 'Ejercicio Excedentario' : 'Ejercicio Deficitario'}</h2>
+                </div>
+                <div class="text-left md:text-right mt-4 md:mt-0">
+                    <span class="text-3xl lg:text-5xl font-black block leading-none">S/ ${data.utilidad_neta.toLocaleString('es-PE', {minimumFractionDigits: 2})}</span>
+                </div>
+            `;
+            netaEl.className = `p-8 lg:p-10 rounded-[2.5rem] flex flex-col md:flex-row md:justify-between md:items-center text-white shadow-xl ${data.utilidad_neta >= 0 ? 'bg-gradient-to-br from-green-600 to-green-800 shadow-green-500/20' : 'bg-gradient-to-br from-red-600 to-red-800 shadow-red-500/20'}`;
+        }
+
+        function crearGraficoRentabilidad(productos) {
+            const canvas = document.getElementById('rentabilidadChart');
+            if (!canvas || !productos) return;
+            const existingChart = Chart.getChart(canvas);
+            if (existingChart) existingChart.destroy();
+            
+            new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: productos.map(p => p.nombre.substring(0, 15) + '...'),
+                    datasets: [{
+                        label: 'Utilidad Bruta (S/)',
+                        data: productos.map(p => p.utilidad_bruta),
+                        backgroundColor: '#1B263B',
+                        borderRadius: 12,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Margen (%)',
+                        data: productos.map(p => p.margen),
+                        type: 'line',
+                        borderColor: '#FF9F1C',
+                        borderWidth: 4,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#FF9F1C',
+                        yAxisID: 'y1',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', weight: 'bold' } } } },
+                    scales: {
+                        y: { position: 'left', ticks: { font: { family: 'Inter' } } },
+                        y1: { position: 'right', min: 0, max: 100, grid: { display: false }, ticks: { font: { family: 'Inter' } } }
+                    }
+                }
+            });
+        }
+
+        function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = 'login.html'; }
+    </script>
+    <script src="js/theme-manager.js"></script>
+</body>
+</html>

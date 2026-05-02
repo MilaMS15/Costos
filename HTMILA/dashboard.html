@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Unik'a | Panel de Control</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#1B263B",
+                        "secondary": "#415A77",
+                        "accent": "#FF9F1C",
+                        "surface": "#F9FAF5",
+                        "card": "#E0E1DD",
+                        "on-surface": "#1B263B",
+                        "on-card": "#1B263B"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="../FRONTEND/css/theme-dark.css">
+    <script src="../FRONTEND/js/config.js"></script>
+</head>
+
+<body class="bg-surface text-on-surface selection:bg-accent/30">
+    <div class="flex min-h-screen">
+        <!-- SideNavBar -->
+        <aside class="bg-[#f3f4f0] border-none w-72 fixed h-screen z-50 flex flex-col py-8 space-y-2">
+            <div class="px-8 mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-accent rounded-lg flex items-center justify-center text-white shadow-sm">
+                        <span class="material-symbols-outlined" data-icon="architecture">architecture</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-primary leading-tight">Unik'a</h1>
+                        <p class="text-[10px] uppercase tracking-[0.1em] text-secondary opacity-70 font-bold">Atelier
+                            Financiero</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 space-y-1">
+                <!-- Dashboard Active -->
+                <div
+                    class="bg-white text-primary rounded-r-full py-3 px-8 shadow-sm flex items-center gap-4 transition-all border-l-4 border-accent">
+                    <span class="material-symbols-outlined text-secondary" data-icon="dashboard">dashboard</span>
+                    <span class="font-['Inter'] text-sm font-medium tracking-wide">Panel de Control</span>
+                </div>
+                <div
+                    class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all cursor-pointer">
+                    <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                    <span class="font-['Inter'] text-sm font-medium tracking-wide">Monitoreo de Costos</span>
+                </div>
+                <div
+                    class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all cursor-pointer">
+                    <span class="material-symbols-outlined" data-icon="calculate">calculate</span>
+                    <span class="font-['Inter'] text-sm font-medium tracking-wide">Herramientas de Cálculo</span>
+                </div>
+                <div
+                    class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all cursor-pointer">
+                    <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                    <span class="font-['Inter'] text-sm font-medium tracking-wide">Inventario</span>
+                </div>
+                <div
+                    class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-accent transition-all cursor-pointer">
+                    <span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+                    <span class="font-['Inter'] text-sm font-medium tracking-wide">Auditorías</span>
+                </div>
+            </nav>
+            <div class="px-8 mt-auto">
+                <button
+                    class="w-full py-4 bg-accent text-white rounded-xl font-bold text-sm shadow-lg shadow-accent/20 hover:opacity-90 active:scale-95 transition-all duration-150">
+                    Calcular Costos
+                </button>
+            </div>
+        </aside>
+        <!-- Main Canvas -->
+        <main class="flex-1 ml-72">
+            <!-- TopAppBar -->
+            <header class="bg-surface flex justify-between items-center w-full px-12 py-6 sticky top-0 z-40">
+                <div>
+                    <h2 class="text-2xl font-['Manrope'] font-extrabold text-primary tracking-tight">Panel de Control
+                        General</h2>
+                    <p class="text-sm text-secondary font-medium">Monitoreo de Desempeño - Año Fiscal 2024</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="relative group">
+                        <span
+                            class="material-symbols-outlined text-secondary cursor-pointer hover:bg-card p-2 rounded-full transition-all"
+                            data-icon="notifications">notifications</span>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-accent rounded-full"></span>
+                    </div>
+                    <span
+                        class="material-symbols-outlined text-secondary cursor-pointer hover:bg-card p-2 rounded-full transition-all"
+                        data-icon="settings">settings</span>
+                    <div
+                        class="h-10 w-10 rounded-full bg-card overflow-hidden border-2 border-white shadow-sm cursor-pointer">
+                        <img class="w-full h-full object-cover" data-alt="perfil profesional contador"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuApO7TX6oPvQmeezVSH_xSb2MAHGBDLm32tqdenFunB-tgXy5J4S-IfV-wSAbhE7YG6NW7ePaPvPdOhcMnsi0SbhNrN1VpR5KP3S3wSEk4BMS6qF2ogWRljPuo5TxvsRJhQZz5RGWUrGv1MCTpiqs34cvqOxTbOvpdZKQTDYomdJ63aODPjaHRkEGwwZ7tdOmOXbmqSvjcbvMmR4WrAE3AUsGdE06tvnBTiH2YqjRjjR1UdDXJzpy9O_9zPAjQSa4bIcupj2R_9c5pN" />
+                    </div>
+                </div>
+            </header>
+            <!-- Dashboard Content -->
+            <div class="px-12 pb-12">
+                <!-- Hero Bento Grid -->
+                <div class="grid grid-cols-12 gap-6 mb-8">
+                    <!-- Main Progress Card -->
+                    <div
+                        class="col-span-8 bg-card p-8 rounded-xl shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[400px]">
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-12">
+                                <div>
+                                    <span
+                                        class="text-[10px] font-bold uppercase tracking-widest text-primary opacity-60">Rendimiento
+                                        de Ingresos</span>
+                                    <h3 class="text-4xl font-extrabold text-primary mt-1">$428,950.00</h3>
+                                    <p class="text-sm text-secondary font-semibold flex items-center gap-1 mt-2">
+                                        <span class="material-symbols-outlined text-sm"
+                                            data-icon="trending_up">trending_up</span>
+                                        +12.4% vs último trimestre
+                                    </p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button
+                                        class="px-4 py-2 bg-white/50 text-primary text-xs font-bold rounded-lg hover:bg-white transition-colors">Mensual</button>
+                                    <button
+                                        class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg">Trimestral</button>
+                                </div>
+                            </div>
+                            <!-- Dynamic Visual Chart Mockup -->
+                            <div class="w-full h-48 flex items-end gap-2 px-4">
+                                <div
+                                    class="flex-1 bg-secondary/20 rounded-t-lg h-[35%] hover:bg-secondary/40 transition-all cursor-pointer">
+                                </div>
+                                <div
+                                    class="flex-1 bg-secondary/20 rounded-t-lg h-[45%] hover:bg-secondary/40 transition-all cursor-pointer">
+                                </div>
+                                <div
+                                    class="flex-1 bg-secondary/20 rounded-t-lg h-[40%] hover:bg-secondary/40 transition-all cursor-pointer">
+                                </div>
+                                <div
+                                    class="flex-1 bg-secondary/20 rounded-t-lg h-[65%] hover:bg-secondary/40 transition-all cursor-pointer">
+                                </div>
+                                <div
+                                    class="flex-1 bg-secondary/20 rounded-t-lg h-[55%] hover:bg-secondary/40 transition-all cursor-pointer">
+                                </div>
+                                <div
+                                    class="flex-1 bg-secondary/20 rounded-t-lg h-[75%] hover:bg-secondary/40 transition-all cursor-pointer">
+                                </div>
+                                <div
+                                    class="flex-1 bg-accent/40 rounded-t-lg h-[60%] hover:bg-accent/60 transition-all cursor-pointer">
+                                </div>
+                                <div
+                                    class="flex-1 bg-accent/60 rounded-t-lg h-[85%] hover:bg-accent/80 transition-all cursor-pointer">
+                                </div>
+                                <div
+                                    class="flex-1 bg-accent/80 rounded-t-lg h-[70%] hover:bg-accent transition-all cursor-pointer">
+                                </div>
+                                <div class="flex-1 bg-accent rounded-t-lg h-[100%] transition-all cursor-pointer"></div>
+                            </div>
+                        </div>
+                        <!-- Abstract Background Decoration -->
+                        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-white/20 rounded-full blur-3xl"></div>
+                    </div>
+                    <!-- Side KPI Cluster -->
+                    <div class="col-span-4 flex flex-col gap-6">
+                        <div class="bg-card p-6 rounded-xl flex-1 flex flex-col justify-center border border-white/20">
+                            <span class="material-symbols-outlined text-secondary mb-3"
+                                data-icon="payments">payments</span>
+                            <span
+                                class="text-xs font-semibold text-primary opacity-70 uppercase tracking-tighter">Margen
+                                de Beneficio Neto</span>
+                            <div class="text-3xl font-bold mt-1 text-primary">24.8%</div>
+                            <div class="w-full bg-white/50 h-2 rounded-full mt-4 overflow-hidden">
+                                <div class="bg-secondary h-full w-[24.8%]"></div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-6 rounded-xl flex-1 flex flex-col justify-center border border-white/20">
+                            <span class="material-symbols-outlined text-secondary mb-3"
+                                data-icon="inventory">inventory</span>
+                            <span class="text-xs font-semibold text-primary opacity-70 uppercase tracking-tighter">Valor
+                                Total del Inventario</span>
+                            <div class="text-3xl font-bold mt-1 text-primary">$142,000</div>
+                            <p class="text-[10px] text-secondary mt-2 font-medium">Rotación de inventario: 14 días</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product Profit Margin Detail -->
+                <div class="grid grid-cols-12 gap-6 items-stretch">
+                    <!-- Left: Category Analysis -->
+                    <div class="col-span-4 bg-card p-8 rounded-xl flex flex-col">
+                        <h4 class="text-lg font-bold mb-6 text-primary">Enfoque por Categoría</h4>
+                        <div class="space-y-8 flex-1">
+                            <!-- Category 1 -->
+                            <div class="group">
+                                <div class="flex justify-between items-end mb-2">
+                                    <div>
+                                        <p class="text-sm font-bold text-primary">Polos Premium</p>
+                                        <p class="text-[11px] text-secondary">3,200 unidades vendidas</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-primary">32% Margen</p>
+                                        <p class="text-[10px] text-accent font-bold">Alto Desempeño</p>
+                                    </div>
+                                </div>
+                                <div class="h-2 bg-white/50 rounded-full overflow-hidden">
+                                    <div class="h-full bg-accent w-[32%] transition-all group-hover:w-[35%]"></div>
+                                </div>
+                            </div>
+                            <!-- Category 2 -->
+                            <div class="group">
+                                <div class="flex justify-between items-end mb-2">
+                                    <div>
+                                        <p class="text-sm font-bold text-primary">Bermudas Chino</p>
+                                        <p class="text-[11px] text-secondary">1,850 unidades vendidas</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-primary">18% Margen</p>
+                                        <p class="text-[10px] text-secondary font-medium">Optimizar Costos</p>
+                                    </div>
+                                </div>
+                                <div class="h-2 bg-white/50 rounded-full overflow-hidden">
+                                    <div class="h-full bg-secondary w-[18%] transition-all group-hover:w-[22%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8 pt-8 border-t border-primary/10">
+                            <p class="text-xs text-secondary leading-relaxed italic">
+                                "El costo de producción de Bermudas Chino aumentó un 4.2% debido a aranceles de
+                                importación. Recomendación: Finalizar auditoría de proveedores."
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Right: Transaction Ledger -->
+                    <div class="col-span-8 bg-white p-8 rounded-xl shadow-sm border border-card">
+                        <div class="flex justify-between items-center mb-8">
+                            <h4 class="text-lg font-bold text-primary">Entradas de Costos Recientes</h4>
+                            <span
+                                class="text-xs font-bold text-secondary cursor-pointer hover:text-accent hover:underline transition-all">Ver
+                                Libro Mayor</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr
+                                        class="text-[10px] uppercase tracking-widest text-secondary/60 border-b border-card">
+                                        <th class="pb-4 font-bold">ID Transacción</th>
+                                        <th class="pb-4 font-bold">Categoría</th>
+                                        <th class="pb-4 font-bold">Fecha</th>
+                                        <th class="pb-4 font-bold">Monto</th>
+                                        <th class="pb-4 font-bold">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm">
+                                    <tr class="hover:bg-card/30 transition-colors border-b border-card/50">
+                                        <td class="py-4 font-medium text-primary">#TX-9021</td>
+                                        <td class="py-4 text-secondary">Materia Prima</td>
+                                        <td class="py-4 text-secondary">12 Oct, 2023</td>
+                                        <td class="py-4 font-bold text-primary">$12,450.00</td>
+                                        <td class="py-4">
+                                            <span
+                                                class="px-3 py-1 bg-card text-primary rounded-full text-[10px] font-bold">Verificado</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-card/30 transition-colors border-b border-card/50">
+                                        <td class="py-4 font-medium text-primary">#TX-8945</td>
+                                        <td class="py-4 text-secondary">Logística</td>
+                                        <td class="py-4 text-secondary">10 Oct, 2023</td>
+                                        <td class="py-4 font-bold text-primary">$2,100.00</td>
+                                        <td class="py-4">
+                                            <span
+                                                class="px-3 py-1 bg-card text-primary rounded-full text-[10px] font-bold">Verificado</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-card/30 transition-colors border-b border-card/50">
+                                        <td class="py-4 font-medium text-primary">#TX-8832</td>
+                                        <td class="py-4 text-secondary">Producción</td>
+                                        <td class="py-4 text-secondary">08 Oct, 2023</td>
+                                        <td class="py-4 font-bold text-primary">$45,000.00</td>
+                                        <td class="py-4">
+                                            <span
+                                                class="px-3 py-1 bg-accent/20 text-accent rounded-full text-[10px] font-bold">Pendiente</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-card/30 transition-colors">
+                                        <td class="py-4 font-medium text-primary">#TX-8711</td>
+                                        <td class="py-4 text-secondary">Bordado Personalizado</td>
+                                        <td class="py-4 text-secondary">05 Oct, 2023</td>
+                                        <td class="py-4 font-bold text-primary">$8,920.00</td>
+                                        <td class="py-4">
+                                            <span
+                                                class="px-3 py-1 bg-card text-primary rounded-full text-[10px] font-bold">Verificado</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../FRONTEND/js/theme-manager.js"></script>
+</body>
+
+</html>

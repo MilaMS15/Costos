@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Unik'a | Gestión de Trabajadores</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "secondary": "#47607e",
+                        "secondary-container": "#c2dcff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9faf5",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#3c475d",
+                        "surface-tint": "#895100",
+                        "inverse-primary": "#ffb86b",
+                        "primary-fixed": "#ffdcbc",
+                        "primary": "#FF9F1C",
+                        "secondary-fixed-dim": "#afc9ea",
+                        "surface-dim": "#d9dad6",
+                        "secondary-fixed": "#d1e4ff",
+                        "tertiary": "#545e76",
+                        "on-secondary-fixed-variant": "#2f4865",
+                        "surface-container-low": "#d1d5db",
+                        "surface-container": "#d1d5db",
+                        "on-surface-variant": "#544434",
+                        "on-surface": "#1a1c1a",
+                        "inverse-surface": "#2f312e",
+                        "primary-container": "#FF9F1C",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed": "#101b30",
+                        "surface-container-high": "#d1d2cd",
+                        "on-background": "#1a1c1a",
+                        "surface-bright": "#f9faf5",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f1ed",
+                        "surface-container-highest": "#c2c3be",
+                        "surface-variant": "#e2e3df",
+                        "tertiary-container": "#aab5d0",
+                        "primary-fixed-dim": "#ffb86b",
+                        "on-tertiary-fixed-variant": "#3c475d",
+                        "on-secondary-container": "#48617e",
+                        "outline-variant": "#dac2ae",
+                        "on-secondary-fixed": "#001d36",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f9faf5",
+                        "tertiary-fixed-dim": "#bbc6e2",
+                        "on-primary": "#ffffff",
+                        "outline": "#877462",
+                        "on-primary-fixed": "#2c1700",
+                        "on-primary-fixed-variant": "#683d00",
+                        "tertiary-fixed": "#d7e2ff",
+                        "error-container": "#ffdad6",
+                        "unik-navy": "#1B263B"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5 { font-family: 'Manrope', sans-serif; }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .tab-btn.active {
+            background-color: #1B263B;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(27, 38, 59, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            animation: modalSlideUp 0.3s ease-out;
+        }
+        @keyframes modalSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Tab Content Styles */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Toast Styles */
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #FF9F1C;
+            animation: toastSlideIn 0.3s ease-out;
+            margin-bottom: 0.5rem;
+        }
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+    </style>
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <script src="js/config.js"></script>
+</head>
+<body class="bg-surface font-body text-on-surface">
+    <script>
+        if (!localStorage.getItem('usuario')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- SideNavBar -->
+        <aside class="hidden md:flex flex-col h-full py-8 space-y-2 bg-surface-container-low w-72 shrink-0 border-r border-outline-variant/10">
+            <div class="px-8 mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white shadow-sm">
+                        <span class="material-symbols-outlined">architecture</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-unik-navy leading-tight">Unik'a</h1>
+                        <p class="text-[10px] uppercase tracking-[0.1em] text-secondary opacity-70 font-bold">Atelier Financiero</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 space-y-1 overflow-y-auto sidebar-scroll">
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mb-2">Principal</p>
+                <a href="index.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-medium tracking-wide">Panel de Control</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Gestión</p>
+                <a href="materiales.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-sm font-medium tracking-wide">Materiales</span>
+                </a>
+                <a href="productos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">label</span>
+                    <span class="text-sm font-medium tracking-wide">Productos</span>
+                </a>
+                <a href="trabajadores.html" class="bg-white text-unik-navy rounded-r-full py-3 px-8 shadow-sm flex items-center gap-4 transition-all border-l-4 border-primary font-bold">
+                    <span class="material-symbols-outlined text-primary">groups</span>
+                    <span class="text-sm font-medium tracking-wide">Trabajadores</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Producción</p>
+                <a href="plan_produccion.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">assignment</span>
+                    <span class="text-sm font-medium tracking-wide">Plan Producción</span>
+                </a>
+                <a href="receta_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">build</span>
+                    <span class="text-sm font-medium tracking-wide">Receta x Producto</span>
+                </a>
+                <a href="mod_cif_producto.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-sm font-medium tracking-wide">MOD y CIF</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Órdenes</p>
+                <a href="ordenes_trabajo.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">description</span>
+                    <span class="text-sm font-medium tracking-wide">Órdenes de Trabajo</span>
+                </a>
+                <a href="hoja_costos.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span class="text-sm font-medium tracking-wide">Hoja de Costos</span>
+                </a>
+
+                <p class="px-8 text-[10px] uppercase tracking-widest text-secondary opacity-50 font-bold mt-6 mb-2">Finanzas</p>
+                <a href="estado_resultados.html" class="text-secondary py-3 px-8 flex items-center gap-4 hover:translate-x-1 hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    <span class="text-sm font-medium tracking-wide">Estado de Resultados</span>
+                </a>
+            </nav>
+            <div class="px-8 mt-auto pt-4 border-t border-primary/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border-2 border-white shadow-sm" id="userInitialSidebar">U</div>
+                    <div class="overflow-hidden text-left">
+                        <p class="text-xs font-bold text-unik-navy truncate" id="userNameSidebar">Usuario</p>
+                        <p class="text-[10px] text-secondary truncate" id="userEmailSidebar">correo@ejemplo.com</p>
+                    </div>
+                </div>
+                <button onclick="cerrarSesion()" class="w-full py-3 bg-unik-navy text-white rounded-xl font-bold text-sm shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">logout</span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- TopAppBar -->
+            <header class="flex justify-between items-center w-full px-12 py-6 bg-surface z-40 border-b border-outline-variant/10">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl font-headline font-black tracking-tight text-unik-navy">Gestión de Personal</h2>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center gap-4">
+                        <button onclick="abrirFormularioTrabajador()" class="bg-primary hover:bg-opacity-90 text-white font-bold py-2.5 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-sm">person_add</span> Nuevo Trabajador
+                        </button>
+                        <div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
+                            <div class="text-right hidden sm:block">
+                                <p class="text-xs font-bold text-unik-navy" id="userName">Usuario</p>
+                                <p class="text-[10px] text-secondary" id="userEmail">correo@ejemplo.com</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border-2 border-white shadow-sm" id="userInitial">U</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-12 bg-surface space-y-8">
+                <!-- Stats Row -->
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-100 shadow-sm flex flex-col justify-center">
+                        <span class="material-symbols-outlined text-indigo-600 mb-2">groups</span>
+                        <span class="text-[10px] font-bold text-indigo-700 uppercase tracking-widest">Total Trabajadores</span>
+                        <div class="text-3xl font-black text-indigo-900 mt-1" id="totalTrabajadores">0</div>
+                    </div>
+                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm flex flex-col justify-center">
+                        <span class="material-symbols-outlined text-blue-600 mb-2">engineering</span>
+                        <span class="text-[10px] font-bold text-blue-700 uppercase tracking-widest">MOD (Directa)</span>
+                        <div class="text-3xl font-black text-blue-900 mt-1" id="totalMOD">0</div>
+                    </div>
+                    <div class="bg-orange-50 p-6 rounded-xl border border-orange-100 shadow-sm flex flex-col justify-center">
+                        <span class="material-symbols-outlined text-orange-600 mb-2">support_agent</span>
+                        <span class="text-[10px] font-bold text-orange-700 uppercase tracking-widest">MOI (Indirecta)</span>
+                        <div class="text-3xl font-black text-orange-900 mt-1" id="totalMOI">0</div>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm flex flex-col justify-center">
+                        <span class="material-symbols-outlined text-green-600 mb-2">payments</span>
+                        <span class="text-[10px] font-bold text-green-700 uppercase tracking-widest">Sueldo Promedio</span>
+                        <div class="text-3xl font-black text-green-900 mt-1" id="sueldoPromedio">S/ 0</div>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="flex bg-surface-container-low p-1.5 rounded-2xl w-fit">
+                    <button class="tab-btn active px-8 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2" onclick="cambiarTab('trabajadores')">
+                        <span class="material-symbols-outlined text-sm">groups</span> Trabajadores
+                    </button>
+                    <button class="tab-btn px-8 py-2.5 rounded-xl text-sm font-bold text-secondary hover:text-unik-navy transition-all flex items-center gap-2" onclick="cambiarTab('tiempos')">
+                        <span class="material-symbols-outlined text-sm">timer</span> Tiempos por Producto
+                    </button>
+                </div>
+
+                <!-- Tab Content: Trabajadores -->
+                <div id="tab-trabajadores" class="tab-content active">
+                    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse" id="tablaTrabajadores">
+                                <thead>
+                                    <tr class="bg-unik-navy">
+                                        <th class="px-8 py-4 text-[10px] font-bold text-white uppercase tracking-wider">Código</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-white uppercase tracking-wider">Apellidos y Nombres</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-white uppercase tracking-wider">Puesto</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-white uppercase tracking-wider">Tipo</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-white uppercase tracking-wider text-right">Sueldo Base</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-white uppercase tracking-wider text-right">Sueldo Total</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-white uppercase tracking-wider text-center">Registro</th>
+                                        <th class="px-8 py-4 text-[10px] font-bold text-white uppercase tracking-wider text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-outline-variant/10">
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Tiempos -->
+                <div id="tab-tiempos" class="tab-content">
+                    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 p-8">
+                        <div class="flex items-end gap-6 mb-8 bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10">
+                            <div class="flex-1 space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Seleccionar Producto</label>
+                                <select class="w-full bg-white border-outline-variant/20 rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3 px-4 shadow-sm" id="productoSelectTiempos" onchange="cargarTiempos()">
+                                    <option value="">-- Seleccione un producto --</option>
+                                </select>
+                            </div>
+                            <button onclick="asignarTrabajador()" class="bg-unik-navy text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center gap-2 text-sm h-[46px]">
+                                <span class="material-symbols-outlined text-sm">add_task</span> Asignar Trabajador
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-outline-variant/10">
+                            <table class="w-full text-left border-collapse" id="tablaTiempos">
+                                <thead>
+                                    <tr class="bg-surface-container-high">
+                                        <th class="px-8 py-4 text-[10px] font-bold text-unik-navy uppercase tracking-wider">Código Trabajador</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-unik-navy uppercase tracking-wider">Puesto</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-unik-navy uppercase tracking-wider text-center">Tiempo (min)</th>
+                                        <th class="px-6 py-4 text-[10px] font-bold text-unik-navy uppercase tracking-wider text-center">Eficiencia</th>
+                                        <th class="px-8 py-4 text-[10px] font-bold text-unik-navy uppercase tracking-wider text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-outline-variant/10">
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Trabajador -->
+    <div class="modal" id="modalTrabajador">
+        <div class="modal-content">
+            <div class="px-8 py-6 bg-unik-navy text-white flex justify-between items-center">
+                <h3 class="text-xl font-bold font-headline" id="modalTituloTrabajador">Nuevo Trabajador</h3>
+                <button class="text-white/60 hover:text-white transition-colors" onclick="cerrarModalTrabajador()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-8">
+                <form id="formTrabajador" class="space-y-8">
+                    <input type="hidden" id="editandoTrabajador" value="false">
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-primary">
+                            <span class="material-symbols-outlined">person</span>
+                            <h4 class="font-bold uppercase tracking-widest text-xs">Información Personal</h4>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Código *</label>
+                                <input type="number" class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3" id="codigotrabajador" required>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Apellidos y Nombres *</label>
+                                <input type="text" class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3" id="apellidosnombres" required>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Puesto</label>
+                                <select class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3" id="puestotrabajo">
+                                    <option value="Cortador">Cortador</option>
+                                    <option value="Costurero">Costurero</option>
+                                    <option value="Ayudante">Ayudante</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Tipo</label>
+                                <select class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3" id="tipotrabajo">
+                                    <option value="MOD">MOD - Directa</option>
+                                    <option value="MOI">MOI - Indirecta</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Productividad</label>
+                                <input type="number" step="0.01" min="0" max="1" class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-bold py-3" id="productividad" value="0.85">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 pt-4 border-t border-outline-variant/10">
+                        <div class="flex items-center gap-3 text-primary">
+                            <span class="material-symbols-outlined">payments</span>
+                            <h4 class="font-bold uppercase tracking-widest text-xs">Estructura Salarial</h4>
+                        </div>
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Sueldo Básico (S/)</label>
+                                <input type="number" step="0.01" class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-black py-3" id="sueldobasico" onchange="calcularSueldoPreview()">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Bonificación</label>
+                                <input type="number" step="0.01" class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3" id="bonificacion" value="0" onchange="calcularSueldoPreview()">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Asig. Familiar</label>
+                                <input type="number" step="0.01" class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3" id="asigfamiliar" value="0" onchange="calcularSueldoPreview()">
+                            </div>
+                        </div>
+
+                        <div id="sueldoPreview" class="hidden bg-[#f3f4f0] p-6 rounded-2xl border border-outline-variant/10">
+                            <div class="flex items-center gap-2 mb-4 text-unik-navy">
+                                <span class="material-symbols-outlined text-sm">calculate</span>
+                                <h5 class="text-xs font-bold uppercase tracking-widest">Cálculo de Costo Laboral Total</h5>
+                            </div>
+                            <div id="sueldoDetalle" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="px-8 py-6 bg-surface-container-low flex justify-end gap-3">
+                <button class="px-6 py-2.5 rounded-xl text-sm font-bold text-secondary hover:bg-surface-container-high transition-all" onclick="cerrarModalTrabajador()">Cancelar</button>
+                <button class="px-8 py-2.5 rounded-xl text-sm font-bold bg-primary text-white shadow-lg shadow-primary/20 hover:opacity-90 transition-all" onclick="guardarTrabajador()">💾 Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Asignación -->
+    <div class="modal" id="modalAsignacion">
+        <div class="modal-content max-w-md">
+            <div class="px-8 py-6 bg-unik-navy text-white flex justify-between items-center">
+                <h3 class="text-xl font-bold font-headline">Asignar a Producto</h3>
+                <button class="text-white/60 hover:text-white transition-colors" onclick="cerrarModalAsignacion()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-8 space-y-6">
+                <form id="formAsignacion" class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Trabajador</label>
+                        <select class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3 px-4" id="trabajadorSelect"></select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Tiempo (minutos)</label>
+                        <input type="number" step="0.01" class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-bold py-3 px-4" id="tiempotrabajo" required placeholder="0.00">
+                    </div>
+                </form>
+            </div>
+            <div class="px-8 py-6 bg-surface-container-low flex justify-end gap-3">
+                <button class="px-6 py-2.5 rounded-xl text-sm font-bold text-secondary hover:bg-surface-container-high transition-all" onclick="cerrarModalAsignacion()">Cancelar</button>
+                <button class="px-8 py-2.5 rounded-xl text-sm font-bold bg-primary text-white shadow-lg shadow-primary/20 hover:opacity-90 transition-all" onclick="guardarAsignacion()">💾 Asignar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer" class="fixed bottom-8 right-8 z-[110] flex flex-col gap-2"></div>
+
+    <script>
+        /* API_URL definido en js/config.js */
+        let productoSeleccionadoTiempos = null;
+        let todosTrabajadores = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarDatosUsuario();
+            cargarTrabajadores();
+            cargarProductosEnSelect();
+        });
+
+        function cargarDatosUsuario() {
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (usuario.user) {
+                // (Removed old TopAppBar references)
+
+                document.getElementById('userNameSidebar').textContent = usuario.user.split('@')[0];
+                document.getElementById('userEmailSidebar').textContent = usuario.user;
+                document.getElementById('userInitialSidebar').textContent = usuario.user.charAt(0).toUpperCase();
+            }
+        }
+
+        function cambiarTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active', 'text-unik-navy'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            const btn = document.querySelector(`[onclick="cambiarTab('${tab}')"]`);
+            btn.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        }
+
+        async function cargarTrabajadores() {
+            try {
+                const response = await fetch(`${API_URL}/trabajadores`);
+                const result = await response.json();
+                if (result.success) {
+                    todosTrabajadores = result.data;
+                    renderizarTrabajadores(todosTrabajadores);
+                    actualizarEstadisticas();
+                }
+            } catch (error) {
+                mostrarToast('Error al cargar trabajadores', 'error');
+            }
+        }
+
+        function actualizarEstadisticas() {
+            document.getElementById('totalTrabajadores').textContent = todosTrabajadores.length;
+            const mod = todosTrabajadores.filter(t => t.tipotrabajo === 'MOD');
+            const moi = todosTrabajadores.filter(t => t.tipotrabajo === 'MOI');
+            document.getElementById('totalMOD').textContent = mod.length;
+            document.getElementById('totalMOI').textContent = moi.length;
+            
+            if (todosTrabajadores.length > 0) {
+                const totalSueldo = todosTrabajadores.reduce((sum, t) => sum + (parseFloat(t.sueldototal) || 0), 0);
+                const promedio = totalSueldo / todosTrabajadores.length;
+                document.getElementById('sueldoPromedio').textContent = `S/ ${promedio.toLocaleString('es-PE', {minimumFractionDigits:2})}`;
+            }
+        }
+
+        function renderizarTrabajadores(trabajadores) {
+            const tbody = document.querySelector('#tablaTrabajadores tbody');
+            
+            if (trabajadores.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="py-20 text-center opacity-40"><span class="material-symbols-outlined text-6xl">groups</span><h3 class="text-xl font-bold mt-4">No hay trabajadores</h3></td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = trabajadores.map(t => `
+                <tr class="group hover:bg-primary/5 even:bg-surface-container-low/20 transition-all duration-200">
+                    <td class="px-8 py-4 font-black text-unik-navy">${t.codigotrabajador || '-'}</td>
+                    <td class="px-6 py-4 font-bold">${t.apellidosnombres || '-'}</td>
+                    <td class="px-6 py-4 text-secondary text-sm">${t.puestotrabajo || '-'}</td>
+                    <td class="px-6 py-4">
+                        <span class="status-badge ${t.tipotrabajo === 'MOD' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}">
+                            ${t.tipotrabajo || '-'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-medium">S/. ${parseFloat(t.sueldobasico || 0).toFixed(2)}</td>
+                    <td class="px-6 py-4 text-right font-black text-unik-navy">S/. ${parseFloat(t.sueldototal || 0).toFixed(2)}</td>
+                    <td class="px-6 py-4 text-center text-xs text-secondary">${t.fecharegistro || '-'}</td>
+                    <td class="px-8 py-4">
+                        <div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="editarTrabajador('${t.codigotrabajador}')" class="p-2 hover:bg-primary/10 text-primary rounded-lg transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+                            <button onclick="eliminarTrabajador('${t.codigotrabajador}')" class="p-2 hover:bg-error/10 text-error rounded-lg transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function calcularSueldoPreview() {
+            const sueldoBase = parseFloat(document.getElementById('sueldobasico').value) || 0;
+            const bonificacion = parseFloat(document.getElementById('bonificacion').value) || 0;
+            const asigFamiliar = parseFloat(document.getElementById('asigfamiliar').value) || 0;
+            
+            if (sueldoBase > 0) {
+                const sueldo = sueldoBase + bonificacion + asigFamiliar;
+                const essalud = sueldo * 0.09;
+                const gratJulio = sueldoBase / 6;
+                const gratDiciembre = sueldoBase / 6;
+                const cts = sueldoBase / 12;
+                const sueldoTotal = sueldo + essalud + gratJulio + gratDiciembre + cts;
+                
+                document.getElementById('sueldoPreview').classList.remove('hidden');
+                document.getElementById('sueldoDetalle').innerHTML = `
+                    <div class="grid grid-cols-2 gap-y-1 text-xs">
+                        <span class="text-secondary">Sueldo Bruto:</span> <span class="font-bold text-right">S/. ${sueldo.toFixed(2)}</span>
+                        <span class="text-secondary">Essalud (9%):</span> <span class="font-bold text-right">S/. ${essalud.toFixed(2)}</span>
+                        <span class="text-secondary">Gratificaciones:</span> <span class="font-bold text-right">S/. ${(gratJulio + gratDiciembre).toFixed(2)}</span>
+                        <span class="text-secondary">CTS:</span> <span class="font-bold text-right">S/. ${cts.toFixed(2)}</span>
+                        <div class="col-span-2 border-t border-unik-navy/10 mt-2 pt-2 flex justify-between">
+                            <span class="font-black text-unik-navy uppercase tracking-tighter">Costo Total:</span>
+                            <span class="font-black text-primary text-sm">S/. ${sueldoTotal.toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('sueldoPreview').classList.add('hidden');
+            }
+        }
+
+        async function editarTrabajador(codigo) {
+            try {
+                const response = await fetch(`${API_URL}/trabajadores/${codigo}`);
+                const result = await response.json();
+                if (result.success) abrirFormularioTrabajador(result.data);
+            } catch (error) { mostrarToast('Error al buscar trabajador', 'error'); }
+        }
+
+        async function guardarTrabajador() {
+            const editando = document.getElementById('editandoTrabajador').value === 'true';
+            const codigo = document.getElementById('codigotrabajador').value;
+            const datos = {
+                codigotrabajador: parseInt(codigo),
+                apellidosnombres: document.getElementById('apellidosnombres').value,
+                puestotrabajo: document.getElementById('puestotrabajo').value,
+                tipotrabajo: document.getElementById('tipotrabajo').value,
+                productividad: parseFloat(document.getElementById('productividad').value) || 0.85,
+                sueldobasico: parseFloat(document.getElementById('sueldobasico').value) || 0,
+                bonificacion: parseFloat(document.getElementById('bonificacion').value) || 0,
+                asigfamiliar: parseFloat(document.getElementById('asigfamiliar').value) || 0
+            };
+            
+            if (!datos.codigotrabajador || !datos.apellidosnombres) {
+                mostrarToast('Código y Nombres son requeridos', 'error'); return;
+            }
+            
+            try {
+                const url = editando ? `${API_URL}/trabajadores/${codigo}` : `${API_URL}/trabajadores`;
+                const response = await fetch(url, {
+                    method: editando ? 'PUT' : 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(datos)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    mostrarToast(editando ? 'Trabajador actualizado' : 'Trabajador creado', 'success');
+                    cerrarModalTrabajador(); cargarTrabajadores();
+                } else mostrarToast('Error: ' + result.error, 'error');
+            } catch (error) { mostrarToast('Error al guardar', 'error'); }
+        }
+
+        async function eliminarTrabajador(codigo) {
+            if (confirm('¿Eliminar trabajador?')) {
+                try {
+                    const result = await fetch(`${API_URL}/trabajadores/${codigo}`, { method: 'DELETE' }).then(r => r.json());
+                    if (result.success) { mostrarToast('Eliminado', 'success'); cargarTrabajadores(); }
+                    else mostrarToast('Error', 'error');
+                } catch (error) { mostrarToast('Error', 'error'); }
+            }
+        }
+
+        async function cargarProductosEnSelect() {
+            try {
+                const result = await fetch(`${API_URL}/productos`).then(r => r.json());
+                if (result.success) {
+                    const select = document.getElementById('productoSelectTiempos');
+                    select.innerHTML = '<option value="">-- Seleccione un producto --</option>' + 
+                        result.data.map(p => `<option value="${p.codigoproducto}">${p.codigoproducto} - ${p.producto}</option>`).join('');
+                }
+            } catch (e) {}
+        }
+
+        async function cargarTiempos() {
+            const codigoProducto = document.getElementById('productoSelectTiempos').value;
+            const tbody = document.querySelector('#tablaTiempos tbody');
+            if (!codigoProducto) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-20 text-center opacity-40">Seleccione un producto</td></tr>`; return;
+            }
+            
+            productoSeleccionadoTiempos = {
+                codigo: codigoProducto,
+                nombre: document.getElementById('productoSelectTiempos').selectedOptions[0].text.split(' - ')[1]
+            };
+            
+            try {
+                const [resTiempos, resTrab] = await Promise.all([
+                    fetch(`${API_URL}/recetas-mo?codigoproducto=${codigoProducto}`).then(r => r.json()),
+                    fetch(`${API_URL}/trabajadores`).then(r => r.json())
+                ]);
+                
+                if (resTiempos.success) {
+                    if (resTiempos.data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="py-20 text-center opacity-40">No hay asignaciones</td></tr>`;
+                    } else {
+                        tbody.innerHTML = resTiempos.data.map(tiempo => {
+                            const t = resTrab.success ? resTrab.data.find(x => x.codigotrabajador == tiempo.codigotrabajador) : null;
+                            return `<tr class="hover:bg-surface">
+                                <td class="px-8 py-4 font-black text-unik-navy">${tiempo.codigotrabajador}</td>
+                                <td class="px-6 py-4 text-sm font-bold">${t ? t.puestotrabajo : 'N/A'}</td>
+                                <td class="px-6 py-4 text-center font-black">${tiempo.tiempotrabajo} min</td>
+                                <td class="px-6 py-4 text-center"><span class="status-badge bg-green-100 text-green-700">${t ? (t.productividad * 100).toFixed(1) + '%' : 'N/A'}</span></td>
+                                <td class="px-8 py-4 text-center"><button onclick="eliminarAsignacion('${tiempo.codigotrabajador}')" class="text-error hover:bg-error/10 p-2 rounded-lg transition-all"><span class="material-symbols-outlined text-sm">delete</span></button></td>
+                            </tr>`;
+                        }).join('');
+                    }
+                }
+            } catch (e) { mostrarToast('Error al cargar tiempos', 'error'); }
+        }
+
+        async function asignarTrabajador() {
+            if (!productoSeleccionadoTiempos) { mostrarToast('Seleccione un producto', 'warning'); return; }
+            try {
+                const res = await fetch(`${API_URL}/trabajadores`).then(r => r.json());
+                if (res.success) {
+                    const select = document.getElementById('trabajadorSelect');
+                    select.innerHTML = res.data.map(t => `<option value="${t.codigotrabajador}">${t.codigotrabajador} - ${t.apellidosnombres}</option>`).join('');
+                }
+            } catch (e) {}
+            document.getElementById('formAsignacion').reset();
+            document.getElementById('modalAsignacion').classList.add('show');
+        }
+
+        async function guardarAsignacion() {
+            const datos = {
+                codigoproducto: parseInt(productoSeleccionadoTiempos.codigo),
+                producto: productoSeleccionadoTiempos.nombre,
+                codigotrabajador: parseInt(document.getElementById('trabajadorSelect').value),
+                tiempotrabajo: parseFloat(document.getElementById('tiempotrabajo').value)
+            };
+            try {
+                const res = await fetch(`${API_URL}/recetas-mo`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(datos)
+                }).then(r => r.json());
+                if (res.success) { mostrarToast('Asignado', 'success'); cerrarModalAsignacion(); cargarTiempos(); }
+                else mostrarToast('Error', 'error');
+            } catch (e) {}
+        }
+
+        async function eliminarAsignacion(codigo) {
+            if (confirm('¿Eliminar asignación?')) {
+                try {
+                    const res = await fetch(`${API_URL}/recetas-mo/${codigo}`, { method: 'DELETE' }).then(r => r.json());
+                    if (res.success) { mostrarToast('Eliminado', 'success'); cargarTiempos(); }
+                } catch (e) {}
+            }
+        }
+
+        function abrirFormularioTrabajador(t = null) {
+            document.getElementById('formTrabajador').reset();
+            document.getElementById('sueldoPreview').classList.add('hidden');
+            if (t) {
+                document.getElementById('modalTituloTrabajador').textContent = 'Editar Trabajador';
+                document.getElementById('editandoTrabajador').value = 'true';
+                document.getElementById('codigotrabajador').value = t.codigotrabajador;
+                document.getElementById('codigotrabajador').readOnly = true;
+                document.getElementById('apellidosnombres').value = t.apellidosnombres;
+                document.getElementById('puestotrabajo').value = t.puestotrabajo;
+                document.getElementById('tipotrabajo').value = t.tipotrabajo;
+                document.getElementById('productividad').value = t.productividad;
+                document.getElementById('sueldobasico').value = t.sueldobasico;
+                document.getElementById('bonificacion').value = t.bonificacion;
+                document.getElementById('asigfamiliar').value = t.asigfamiliar;
+                calcularSueldoPreview();
+            } else {
+                document.getElementById('modalTituloTrabajador').textContent = 'Nuevo Trabajador';
+                document.getElementById('editandoTrabajador').value = 'false';
+                document.getElementById('codigotrabajador').readOnly = false;
+            }
+            document.getElementById('modalTrabajador').classList.add('show');
+        }
+
+        function cerrarModalTrabajador() { document.getElementById('modalTrabajador').classList.remove('show'); }
+        function cerrarModalAsignacion() { document.getElementById('modalAsignacion').classList.remove('show'); }
+        function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = 'login.html'; }
+        function mostrarToast(m, t='info') {
+            const c = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${t}`;
+            toast.innerHTML = `<p class="text-sm font-bold">${m}</p>`;
+            toast.onclick = () => toast.remove();
+            c.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+        window.onclick = e => {
+            if (e.target === document.getElementById('modalTrabajador')) cerrarModalTrabajador();
+            if (e.target === document.getElementById('modalAsignacion')) cerrarModalAsignacion();
+        }
+    </script>
+    <script src="js/theme-manager.js"></script>
+</body>
+</html>
