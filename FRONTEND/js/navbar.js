@@ -43,7 +43,7 @@ function cargarNavbar() {
                 font-weight: 500;
                 transition: all 0.2s;
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
-                🏠 Dashboard
+                🏠 / 📊 Dashboard
             </button>
             <button onclick="window.location.href='menu1.html'" class="nav-btn" style="
                 background: transparent;
@@ -55,7 +55,7 @@ function cargarNavbar() {
                 font-weight: 500;
                 transition: all 0.2s;
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
-                📋 Menú 1
+                🛍️ / 📋 Catálogo Comercial o Cotizador
             </button>
             <button onclick="window.location.href='menu2.html'" class="nav-btn" style="
                 background: transparent;
@@ -67,7 +67,7 @@ function cargarNavbar() {
                 font-weight: 500;
                 transition: all 0.2s;
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
-                📊 Menú 2
+                ⚙️ / 🏗️ Producción
             </button>
             <button onclick="window.location.href='menu3.html'" class="nav-btn" style="
                 background: transparent;
@@ -79,7 +79,7 @@ function cargarNavbar() {
                 font-weight: 500;
                 transition: all 0.2s;
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
-                📈 Menú 3
+                📦 / 🚚 Logística
             </button>
             <button onclick="window.location.href='menu4.html'" class="nav-btn" style="
                 background: transparent;
@@ -91,7 +91,7 @@ function cargarNavbar() {
                 font-weight: 500;
                 transition: all 0.2s;
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
-                📉 Menú 4
+                📐 / 📉 Costos Industriales
             </button>
             <button onclick="window.location.href='menu5.html'" class="nav-btn" style="
                 background: transparent;
@@ -103,7 +103,7 @@ function cargarNavbar() {
                 font-weight: 500;
                 transition: all 0.2s;
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
-                🔧 Menú 5
+                👥 / 👔 Talento Humano o RRHH
             </button>
             <button onclick="window.location.href='menu6.html'" class="nav-btn" style="
                 background: transparent;
@@ -115,7 +115,7 @@ function cargarNavbar() {
                 font-weight: 500;
                 transition: all 0.2s;
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
-                ⚙️ Menú 6
+                💰 / 📈 Finanzas
             </button>
             <button onclick="window.location.href='menu7.html'" class="nav-btn" style="
                 background: transparent;
@@ -127,7 +127,7 @@ function cargarNavbar() {
                 font-weight: 500;
                 transition: all 0.2s;
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
-                📦 Menú 7
+                ⚙️ / 🛠️ Configuración
             </button>
             
             <!-- Botón de Cerrar Sesión al final -->
