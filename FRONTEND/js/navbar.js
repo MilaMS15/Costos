@@ -11,8 +11,26 @@ function cargarNavbar() {
         return;
     }
     
-    // Si hay sesión, mostrar la barra
+    // Si ya existe una barra, no la dupliques
+    if (document.querySelector('.top-navbar')) {
+        return;
+    }
+    
     console.log('Sesión activa - mostrando barra de navegación');
+    
+    // 🔧 FUNCIÓN PARA ACTUALIZAR EL PADDING DEL BODY
+    function actualizarPaddingBody() {
+        const navbar = document.querySelector('.top-navbar');
+        if (!navbar) return;
+        
+        // Obtener la altura REAL de la barra (incluyendo padding y margin)
+        const alturaNavbar = navbar.offsetHeight;
+        
+        // Aplicar padding-top al body
+        document.body.style.paddingTop = alturaNavbar + 'px';
+        
+        console.log(`Altura de la barra: ${alturaNavbar}px - Padding aplicado`);
+    }
     
     const navbarHtml = `
         <nav class="top-navbar" style="
@@ -29,6 +47,7 @@ function cargarNavbar() {
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             font-family: 'Inter', sans-serif;
+            font-size: 14px;
         ">
             <div style="display: flex; align-items: center; margin-right: 24px;">
                 <span style="font-weight: 800; font-size: 1.2rem;">🔵 Unik'a</span>
@@ -130,36 +149,29 @@ function cargarNavbar() {
                 ⚙️ / 🛠️ Configuración
             </button>
             
-            <!-- Botón de Cerrar Sesión al final -->
-            <button onclick="cerrarSesionDesdeNavbar()" class="nav-btn" style="
-                background: #dc2626;
-                border: none;
-                color: white;
-                padding: 8px 16px;
-                cursor: pointer;
-                border-radius: 8px;
-                font-weight: 500;
-                transition: all 0.2s;
-                margin-left: auto;
-            " onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
-                🚪 Cerrar Sesión
-            </button>
         </nav>
-        <style>
-            body {
-                padding-top: 70px !important;
-                margin: 0;
-            }
-            @media (max-width: 768px) {
-                .top-navbar { flex-wrap: wrap; justify-content: center; }
-                .top-navbar button:last-child { margin-left: 0 !important; }
-                body { padding-top: 120px !important; }
-            }
-        </style>
     `;
     
     // Insertar al inicio del body
     document.body.insertAdjacentHTML('afterbegin', navbarHtml);
+    
+    // Aplicar el padding después de insertar la barra
+    actualizarPaddingBody();
+    
+    // Escuchar cambios de tamaño de ventana (cuando la barra cambia de altura)
+    window.addEventListener('resize', function() {
+        actualizarPaddingBody();
+    });
+    
+    // También observar si hay cambios en la barra (por si el contenido cambia)
+    const observer = new ResizeObserver(function() {
+        actualizarPaddingBody();
+    });
+    
+    const navbar = document.querySelector('.top-navbar');
+    if (navbar) {
+        observer.observe(navbar);
+    }
 }
 
 // Función para cerrar sesión desde la barra
