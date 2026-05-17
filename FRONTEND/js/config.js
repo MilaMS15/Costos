@@ -6,3 +6,4 @@ const API_URL = 'https://costos-d12p.onrender.com/api';
 
 // Para desarrollo local, comenta la línea de arriba y descomenta la de abajo:
 // const API_URL = 'http://localhost:5000/api';
+// FRONTEND/js/config.js

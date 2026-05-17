@@ -7,7 +7,13 @@ from servicios import (
     OrdenTrabajoService, OrdenMaterialesService, 
     OrdenManoObraService, OrdenCIFService  # ← NUEVOS
 )
-
+from menu1_backend import register_menu1_routes
+from menu2_backend import register_menu2_routes
+from menu3_backend import register_menu3_routes
+from menu4_backend import register_menu4_routes
+from menu5_backend import register_menu5_routes
+from menu6_backend import register_menu6_routes
+from menu7_backend import register_menu7_routes
 from datetime import date
 from database import SupabaseBrain  # ← Agregar esta línea
 import traceback
@@ -1384,7 +1390,13 @@ def api_estado_resultados(year_month):
     except Exception as e:
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-
+register_menu1_routes(app)
+register_menu2_routes(app)
+register_menu3_routes(app)
+register_menu4_routes(app)
+register_menu5_routes(app)
+register_menu6_routes(app)
+register_menu7_routes(app)
 if __name__ == '__main__':
     import os
     port = int(os.environ.get("PORT", 5000))
