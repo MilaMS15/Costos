@@ -1,7 +1,19 @@
 // FRONTEND/js/navbar.js
-// Este script se incluye en TODOS los HTML para que tengan la misma barra
+// Solo muestra la barra de navegación si el usuario ha iniciado sesión
 
 function cargarNavbar() {
+    // 🔐 VERIFICAR SI HAY SESIÓN ACTIVA
+    const usuario = localStorage.getItem('usuario');
+    
+    // Si NO hay usuario logueado, NO mostrar la barra
+    if (!usuario) {
+        console.log('Sin sesión activa - barra oculta');
+        return;
+    }
+    
+    // Si hay sesión, mostrar la barra
+    console.log('Sesión activa - mostrando barra de navegación');
+    
     const navbarHtml = `
         <nav class="top-navbar" style="
             position: fixed;
@@ -117,6 +129,21 @@ function cargarNavbar() {
             " onmouseover="this.style.background='#FF9F1C'" onmouseout="this.style.background='transparent'">
                 📦 Menú 7
             </button>
+            
+            <!-- Botón de Cerrar Sesión al final -->
+            <button onclick="cerrarSesionDesdeNavbar()" class="nav-btn" style="
+                background: #dc2626;
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                cursor: pointer;
+                border-radius: 8px;
+                font-weight: 500;
+                transition: all 0.2s;
+                margin-left: auto;
+            " onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+                🚪 Cerrar Sesión
+            </button>
         </nav>
         <style>
             body {
@@ -125,6 +152,7 @@ function cargarNavbar() {
             }
             @media (max-width: 768px) {
                 .top-navbar { flex-wrap: wrap; justify-content: center; }
+                .top-navbar button:last-child { margin-left: 0 !important; }
                 body { padding-top: 120px !important; }
             }
         </style>
@@ -132,6 +160,12 @@ function cargarNavbar() {
     
     // Insertar al inicio del body
     document.body.insertAdjacentHTML('afterbegin', navbarHtml);
+}
+
+// Función para cerrar sesión desde la barra
+function cerrarSesionDesdeNavbar() {
+    localStorage.removeItem('usuario');
+    window.location.href = 'login.html';
 }
 
 // Ejecutar cuando el DOM esté listo
