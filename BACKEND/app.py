@@ -1399,7 +1399,16 @@ register_menu4_routes(app)
 register_menu5_routes(app)
 register_menu6_routes(app)
 register_menu7_routes(app)
+@app.route('/api/ia/status', methods=['GET'])
+# Ruta de prueba para IA
+@app.route('/api/ia/status', methods=['GET'])
+def ia_status():
+    return jsonify({
+        'success': True, 
+        'mensaje': 'Endpoint de prueba funcionando'
+    })
 register_ia_routes(app)
+
 # Al principio del archivo, agrega esta línea si no existe
 import os
 
