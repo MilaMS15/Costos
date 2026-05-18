@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from ia_service import register_ia_routes
+from flask import send_from_directory
 from servicios import (
     MaterialesService, PersonalService, ProductoService,
     CIFService, GAService, GVService, MODService,
@@ -1397,6 +1399,14 @@ register_menu4_routes(app)
 register_menu5_routes(app)
 register_menu6_routes(app)
 register_menu7_routes(app)
+register_ia_routes(app)
+@app.route('/')
+def servir_index():
+    return send_from_directory('../FRONTEND', 'index.html')
+
+@app.route('/<path:path>')
+def servir_frontend(path):
+    return send_from_directory('../FRONTEND', path)
 if __name__ == '__main__':
     import os
     port = int(os.environ.get("PORT", 5000))
