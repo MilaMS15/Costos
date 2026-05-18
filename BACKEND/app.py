@@ -1400,13 +1400,22 @@ register_menu5_routes(app)
 register_menu6_routes(app)
 register_menu7_routes(app)
 register_ia_routes(app)
+# Al principio del archivo, agrega esta línea si no existe
+import os
+
+# Al final de app.py, REEMPLAZA estas líneas:
+
 @app.route('/')
 def servir_index():
-    return send_from_directory('../FRONTEND', 'index.html')
+    # Busca FRONTEND en la raíz del proyecto
+    frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'FRONTEND')
+    return send_from_directory(frontend_path, 'index.html')
 
 @app.route('/<path:path>')
 def servir_frontend(path):
-    return send_from_directory('../FRONTEND', path)
+    frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'FRONTEND')
+    return send_from_directory(frontend_path, path)
+
 if __name__ == '__main__':
     import os
     port = int(os.environ.get("PORT", 5000))

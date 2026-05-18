@@ -6,8 +6,8 @@ from flask import jsonify, request
 from dotenv import load_dotenv
 
 load_dotenv()
-
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# Poner la key directamente (solución más rápida)
+GEMINI_API_KEY = "AIzaSyD9A_GOlYT93IkkHFXqct_NezK5ZrphFfU"
 
 def register_ia_routes(app):
     @app.route('/api/ia/chat', methods=['POST'])
