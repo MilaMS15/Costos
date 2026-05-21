@@ -6,7 +6,9 @@
     if (!usuario) return;
     
     console.log('Chatbot iniciado con voz');
-    // VOZ - Control de duplicados y voz femenina
+    
+    // ==================== FUNCIÓN DE VOZ ====================
+
     // ==================== VOZ FEMENINA CORREGIDA ====================
     let vozActiva = false;
     let vocesCargadas = false;
@@ -75,7 +77,7 @@
             setTimeout(hablarConVoz, 100);
         }
     }
-    
+        
     // ==================== ESTILOS ====================
     const style = document.createElement('style');
     style.textContent = `
@@ -209,7 +211,13 @@
                 </div>
                 <div class="chatbot-messages" id="chatbotMessages">
                     <div class="message bot">
-                        <div class="message-bubble">¡Hola! Soy tu asistente. ¿En qué puedo ayudarte?</div>
+                        <div class="message-bubble">¡Hola! Soy Uni, tu asistente amigable. 🌟<br><br>
+                        Puedo ayudarte con:<br>
+                        • Costos de producción<br>
+                        • Materiales y productos<br>
+                        • Mano de obra<br>
+                        • Órdenes de trabajo<br><br>
+                        ¿En qué te ayudo hoy? 😊</div>
                     </div>
                 </div>
                 <div class="chatbot-input">
@@ -300,12 +308,12 @@
         const div = document.createElement('div');
         div.className = 'message bot';
         div.id = 'thinking';
-        div.innerHTML = '<div class="message-bubble">🤔 Pensando...</div>';
+        div.innerHTML = '<div class="message-bubble">🤔 Uni está pensando... ¡Ya vuelvo!</div>';
         messagesContainer.appendChild(div);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         return div;
     }
-    
+        
     function eliminarPensando() {
         const thinking = document.getElementById('thinking');
         if (thinking) thinking.remove();

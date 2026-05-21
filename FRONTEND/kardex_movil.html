@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Unik'a | Kardex Móvil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="js/config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        #reader { width: 100%; border-radius: 1rem; overflow: hidden; border: none !important; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-between">
+
+    <header class="bg-[#1B263B] p-4 text-center border-b border-gray-800 shadow-md">
+        <h1 class="text-lg font-bold flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[#FF9F1C]">qr_code_scanner</span>
+            Kardex Escáner Almacén
+        </h1>
+    </header>
+
+    <main class="p-4 flex-1 flex flex-col justify-center max-w-md mx-auto w-full gap-4">
+        
+        <div class="bg-gray-800 p-2 rounded-2xl shadow-inner relative">
+            <div id="reader"></div>
+            <div id="escaneo-exitoso" class="hidden absolute inset-0 bg-green-600/90 rounded-2xl flex flex-col items-center justify-center text-center p-4 transition-all">
+                <span class="material-symbols-outlined text-5xl animate-bounce">check_circle</span>
+                <p class="font-bold text-lg mt-2">¡Código Detectado!</p>
+                <p id="txt-item-detectado" class="text-sm text-gray-100 font-medium mt-1"></p>
+            </div>
+        </div>
+
+        <div id="form-transaccion" class="bg-gray-800 p-5 rounded-2xl shadow-lg space-y-4 hidden">
+            <div class="border-b border-gray-700 pb-2">
+                <span id="lbl-tipo" class="text-xs font-bold px-2 py-0.5 rounded-full bg-[#FF9F1C] text-black">MP</span>
+                <h3 id="lbl-nombre-item" class="text-base font-bold mt-1 text-gray-100">Nombre del Ítem</h3>
+            </div>
+
+            <form onsubmit="enviarMovimientoMovil(event)" class="space-y-3">
+                <input type="hidden" id="mvTipoItem">
+                <input type="hidden" id="mvCodigoItem">
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Tipo de Operación</label>
+                    <select id="mvTipoMov" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm font-semibold text-white focus:ring-2 focus:ring-[#FF9F1C]">
+                        <option value="ENTRADA">📥 ENTRADA (Ingreso)</option>
+                        <option value="SALIDA">📤 SALIDA (Despacho)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Cantidad Física</label>
+                        <input type="number" id="mvCantidad" step="any" required min="0.01" oninput="calcularCostoUnitarioAutomatico()" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-right font-bold text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Costo Total (S/.)</label>
+                        <input type="number" id="mvCostoTotal" step="any" required min="0.00" oninput="calcularCostoUnitarioAutomatico()" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-right font-bold text-green-400">
+                    </div>
+                </div>
+
+                <div class="bg-gray-700/50 p-3 rounded-xl text-center border border-gray-600">
+                    <p class="text-xs text-gray-400">Costo Unitario Calculado automáticamente:</p>
+                    <p class="text-xl font-black text-[#FF9F1C] mt-1">S/. <span id="lbl-costo-unitario-calc">0.0000</span></p>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="reiniciarEscaner()" class="w-1/3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium py-3 rounded-xl text-sm transition-all">Escanear de nuevo</button>
+                    <button type="submit" class="w-2/3 bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-md">Procesar en Kardex</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="p-3 bg-gray-800 text-center">
+        <button onclick="window.location.href='menu3.html'" class="text-xs text-gray-400 hover:text-white underline">Volver al Kardex Completo</button>
+    </footer>
+
+    <script>
+        let html5QrcodeScanner;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inicializarEscaner();
+        });
+
+        function inicializarEscaner() {
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            
+            // Configuración optimizada para lectura instantánea de QR y Barras
+            const config = { 
+                fps: 20, 
+                qrbox: { width: 220, height: 220 } // Cuadrado perfecto ideal para QR
+            };
+            
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, // Forzar cámara trasera
+                config,
+                onScanSuccess
+            ).catch(err => console.error("Error al iniciar cámara: ", err));
+        }
+
+        async function onScanSuccess(decodedText) {
+            try {
+                // Detener escáner momentáneamente para procesar el hallazgo
+                await html5QrcodeScanner.stop();
+                
+                // Consultar al backend pasándole el código de barras leído
+                const response = await fetch(`${API_URL}/menu3/escanear/${decodedText}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const item = result.data;
+                    
+                    // Mostrar animación de éxito
+                    document.getElementById('txt-item-detectado').textContent = item.nombre;
+                    document.getElementById('escaneo-exitoso').classList.remove('hidden');
+                    
+                    // Rellenar formulario oculto
+                    document.getElementById('mvTipoItem').value = item.tipo_item;
+                    document.getElementById('mvCodigoItem').value = item.codigo_item;
+                    document.getElementById('lbl-tipo').textContent = item.tipo_item;
+                    document.getElementById('lbl-nombre-item').textContent = item.nombre;
+                    
+                    setTimeout(() => {
+                        document.getElementById('escaneo-exitoso').classList.add('hidden');
+                        document.getElementById('form-transaccion').classList.remove('hidden');
+                    }, 1200);
+                } else {
+                    alert('Código no mapeado: ' + result.error);
+                    inicializarEscaner();
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error al procesar lectura');
+                inicializarEscaner();
+            }
+        }
+
+        // Lógica clave solicitada: Costo Unitario = Costo Total / Cantidad
+        function calcularCostoUnitarioAutomatico() {
+            const cantidad = parseFloat(document.getElementById('mvCantidad').value) || 0;
+            const costoTotal = parseFloat(document.getElementById('mvCostoTotal').value) || 0;
+            
+            let costoUnitario = 0;
+            if (cantidad > 0) {
+                costoUnitario = costoTotal / cantidad;
+            }
+            
+            document.getElementById('lbl-costo-unitario-calc').textContent = costoUnitario.toFixed(4);
+            return costoUnitario;
+        }
+
+        async function enviarMovimientoMovil(e) {
+            e.preventDefault();
+            
+            const cantidad = parseFloat(document.getElementById('mvCantidad').value);
+            const costoUnitarioCalculado = calcularCostoUnitarioAutomatico();
+            
+            const payload = {
+                tipo_item: document.getElementById('mvTipoItem').value,
+                codigo_item: document.getElementById('mvCodigoItem').value,
+                tipo_movimiento: document.getElementById('mvTipoMov').value,
+                detalle: `Celular Almacén - Lote Escaneado`,
+                cantidad: cantidad,
+                costo_unitario: costoUnitarioCalculado, // Le inyectamos el costo unitario ya calculado
+                fecha: new Date().toISOString().split('T')[0]
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/menu3/kardex`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('¡Movimiento asentado en Kardex y Costo Maestro recalculado!');
+                    reiniciarEscaner();
+                } else {
+                    alert('Error en Kardex: ' + result.error);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error de red');
+            }
+        }
+
+        function reiniciarEscaner() {
+            document.getElementById('form-transaccion').classList.add('hidden');
+            document.getElementById('form-transaccion').querySelector('form').reset();
+            document.getElementById('lbl-costo-unitario-calc').textContent = '0.0000';
+            inicializarEscaner();
+        }
+    </script>
+</body>
+</html>

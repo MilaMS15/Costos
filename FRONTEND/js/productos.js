@@ -33,11 +33,11 @@ async function cargarProductos() {
     try {
         const response = await fetch(`${API_URL}/productos`);
         const result = await response.json();
-        
+
         if (result.success) {
             const tbody = document.querySelector('#tablaProductos tbody');
             tbody.innerHTML = '';
-            
+
             result.data.forEach(producto => {
                 const row = tbody.insertRow();
                 row.innerHTML = `
@@ -46,6 +46,7 @@ async function cargarProductos() {
                     <td>${(producto.descripcion || '').substring(0, 50)}...</td>
                     <td>${producto.fecharegistro || ''}</td>
                     <td>
+                        <button class="btn btn-info btn-sm" onclick="generarYMostrarQR('${producto.codigoproducto}', '${producto.producto.replace(/'/g, "\\'")}', 'Producto Terminado (PT)')" title="Ver QR">🔲</button>
                         <button class="btn btn-warning btn-sm" onclick="editarProducto('${producto.codigoproducto}')">✏️</button>
                         <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${producto.codigoproducto}')">🗑️</button>
                     </td>
@@ -312,4 +313,24 @@ async function eliminarMaterialReceta(codigoMaterial) {
 window.onclick = function(event) {
     if (event.target === modalProducto) cerrarModalProducto();
     if (event.target === modalReceta) cerrarModalReceta();
+}
+function generarYMostrarQR(idSupabase, nombreItem, tipoItem) {
+    document.getElementById('modalQR').classList.remove('hidden');
+    document.getElementById('qrModalTitulo').textContent = nombreItem;
+    document.getElementById('qrModalSubtitulo').textContent = tipoItem;
+    document.getElementById('qrModalCodigo').textContent = `ID: ${idSupabase}`;
+
+    const contenedor = document.getElementById('contenedorQR');
+    contenedor.innerHTML = "";
+
+    new QRCode(contenedor, {
+        text: idSupabase.toString(),
+        width: 150,
+        height: 150,
+        correctLevel: QRCode.CorrectLevel.H
+    });
+}
+
+function cerrarModalQR() {
+    document.getElementById('modalQR').classList.add('hidden');
 }

@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Cargar todos los materiales
+// Cargar todos los materiales (Versión Automatizada con QR)
+// Cargar todos los materiales (Versión corregida sin errores de comillas)
 async function cargarMateriales() {
     try {
         const response = await fetch(`${API_URL}/materiales`);
@@ -26,17 +28,31 @@ async function cargarMateriales() {
             
             result.data.forEach(material => {
                 const row = tbody.insertRow();
+                
+                // 1. Aseguramos los datos en variables limpias para evitar que rompan el HTML
+                const codigo = material.codigomaterial ? material.codigomaterial.toString() : '';
+                const nombre = (material.material || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+                const descripcion = (material.descripcion || '').substring(0, 50) + '...';
+                const tipo = material.tipomaterial || 'MP';
+                const unidad = material.unidadmedida || 'Kg';
+                const costo = (material.costounitario || 0).toFixed(2);
+                const stock = material.stockseguridad || '0';
+                
+                // 2. Inyectamos el HTML usando de forma segura las variables limpias
                 row.innerHTML = `
-                    <td>${material.codigomaterial || ''}</td>
+                    <td>${codigo}</td>
                     <td>${material.material || ''}</td>
-                    <td>${(material.descripcion || '').substring(0, 50)}...</td>
-                    <td>${material.tipomaterial || ''}</td>
-                    <td>${material.unidadmedida || ''}</td>
-                    <td>S/. ${(material.costounitario || 0).toFixed(2)}</td>
-                    <td>${material.stockseguridad || ''}</td>
+                    <td>${descripcion}</td>
+                    <td>${tipo}</td>
+                    <td>${unidad}</td>
+                    <td>S/. ${costo}</td>
+                    <td>${stock}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarMaterial('${material.codigomaterial}')">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarMaterial('${material.codigomaterial}')">🗑️</button>
+                        <button class="btn btn-info btn-sm" onclick="generarYMostrarQR('${codigo}', '${nombre}', 'Materia Prima / Insumo')" title="Ver Código QR">🔲</button>
+                        
+                        <button class="btn btn-warning btn-sm" onclick="editarMaterial('${codigo}')">✏️</button>
+                        
+                        <button class="btn btn-danger btn-sm" onclick="eliminarMaterial('${codigo}')">🗑️</button>
                     </td>
                 `;
             });
@@ -161,4 +177,26 @@ window.onclick = function(event) {
     if (event.target === modal) {
         cerrarModal();
     }
+}
+// LÓGICA GENERAL PARA EL MODAL DEL CÓDIGO QR
+function generarYMostrarQR(idSupabase, nombreItem, tipoItem) {
+    document.getElementById('modalQR').classList.remove('hidden');
+    document.getElementById('qrModalTitulo').textContent = nombreItem;
+    document.getElementById('qrModalSubtitulo').textContent = tipoItem;
+    document.getElementById('qrModalCodigo').textContent = `ID: ${idSupabase}`;
+    
+    const contenedor = document.getElementById('contenedorQR');
+    contenedor.innerHTML = ""; // Limpiamos el código QR anterior
+    
+    // El QR codifica estrictamente el ID numérico que espera tu backend móvil
+    new QRCode(contenedor, {
+        text: idSupabase.toString(),
+        width: 150,
+        height: 150,
+        correctLevel: QRCode.CorrectLevel.H // Alta tolerancia a reflejos de pantallas
+    });
+}
+
+function cerrarModalQR() {
+    document.getElementById('modalQR').classList.add('hidden');
 }

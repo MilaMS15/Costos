@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador QR Oficial del Taller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="bg-slate-900 p-6 flex flex-col items-center justify-center min-h-screen">
+
+    <div class="max-w-md w-full bg-white p-6 rounded-2xl shadow-2xl space-y-6">
+        <div class="text-center border-b pb-3">
+            <h1 class="text-lg font-bold text-gray-800">Códigos QR del Almacén</h1>
+            <p class="text-xs text-gray-500">Apunta la cámara de tu celular a estos QR</p>
+        </div>
+
+        <div class="flex flex-col items-center p-4 border border-dashed rounded-xl bg-slate-50">
+            <span class="text-xs font-bold text-blue-600 mb-1">🧵 MATERIA PRIMA</span>
+            <h2 class="text-sm font-black text-slate-800 mb-3">Hilo de Algodón 20/1</h2>
+            <div id="qr-hilo"></div>
+            <span class="text-xs font-mono font-bold text-slate-500 mt-2">ID: 77500001</span>
+        </div>
+
+        <div class="flex flex-col items-center p-4 border border-dashed rounded-xl bg-slate-50">
+            <span class="text-xs font-bold text-blue-600 mb-1">👕 MATERIA PRIMA</span>
+            <h2 class="text-sm font-black text-slate-800 mb-3">Tela Jersey Premium</h2>
+            <div id="qr-tela"></div>
+            <span class="text-xs font-mono font-bold text-slate-500 mt-2">ID: 77500002</span>
+        </div>
+
+        <div class="flex flex-col items-center p-4 border border-dashed rounded-xl bg-slate-50">
+            <span class="text-xs font-bold text-green-600 mb-1">📦 PRODUCTO TERMINADO</span>
+            <h2 class="text-sm font-black text-slate-800 mb-3">Polo Box Manga Corta</h2>
+            <div id="qr-polo"></div>
+            <span class="text-xs font-mono font-bold text-slate-500 mt-2">ID: 77500004</span>
+        </div>
+    </div>
+
+    <script>
+    // Aquí pones los IDs REALES que ya tienes creados en tu base de datos de Supabase
+    // Cuando crees nuevos materiales, solo vienes aquí y agregas una línea más con su ID
+    new QRCode(document.getElementById("qr-hilo"), { text: "242001", width: 128, height: 128 }); // Ejemplo para tu Tela_Rip
+    new QRCode(document.getElementById("qr-tela"), { text: "242002", width: 128, height: 128 }); // Cambia por otro ID real de tu tabla
+    new QRCode(document.getElementById("qr-polo"), { text: "242003", width: 128, height: 128 }); // Cambia por otro ID real de tu tabla
+    </script>
+</body>
+</html>

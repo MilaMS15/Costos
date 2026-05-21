@@ -1399,33 +1399,24 @@ register_menu4_routes(app)
 register_menu5_routes(app)
 register_menu6_routes(app)
 register_menu7_routes(app)
-@app.route('/api/ia/status', methods=['GET'])
-# Ruta de prueba para IA
-@app.route('/api/ia/status', methods=['GET'])
-def ia_status():
-    return jsonify({
-        'success': True, 
-        'mensaje': 'Endpoint de prueba funcionando'
-    })
 register_ia_routes(app)
-
-# Al principio del archivo, agrega esta línea si no existe
-import os
-
-# Al final de app.py, REEMPLAZA estas líneas:
-
 @app.route('/')
 def servir_index():
-    # Busca FRONTEND en la raíz del proyecto
-    frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'FRONTEND')
-    return send_from_directory(frontend_path, 'index.html')
+    return send_from_directory('../FRONTEND', 'index.html')
 
+
+# ============================================
+# SERVIR KARDEX MÓVIL
+# ============================================
+@app.route('/kardex_movil.html')
+def servir_kardex_celular(): # Nombre único cambiado para evitar el AssertionError
+    return send_from_directory('../FRONTEND', 'kardex_movil.html')
+
+# ESTA ES TU RUTA COMODÍN ORIGINAL (Déjala tal cual estaba, sin duplicar)
 @app.route('/<path:path>')
 def servir_frontend(path):
-    frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'FRONTEND')
-    return send_from_directory(frontend_path, path)
+    return send_from_directory('../FRONTEND', path)
 
 if __name__ == '__main__':
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', debug=False, port=port)
+    # '0.0.0.0' obliga a Flask a escuchar tanto a la PC (127.0.0.1) como a tu celular a través de la IP de tu Wi-Fi
+    app.run(host='0.0.0.0', port=5000, debug=True)
