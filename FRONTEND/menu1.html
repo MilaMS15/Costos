@@ -3,32 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unik'a | Menú 1</title>
+    <title>Unik'a | Cotizador y Catálogo Comercial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="js/config.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; padding-top: 70px; }
-        .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .content-area { padding: 2rem; max-width: 1600px; margin: 0 auto; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50">
     <script src="js/navbar.js"></script>
     
     <main class="content-area">
-        <div class="bg-white rounded-2xl shadow-sm p-8">
-            <h1 class="text-2xl font-bold text-[#1B263B] mb-4">🛍️ / 📋 Catálogo Comercial o Cotizador</h1>
-            <p class="text-gray-600 mb-6">Aquí va el contenido específico del Menú 1.</p>
-            
-            <!-- Aquí tu amigo puede poner su contenido -->
-            <div id="app">
-                <button onclick="cargarDatos()" class="bg-[#FF9F1C] text-white px-6 py-3 rounded-xl font-bold">
-                    Cargar Datos
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-[#1B263B] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#FF9F1C]">storefront</span>
+                    Catálogo Comercial & Cotizador
+                </h1>
+                <p class="text-gray-500 text-sm">Selecciona nuestros productos exclusivos y gestiona tu orden de compra en vivo.</p>
+            </div>
+            <button onclick="toggleCarrito()" class="bg-[#1B263B] hover:bg-[#2c3d5e] text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 relative transition-all shadow-md">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span>Mi Carrito</span>
+                <span id="contadorCarrito" class="absolute -top-2 -right-2 bg-[#FF9F1C] text-white text-xs font-black rounded-full h-6 w-6 flex items-center justify-center border-2 border-white">0</span>
+            </button>
+        </div>
+
+        <div id="contenedorProductos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            </div>
+    </main>
+
+    <div id="modalFicha" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl transform scale-95 transition-transform duration-300">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 id="fichaNombre" class="text-xl font-bold text-gray-900">Ficha Técnica</h3>
+                <button onclick="cerrarModalFicha()" class="text-gray-400 hover:text-gray-600">
+                    <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
+            <div class="space-y-4">
+                <div class="flex justify-center bg-gray-50 rounded-xl p-4">
+                    <img id="fichaImagen" src="" alt="Producto" class="h-48 object-contain rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="bg-gray-50 p-3 rounded-xl">
+                        <span class="block text-xs text-gray-400 font-bold uppercase">Código PT</span>
+                        <span id="fichaCodigo" class="font-bold text-gray-800">-</span>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-xl">
+                        <span class="block text-xs text-gray-400 font-bold uppercase">Precio Unitario</span>
+                        <span id="fichaPrecio" class="font-black text-primary text-emerald-600">-</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="block text-xs text-gray-400 font-bold uppercase mb-1">Descripción Comercial</span>
+                    <p id="fichaDescripcion" class="text-gray-600 text-sm bg-gray-50 p-3 rounded-xl leading-relaxed">-</p>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
+
+    <div id="panelCarrito" class="fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-6 border-b flex justify-between items-center bg-[#1B263B] text-white">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined">shopping_basket</span> Resumen del Pedido
+            </h3>
+            <button onclick="toggleCarrito()" class="text-gray-300 hover:text-white">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <div id="listaCarrito" class="flex-1 overflow-y-auto p-6 space-y-4 divide-y divide-gray-100">
+            </div>
+
+        <div class="p-6 border-t bg-gray-50 space-y-4">
+            <div class="flex justify-between items-center text-lg font-black text-gray-900 mb-2">
+                <span>Total a Pagar:</span>
+                <span id="totalCarrito">S/. 0.00</span>
+            </div>
+            
+            <form id="formCheckout" onsubmit="procesarOrdenCompra(e)" class="space-y-3">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Datos del Cliente Facturación</h4>
+                <input type="text" id="cliNombre" required placeholder="Nombre Completo / Razón Social" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-sm">
+                <input type="email" id="cliCorreo" required placeholder="Correo Electrónico" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-sm">
+                
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider pt-2">Pasarela de Pago (Simulada)</h4>
+                <div class="bg-white border border-gray-200 rounded-xl p-3 space-y-2 shadow-inner">
+                    <input type="text" id="bankTarjeta" required maxlength="16" placeholder="💳 Número de Tarjeta (16 dígitos)" class="w-full bg-gray-50 p-2 text-sm border-b focus:outline-none">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="bankExp" required maxlength="5" placeholder="MM/AA" class="bg-gray-50 p-2 text-sm border-r text-center focus:outline-none">
+                        <input type="password" id="bankCvv" required maxlength="3" placeholder="CVV" class="bg-gray-50 p-2 text-sm text-center focus:outline-none">
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full mt-4 bg-[#FF9F1C] hover:bg-[#e08a10] text-white p-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">lock</span> Confirmar y Cargar Orden
+                </button>
+            </form>
+        </div>
+    </div>
 
     <script src="js/menu1.js"></script>
 </body>
