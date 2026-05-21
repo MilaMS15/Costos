@@ -3,33 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unik'a | Menú 1</title>
+    <title>Unik'a | Costos de Recursos Humanos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/config.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; padding-top: 70px; }
+        body { font-family: 'Inter', sans-serif; padding-top: 70px; background-color: #f8fafc; }
         .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .card { transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1); }
+        .table-container { max-height: 500px; overflow-y: auto; }
     </style>
 </head>
 <body>
     <script src="js/navbar.js"></script>
-    
+
     <main class="content-area">
-        <div class="bg-white rounded-2xl shadow-sm p-8">
-            <h1 class="text-2xl font-bold text-[#1B263B] mb-4">📋 Menú 1</h1>
-            <p class="text-gray-600 mb-6">Aquí va el contenido específico del Menú 1.</p>
-            
-            <!-- Aquí tu amigo puede poner su contenido -->
-            <div id="app">
-                <button onclick="cargarDatos()" class="bg-[#FF9F1C] text-white px-6 py-3 rounded-xl font-bold">
-                    Cargar Datos
-                </button>
+        <!-- Encabezado -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-[#1B263B]">💰 Gestión de Costos – Recursos Humanos</h1>
+            <p class="text-gray-600 mt-1">Sueldos, bonificaciones, planillas y costos laborales</p>
+        </div>
+
+        <!-- Tarjetas de KPIs -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card bg-white rounded-2xl shadow-md p-6 border-l-8 border-[#FF9F1C]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Trabajadores</p>
+                        <p id="totalTrabajadores" class="text-3xl font-bold text-[#1B263B]">0</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-[#FF9F1C]">groups</span>
+                </div>
+            </div>
+            <div class="card bg-white rounded-2xl shadow-md p-6 border-l-8 border-[#2EC4B6]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Costo Total Planilla (mes)</p>
+                        <p id="totalPlanilla" class="text-3xl font-bold text-[#1B263B]">S/ 0.00</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-[#2EC4B6]">payments</span>
+                </div>
+            </div>
+            <div class="card bg-white rounded-2xl shadow-md p-6 border-l-8 border-[#E71D36]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Promedio por Trabajador</p>
+                        <p id="promedioSueldo" class="text-3xl font-bold text-[#1B263B]">S/ 0.00</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-[#E71D36]">bar_chart</span>
+                </div>
+            </div>
+            <div class="card bg-white rounded-2xl shadow-md p-6 border-l-8 border-[#FFB703]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">ESSALUD (9%)</p>
+                        <p id="totalEssalud" class="text-3xl font-bold text-[#1B263B]">S/ 0.00</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-[#FFB703]">health_and_safety</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico y tabla -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Gráfico de barras (top 5 costos) -->
+            <div class="bg-white rounded-2xl shadow-md p-6 lg:col-span-1">
+                <h2 class="text-xl font-bold text-[#1B263B] mb-4">📊 Top 5 mayores costos</h2>
+                <canvas id="costosChart" width="400" height="300"></canvas>
+            </div>
+            <!-- Tabla de trabajadores -->
+            <div class="bg-white rounded-2xl shadow-md p-6 lg:col-span-2">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                    <h2 class="text-xl font-bold text-[#1B263B]">📋 Detalle de trabajadores</h2>
+                    <button id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">download</span> Exportar CSV
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="tablaTrabajadores" class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Puesto</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sueldo Base</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bonificación</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Asig. Familiar</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sueldo Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaBody" class="divide-y divide-gray-200 bg-white">
+                            <tr><td colspan="7" class="text-center py-8 text-gray-500">Cargando datos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
 
-    <script src="js/menu1.js"></script>
+    <script src="js/menu5.js"></script>
 </body>
 </html>
