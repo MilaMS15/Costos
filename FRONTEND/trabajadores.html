@@ -362,6 +362,7 @@
         </main>
     </div>
 
+    
     <!-- Modal Trabajador -->
     <div class="modal" id="modalTrabajador">
         <div class="modal-content">
@@ -375,6 +376,7 @@
                 <form id="formTrabajador" class="space-y-8">
                     <input type="hidden" id="editandoTrabajador" value="false">
                     
+                    <!-- ========== SECCIÓN 1: INFORMACIÓN PERSONAL ========== -->
                     <div class="space-y-4">
                         <div class="flex items-center gap-3 text-primary">
                             <span class="material-symbols-outlined">person</span>
@@ -415,6 +417,7 @@
                         </div>
                     </div>
 
+                    <!-- ========== SECCIÓN 2: ESTRUCTURA SALARIAL ========== -->
                     <div class="space-y-4 pt-4 border-t border-outline-variant/10">
                         <div class="flex items-center gap-3 text-primary">
                             <span class="material-symbols-outlined">payments</span>
@@ -435,6 +438,25 @@
                             </div>
                         </div>
 
+                        <!-- ✅⬇️⬇️⬇️ AQUÍ DEBES AGREGAR EL CAMPO TIEMPO ⬇️⬇️⬇️✅ -->
+                        
+                        <div class="grid grid-cols-2 gap-6 mt-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">
+                                    ⏱️ Tiempo Total (minutos/mes)
+                                </label>
+                                <input type="number" 
+                                    class="w-full bg-surface-container border-transparent rounded-xl focus:ring-primary focus:border-primary text-sm font-medium py-3 px-4" 
+                                    id="tiempototal_min" 
+                                    value="0" 
+                                    placeholder="Ej: 9600">
+                                <p class="text-[10px] text-secondary mt-1">Minutos totales trabajados al mes</p>
+                            </div>
+                        </div>
+
+                        <!-- ✅⬆️⬆️⬆️ HASTA AQUÍ EL CAMPO NUEVO ⬆️⬆️⬆️✅ -->
+
+                        <!-- Preview del sueldo -->
                         <div id="sueldoPreview" class="hidden bg-[#f3f4f0] p-6 rounded-2xl border border-outline-variant/10">
                             <div class="flex items-center gap-2 mb-4 text-unik-navy">
                                 <span class="material-symbols-outlined text-sm">calculate</span>
@@ -451,7 +473,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modal Asignación -->
     <div class="modal" id="modalAsignacion">
         <div class="modal-content max-w-md">
@@ -577,73 +598,183 @@
             const sueldoBase = parseFloat(document.getElementById('sueldobasico').value) || 0;
             const bonificacion = parseFloat(document.getElementById('bonificacion').value) || 0;
             const asigFamiliar = parseFloat(document.getElementById('asigfamiliar').value) || 0;
+            const tiempoTotal = parseInt(document.getElementById('tiempototal_min').value) || 0;
             
             if (sueldoBase > 0) {
+                const gratificacionJulio = sueldoBase / 24;
+                const gratificacionDiciembre = sueldoBase / 24;
+                const cts = sueldoBase / 12;
                 const sueldo = sueldoBase + bonificacion + asigFamiliar;
                 const essalud = sueldo * 0.09;
-                const gratJulio = sueldoBase / 6;
-                const gratDiciembre = sueldoBase / 6;
-                const cts = sueldoBase / 12;
-                const sueldoTotal = sueldo + essalud + gratJulio + gratDiciembre + cts;
+                const sueldoTotal = sueldo + essalud + gratificacionJulio + gratificacionDiciembre + cts;
+                
+                // Costo por minuto
+                const costoPorMinuto = tiempoTotal > 0 ? sueldoTotal / tiempoTotal : 0;
                 
                 document.getElementById('sueldoPreview').classList.remove('hidden');
                 document.getElementById('sueldoDetalle').innerHTML = `
-                    <div class="grid grid-cols-2 gap-y-1 text-xs">
-                        <span class="text-secondary">Sueldo Bruto:</span> <span class="font-bold text-right">S/. ${sueldo.toFixed(2)}</span>
-                        <span class="text-secondary">Essalud (9%):</span> <span class="font-bold text-right">S/. ${essalud.toFixed(2)}</span>
-                        <span class="text-secondary">Gratificaciones:</span> <span class="font-bold text-right">S/. ${(gratJulio + gratDiciembre).toFixed(2)}</span>
-                        <span class="text-secondary">CTS:</span> <span class="font-bold text-right">S/. ${cts.toFixed(2)}</span>
-                        <div class="col-span-2 border-t border-unik-navy/10 mt-2 pt-2 flex justify-between">
-                            <span class="font-black text-unik-navy uppercase tracking-tighter">Costo Total:</span>
-                            <span class="font-black text-primary text-sm">S/. ${sueldoTotal.toFixed(2)}</span>
+                    <div class="grid grid-cols-2 gap-y-2 text-sm">
+                        <span class="text-secondary">Sueldo Básico:</span>
+                        <span class="font-bold text-right">S/. ${sueldoBase.toFixed(2)}</span>
+                        
+                        <span class="text-secondary">+ Bonificación:</span>
+                        <span class="font-bold text-right">S/. ${bonificacion.toFixed(2)}</span>
+                        
+                        <span class="text-secondary">+ Asignación Familiar:</span>
+                        <span class="font-bold text-right">S/. ${asigFamiliar.toFixed(2)}</span>
+                        
+                        <div class="col-span-2 border-t border-unik-navy/10 mt-1 pt-1"></div>
+                        
+                        <span class="text-secondary font-bold">= Sueldo Base Mensual:</span>
+                        <span class="font-bold text-right text-primary">S/. ${sueldo.toFixed(2)}</span>
+                        
+                        <span class="text-secondary">EsSalud (9%):</span>
+                        <span class="font-bold text-right">S/. ${essalud.toFixed(2)}</span>
+                        
+                        <span class="text-secondary">Gratificación Julio:</span>
+                        <span class="font-bold text-right">S/. ${gratificacionJulio.toFixed(2)}</span>
+                        
+                        <span class="text-secondary">Gratificación Diciembre:</span>
+                        <span class="font-bold text-right">S/. ${gratificacionDiciembre.toFixed(2)}</span>
+                        
+                        <span class="text-secondary">CTS:</span>
+                        <span class="font-bold text-right">S/. ${cts.toFixed(2)}</span>
+                        
+                        <div class="col-span-2 border-t-2 border-primary/30 mt-2 pt-2"></div>
+                        
+                        <span class="font-black text-unik-navy uppercase text-sm">💰 COSTO TOTAL MENSUAL:</span>
+                        <span class="font-black text-primary text-lg">S/. ${sueldoTotal.toFixed(2)}</span>
+                        
+                        ${tiempoTotal > 0 ? `
+                        <div class="col-span-2 bg-primary/10 p-2 rounded-lg mt-2">
+                            <span class="text-secondary text-xs">⏱️ Costo por minuto:</span>
+                            <span class="font-black text-unik-navy float-right">S/. ${costoPorMinuto.toFixed(4)}</span>
                         </div>
+                        ` : ''}
                     </div>
                 `;
             } else {
                 document.getElementById('sueldoPreview').classList.add('hidden');
             }
         }
-
         async function editarTrabajador(codigo) {
+            console.log('Editando trabajador con código:', codigo);
+            
             try {
                 const response = await fetch(`${API_URL}/trabajadores/${codigo}`);
                 const result = await response.json();
-                if (result.success) abrirFormularioTrabajador(result.data);
-            } catch (error) { mostrarToast('Error al buscar trabajador', 'error'); }
+                
+                console.log('Respuesta editar:', result);
+                
+                if (result.success) {
+                    const t = result.data;
+                    
+                    // ✅ Llenar el formulario
+                    document.getElementById('modalTituloTrabajador').textContent = 'Editar Trabajador';
+                    document.getElementById('editandoTrabajador').value = 'true';
+                    document.getElementById('codigotrabajador').value = t.codigotrabajador;
+                    document.getElementById('codigotrabajador').readOnly = true;  // No permitir cambiar código
+                    document.getElementById('apellidosnombres').value = t.apellidosnombres || '';
+                    document.getElementById('puestotrabajo').value = t.puestotrabajo || '';
+                    document.getElementById('tipotrabajo').value = t.tipotrabajo || '';
+                    document.getElementById('productividad').value = t.productividad || 0.85;
+                    document.getElementById('sueldobasico').value = t.sueldobasico || 0;
+                    document.getElementById('bonificacion').value = t.bonificacion || 0;
+                    document.getElementById('asigfamiliar').value = t.asigfamiliar || 0;
+                    
+                    // ✅ Si existe el campo tiempo
+                    if (document.getElementById('tiempototal_min')) {
+                        document.getElementById('tiempototal_min').value = t.tiempototal_min || 0;
+                    }
+                    
+                    // ✅ Actualizar preview
+                    if (typeof calcularSueldoPreview === 'function') {
+                        calcularSueldoPreview();
+                    }
+                    
+                    // ✅ Mostrar modal
+                    document.getElementById('modalTrabajador').classList.add('show');
+                } else {
+                    mostrarToast('Error al cargar trabajador: ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error en editarTrabajador:', error);
+                mostrarToast('Error al cargar los datos del trabajador', 'error');
+            }
         }
 
         async function guardarTrabajador() {
             const editando = document.getElementById('editandoTrabajador').value === 'true';
             const codigo = document.getElementById('codigotrabajador').value;
+            
+            // ✅ Validar que el código sea un número válido
+            const codigoNumero = parseInt(codigo);
+            if (isNaN(codigoNumero)) {
+                mostrarToast('El código debe ser un número válido', 'error');
+                return;
+            }
+            
+            // ✅ Construir datos asegurando tipos correctos
             const datos = {
-                codigotrabajador: parseInt(codigo),
+                codigotrabajador: codigoNumero,  // Enviar como número
                 apellidosnombres: document.getElementById('apellidosnombres').value,
                 puestotrabajo: document.getElementById('puestotrabajo').value,
                 tipotrabajo: document.getElementById('tipotrabajo').value,
                 productividad: parseFloat(document.getElementById('productividad').value) || 0.85,
                 sueldobasico: parseFloat(document.getElementById('sueldobasico').value) || 0,
                 bonificacion: parseFloat(document.getElementById('bonificacion').value) || 0,
-                asigfamiliar: parseFloat(document.getElementById('asigfamiliar').value) || 0
+                asigfamiliar: parseFloat(document.getElementById('asigfamiliar').value) || 0,
+                tiempototal_min: parseInt(document.getElementById('tiempototal_min')?.value) || 0
             };
             
+            // ✅ Validar campos requeridos
             if (!datos.codigotrabajador || !datos.apellidosnombres) {
-                mostrarToast('Código y Nombres son requeridos', 'error'); return;
+                mostrarToast('Código y Nombres son requeridos', 'error');
+                return;
             }
             
+            if (datos.sueldobasico <= 0) {
+                mostrarToast('El sueldo básico debe ser mayor a 0', 'error');
+                return;
+            }
+            
+            console.log('Guardando trabajador:', datos);  // Debug
+            
             try {
-                const url = editando ? `${API_URL}/trabajadores/${codigo}` : `${API_URL}/trabajadores`;
+                let url, method;
+                if (editando) {
+                    url = `${API_URL}/trabajadores/${datos.codigotrabajador}`;  // Usar el número
+                    method = 'PUT';
+                } else {
+                    url = `${API_URL}/trabajadores`;
+                    method = 'POST';
+                }
+                
+                console.log(`Enviando ${method} a ${url}`);
+                
                 const response = await fetch(url, {
-                    method: editando ? 'PUT' : 'POST',
+                    method: method,
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(datos)
                 });
+                
                 const result = await response.json();
+                console.log('Respuesta:', result);
+                
                 if (result.success) {
-                    mostrarToast(editando ? 'Trabajador actualizado' : 'Trabajador creado', 'success');
-                    cerrarModalTrabajador(); cargarTrabajadores();
-                } else mostrarToast('Error: ' + result.error, 'error');
-            } catch (error) { mostrarToast('Error al guardar', 'error'); }
+                    mostrarToast(editando ? '✅ Trabajador actualizado' : '✅ Trabajador creado', 'success');
+                    cerrarModalTrabajador();
+                    cargarTrabajadores();  // Recargar la tabla
+                } else {
+                    mostrarToast('❌ Error: ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error en guardarTrabajador:', error);
+                mostrarToast('Error de conexión al guardar', 'error');
+            }
         }
+
+
 
         async function eliminarTrabajador(codigo) {
             if (confirm('¿Eliminar trabajador?')) {
@@ -742,29 +873,40 @@
         }
 
         function abrirFormularioTrabajador(t = null) {
+            // Resetear formulario
             document.getElementById('formTrabajador').reset();
             document.getElementById('sueldoPreview').classList.add('hidden');
+            document.getElementById('codigotrabajador').readOnly = false;
+            
             if (t) {
+                // Modo edición
                 document.getElementById('modalTituloTrabajador').textContent = 'Editar Trabajador';
                 document.getElementById('editandoTrabajador').value = 'true';
                 document.getElementById('codigotrabajador').value = t.codigotrabajador;
                 document.getElementById('codigotrabajador').readOnly = true;
-                document.getElementById('apellidosnombres').value = t.apellidosnombres;
-                document.getElementById('puestotrabajo').value = t.puestotrabajo;
-                document.getElementById('tipotrabajo').value = t.tipotrabajo;
-                document.getElementById('productividad').value = t.productividad;
-                document.getElementById('sueldobasico').value = t.sueldobasico;
-                document.getElementById('bonificacion').value = t.bonificacion;
-                document.getElementById('asigfamiliar').value = t.asigfamiliar;
+                document.getElementById('apellidosnombres').value = t.apellidosnombres || '';
+                document.getElementById('puestotrabajo').value = t.puestotrabajo || '';
+                document.getElementById('tipotrabajo').value = t.tipotrabajo || '';
+                document.getElementById('productividad').value = t.productividad || 0.85;
+                document.getElementById('sueldobasico').value = t.sueldobasico || 0;
+                document.getElementById('bonificacion').value = t.bonificacion || 0;
+                document.getElementById('asigfamiliar').value = t.asigfamiliar || 0;
+                
+                if (document.getElementById('tiempototal_min')) {
+                    document.getElementById('tiempototal_min').value = t.tiempototal_min || 0;
+                }
+                
                 calcularSueldoPreview();
             } else {
+                // Modo creación
                 document.getElementById('modalTituloTrabajador').textContent = 'Nuevo Trabajador';
                 document.getElementById('editandoTrabajador').value = 'false';
+                document.getElementById('codigotrabajador').value = '';
                 document.getElementById('codigotrabajador').readOnly = false;
             }
+            
             document.getElementById('modalTrabajador').classList.add('show');
         }
-
         function cerrarModalTrabajador() { document.getElementById('modalTrabajador').classList.remove('show'); }
         function cerrarModalAsignacion() { document.getElementById('modalAsignacion').classList.remove('show'); }
         function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = 'login.html'; }

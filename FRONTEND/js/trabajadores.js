@@ -1,360 +1,421 @@
-// Configuración de la API
-// API_URL se toma de config.js
+/**
+ * SISTEMA DE GESTIÓN DE MANO DE OBRA DIRECTA (MOD) - TEXTILCOST
+ * Desarrollado para la gestión automatizada de costos laborales.
+ * Operaciones matemáticas delegadas a la base de datos (Supabase Trigger).
+ */
 
-
-// Elementos del DOM
-let modalTrabajador;
-let modalAsignacion;
-let productoSeleccionadoTiempos = null;
-
-// Inicialización
-document.addEventListener('DOMContentLoaded', function() {
-    modalTrabajador = document.getElementById('modalTrabajador');
-    modalAsignacion = document.getElementById('modalAsignacion');
-    cargarTrabajadores();
-    cargarProductosEnSelectTiempos();
-});
-
-// ============================================
-// FUNCIONES DE PESTAÑAS
-// ============================================
-function cambiarTab(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+document.addEventListener('DOMContentLoaded', () => {
+    // =========================================================================
+    // 🏛️ 1. DECLARACIÓN DE VARIABLES GLOBALES Y ELEMENTOS DEL DOM
+    // =========================================================================
+    const trabajadorForm = document.getElementById('trabajadorForm');
+    const trabajadoresTableBody = document.getElementById('trabajadoresTableBody');
+    const searchInput = document.getElementById('searchInput');
+    const filterPuesto = document.getElementById('filterPuesto');
+    const filterTipo = document.getElementById('filterTipo');
     
-    document.querySelector(`[onclick="cambiarTab('${tab}')"]`).classList.add('active');
-    document.getElementById(`tab-${tab}`).classList.add('active');
-}
+    // Elementos de resumen estadístico en el Dashboard superior
+    const totalTrabajadoresEl = document.getElementById('totalTrabajadores');
+    const costoPlanillaTotalEl = document.getElementById('costoPlanillaTotal');
+    const promedioProductividadEl = document.getElementById('promedioProductividad');
+    const totalMinutosAsignadosEl = document.getElementById('totalMinutosAsignados');
 
-// ============================================
-// FUNCIONES DE TRABAJADORES
-// ============================================
-async function cargarTrabajadores() {
-    try {
-        const response = await fetch(`${API_URL}/trabajadores`);
-        const result = await response.json();
-        
-        if (result.success) {
-            const tbody = document.querySelector('#tablaTrabajadores tbody');
-            tbody.innerHTML = '';
-            
-            result.data.forEach(trabajador => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${trabajador.codigotrabajador || ''}</td>
-                    <td>${trabajador.apellidosnombres || ''}</td>
-                    <td>${trabajador.puestotrabajo || ''}</td>
-                    <td>S/. ${(trabajador.sueldobasico || 0).toFixed(2)}</td>
-                    <td>S/. ${(trabajador.sueldototal || 0).toFixed(2)}</td>
-                    <td>${trabajador.fecharegistro || ''}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarTrabajador('${trabajador.codigotrabajador}')">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarTrabajador('${trabajador.codigotrabajador}')">🗑️</button>
-                    </td>
-                `;
+    // Instancia del Modal de Bootstrap para creación/edición
+    const trabajadorModalEl = document.getElementById('trabajadorModal');
+    let trabajadorModal = null;
+    if (trabajadorModalEl) {
+        trabajadorModal = new bootstrap.Modal(trabajadorModalEl);
+    }
+
+    // Array en memoria para almacenar los trabajadores y permitir filtrado rápido
+    let trabajadoresMasterList = [];
+
+    // Cargar la base de datos de trabajadores al iniciar la página
+    loadTrabajadores();
+
+    // =========================================================================
+    // 💳 2. EVENTOS DEL FORMULARIO Y CONTROLADORES DE ACCIÓN
+    // =========================================================================
+    
+    // Escuchador del envío del formulario (Crear o Editar)
+    if (trabajadorForm) {
+        trabajadorForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validar campos del formulario antes de procesar el JSON
+            if (!validateForm()) {
+                return;
+            }
+
+            const id = document.getElementById('trabajadorId').value;
+            const action = id ? 'editar' : 'crear';
+            const submitBtn = trabajadorForm.querySelector('button[type="submit"]');
+
+            // Bloquear botón para evitar doble envío (Anti-bounce)
+            if (submitBtn) submitBtn.disabled = true;
+
+            // Construcción del objeto JSON con datos numéricos puros (Sin toFixed en el cliente)
+            const trabajadorData = {
+                puestotrabajo: document.getElementById('puestotrabajo').value,
+                tipotrabajo: document.getElementById('tipotrabajo').value,
+                productividad: parseFloat(document.getElementById('productividad').value) || 0.0,
+                tiempototal_min: parseInt(document.getElementById('tiempototal_min').value) || 0,
+                apellidosnombres: document.getElementById('apellidosnombres').value.trim(),
+                sueldobasico: parseFloat(document.getElementById('sueldobasico').value) || 0.0,
+                bonificacion: parseFloat(document.getElementById('bonificacion').value) || 0.0,
+                asigfamiliar: parseFloat(document.getElementById('asigfamiliar').value) || 0.0,
+                proveedr: document.getElementById('proveedr').value.trim() || 'PROPIO'
+            };
+
+            try {
+                let response;
+                if (action === 'crear') {
+                    response = await fetch('/api/trabajadores', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(trabajadorData)
+                    });
+                } else {
+                    response = await fetch(`/api/trabajadores/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(trabajadorData)
+                    });
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(
+                        action === 'crear' ? 'Trabajador registrado correctamente.' : 'Datos actualizados en la base de datos.',
+                        'success'
+                    );
+                    resetTrabajadorForm();
+                    if (trabajadorModal) trabajadorModal.hide();
+                    loadTrabajadores();
+                } else {
+                    showNotification('Error en la base de datos: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                console.error('Error crítico al comunicar con la API:', error);
+                showNotification('Error de red no controlado al intentar guardar.', 'danger');
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // Formatear automáticamente los inputs numéricos cuando el usuario pierde el foco (blur)
+    const numericInputs = ['sueldobasico', 'bonificacion', 'asigfamiliar', 'productividad'];
+    numericInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('blur', (e) => {
+                const val = parseFloat(e.target.value);
+                if (!isNaN(val)) {
+                    e.target.value = val.toFixed(2);
+                }
             });
         }
-    } catch (error) {
-        alert('Error al cargar trabajadores: ' + error.message);
-    }
-}
+    });
 
-function abrirFormularioTrabajador(trabajador = null) {
-    document.getElementById('formTrabajador').reset();
-    document.getElementById('sueldoPreview').style.display = 'none';
+    // =========================================================================
+    // 🧵 3. FUNCIONES DE CARGA Y PROCESAMIENTO ASÍNCRONO (API FETCH)
+    // =========================================================================
     
-    if (trabajador) {
-        document.getElementById('modalTituloTrabajador').textContent = 'Editar Trabajador';
-        document.getElementById('editandoTrabajador').value = 'true';
-        document.getElementById('codigotrabajador').value = trabajador.codigotrabajador;
-        document.getElementById('codigotrabajador').readOnly = true;
+    // Cargar y listar los trabajadores desde el Backend de Flask
+    async function loadTrabajadores() {
+        showTableLoading(true);
+        try {
+            const response = await fetch('/api/trabajadores');
+            const result = await response.json();
+
+            if (result.success) {
+                // Respaldamos la lista completa en memoria para búsquedas en tiempo real
+                trabajadoresMasterList = result.data || [];
+                renderTrabajadoresTable(trabajadoresMasterList);
+                calculateDashboardMetrics(trabajadoresMasterList);
+            } else {
+                showNotification('No se pudo estructurar el listado: ' + result.error, 'warning');
+            }
+        } catch (error) {
+            console.error('Error al realizar fetch en /api/trabajadores:', error);
+            showNotification('Error de conexión con el servidor de costos.', 'danger');
+        } finally {
+            showTableLoading(false);
+        }
+    }
+
+    // =========================================================================
+    // 🧮 4. RENDERIZADO DINÁMICO DE LA TABLA Y DASHBOARD (SOLUCIÓN)
+    // =========================================================================
+    
+    // Construir el cuerpo de la tabla aplicando los filtros activos
+    function renderTrabajadoresTable(data) {
+        if (!trabajadoresTableBody) return;
+        trabajadoresTableBody.innerHTML = '';
+
+        if (data.length === 0) {
+            trabajadoresTableBody.innerHTML = `
+                <tr>
+                    <td colspan="17" class="text-center text-muted py-4">
+                        <i class="fas fa-folder-open mr-2"></i>No se encontraron registros de personal en el sistema.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach(trabajador => {
+            const tr = document.createElement('tr');
+
+            // EXTRACCIÓN DIRECTA DESDE SUPABASE (Evitamos operaciones matemáticas redundantes en JS)
+            const sueldoBasico = parseFloat(trabajador.sueldobasico) || 0.0;
+            const bonificacion = parseFloat(trabajador.bonificacion) || 0.0;
+            const asigFamiliar = parseFloat(trabajador.asigfamiliar) || 0.0;
+            const gratificacionJulio = parseFloat(trabajador.gratificacionjulio) || 0.0;
+            const gratificacionDiciembre = parseFloat(trabajador.gratificaciondiciembre) || 0.0;
+            const cts = parseFloat(trabajador.cts) || 0.0;
+            const sueldoBruto = parseFloat(trabajador.sueldo) || 0.0;
+            const essalud = parseFloat(trabajador.essalud) || 0.0;
+            const sueldoTotal = parseFloat(trabajador.sueldototal) || 0.0;
+
+            // Renderizamos los valores exactos calculados por el Trigger SQL
+            tr.innerHTML = `
+                <td><code>${trabajador.codigo_trabajador || trabajador.id || 'N/A'}</code></td>
+                <td><strong>${trabajador.apellidosnombres || 'Sin nombre'}</strong></td>
+                <td><span class="badge badge-light text-dark border">${trabajador.puestotrabajo || ''}</span></td>
+                <td><span class="badge badge-secondary">${trabajador.tipotrabajo || ''}</span></td>
+                <td class="text-center text-info font-weight-bold">${trabajador.productividad || '0.00'}</td>
+                <td class="text-center">${trabajador.tiempototal_min || 0} min</td>
+                <td>S/. ${sueldoBasico.toFixed(2)}</td>
+                <td>S/. ${bonificacion.toFixed(2)}</td>
+                <td>S/. ${asigFamiliar.toFixed(2)}</td>
+                <td>S/. ${gratificacionJulio.toFixed(2)}</td>
+                <td>S/. ${gratificacionDiciembre.toFixed(2)}</td>
+                <td>S/. ${cts.toFixed(2)}</td>
+                <td class="font-weight-bold text-primary bg-light">S/. ${sueldoBruto.toFixed(2)}</td>
+                <td>S/. ${essalud.toFixed(2)}</td>
+                <td class="font-weight-bold text-white bg-success">S/. ${sueldoTotal.toFixed(2)}</td>
+                <td><small class="text-muted">${trabajador.proveedr || 'PROPIO'}</small></td>
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button class="btn btn-warning btn-edit" title="Editar ficha de costos">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-delete" title="Dar de baja en planilla">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+
+            // Asignación de manejadores de eventos con Scope de objeto directo
+            tr.querySelector('.btn-edit').addEventListener('click', () => prepareEditForm(trabajador));
+            tr.querySelector('.btn-delete').addEventListener('click', () => executeDeleteTrabajador(trabajador.codigo_trabajador || trabajador.id));
+
+            trabajadoresTableBody.appendChild(tr);
+        });
+    }
+
+    // Calcular y renderizar las tarjetas métricas en el Dashboard superior
+    function calculateDashboardMetrics(data) {
+        if (!totalTrabajadoresEl || !costoPlanillaTotalEl || !promedioProductividadEl || !totalMinutosAsignadosEl) return;
+
+        const count = data.length;
+        if (count === 0) {
+            totalTrabajadoresEl.textContent = '0';
+            costoPlanillaTotalEl.textContent = 'S/. 0.00';
+            promedioProductividadEl.textContent = '0.00%';
+            totalMinutosAsignadosEl.textContent = '0 min';
+            return;
+        }
+
+        let sumaPlanillaTotal = 0.0;
+        let sumaProductividad = 0.0;
+        let sumaMinutos = 0;
+
+        data.forEach(t => {
+            sumaPlanillaTotal += parseFloat(t.sueldototal) || 0.0;
+            sumaProductividad += parseFloat(t.productividad) || 0.0;
+            sumaMinutos += parseInt(t.tiempototal_min) || 0;
+        });
+
+        const promedioProd = sumaProductividad / count;
+
+        // Actualizar indicadores visuales
+        totalTrabajadoresEl.textContent = count.toString();
+        costoPlanillaTotalEl.textContent = `S/. ${sumaPlanillaTotal.toFixed(2)}`;
+        promedioProductividadEl.textContent = `${(promedioProd * 100).toFixed(0)}%`;
+        totalMinutosAsignadosEl.textContent = `${sumaMinutos} min`;
+    }
+
+    // =========================================================================
+    // 🛠️ 5. EDICIÓN, ELIMINACIÓN Y GESTIÓN DE INTERFAZ MODAL
+    // =========================================================================
+    
+    // Cargar los datos de la fila dentro del formulario y abrir el modal
+    function prepareEditForm(trabajador) {
+        if (!trabajadorForm) return;
+
+        document.getElementById('trabajadorId').value = trabajador.codigo_trabajador || trabajador.id;
+        document.getElementById('puestotrabajo').value = trabajador.puestotrabajo || '';
+        document.getElementById('tipotrabajo').value = trabajador.tipotrabajo || '';
+        document.getElementById('productividad').value = (parseFloat(trabajador.productividad) || 0.0).toFixed(2);
+        document.getElementById('tiempototal_min').value = trabajador.tiempototal_min || 0;
         document.getElementById('apellidosnombres').value = trabajador.apellidosnombres || '';
-        document.getElementById('puestotrabajo').value = trabajador.puestotrabajo || 'Cortador';
-        document.getElementById('tipotrabajo').value = trabajador.tipotrabajo || 'MOD';
-        document.getElementById('productividad').value = trabajador.productividad || 0.85;
-        document.getElementById('sueldobasico').value = trabajador.sueldobasico || 0;
-        document.getElementById('bonificacion').value = trabajador.bonificacion || 0;
-        document.getElementById('asigfamiliar').value = trabajador.asigfamiliar || 0;
-        
-        calcularSueldoPreview();
-    } else {
-        document.getElementById('modalTituloTrabajador').textContent = 'Nuevo Trabajador';
-        document.getElementById('editandoTrabajador').value = 'false';
-        document.getElementById('codigotrabajador').readOnly = false;
-    }
-    
-    modalTrabajador.classList.add('show');
-}
+        document.getElementById('sueldobasico').value = (parseFloat(trabajador.sueldobasico) || 0.0).toFixed(2);
+        document.getElementById('bonificacion').value = (parseFloat(trabajador.bonificacion) || 0.0).toFixed(2);
+        document.getElementById('asigfamiliar').value = (parseFloat(trabajador.asigfamiliar) || 0.0).toFixed(2);
+        document.getElementById('proveedr').value = trabajador.proveedr || 'PROPIO';
 
-function cerrarModalTrabajador() {
-    modalTrabajador.classList.remove('show');
-}
-
-function calcularSueldoPreview() {
-    const sueldoBase = parseFloat(document.getElementById('sueldobasico').value) || 0;
-    const bonificacion = parseFloat(document.getElementById('bonificacion').value) || 0;
-    const asigFamiliar = parseFloat(document.getElementById('asigfamiliar').value) || 0;
-    
-    if (sueldoBase > 0) {
-        const sueldo = sueldoBase + bonificacion + asigFamiliar;
-        const essalud = sueldo * 0.09;
-        const gratificacionJulio = sueldoBase / 6;
-        const gratificacionDiciembre = sueldoBase / 6;
-        const cts = sueldoBase / 12;
-        const sueldoTotal = sueldo + essalud + gratificacionJulio + gratificacionDiciembre + cts;
+        // Modificar el encabezado del modal y botón de acción
+        const modalTitle = document.getElementById('trabajadorModalLabel');
+        if (modalTitle) modalTitle.innerHTML = `<i class="fas fa-user-edit mr-2 text-warning"></i>Editar Ficha Laboral`;
         
-        document.getElementById('sueldoPreview').style.display = 'block';
-        document.getElementById('sueldoDetalle').innerHTML = `
-            <p>Sueldo Base + Bonif. + Asig. Familiar: <strong>S/. ${sueldo.toFixed(2)}</strong></p>
-            <p>Essalud (9%): <strong>S/. ${essalud.toFixed(2)}</strong></p>
-            <p>Gratificación Julio: <strong>S/. ${gratificacionJulio.toFixed(2)}</strong></p>
-            <p>Gratificación Diciembre: <strong>S/. ${gratificacionDiciembre.toFixed(2)}</strong></p>
-            <p>CTS: <strong>S/. ${cts.toFixed(2)}</strong></p>
-            <hr>
-            <p style="font-size: 1.2rem;">SUELDO TOTAL: <strong style="color: #667eea;">S/. ${sueldoTotal.toFixed(2)}</strong></p>
-        `;
-    } else {
-        document.getElementById('sueldoPreview').style.display = 'none';
-    }
-}
-
-async function editarTrabajador(codigo) {
-    try {
-        const response = await fetch(`${API_URL}/trabajadores/${codigo}`);
-        const result = await response.json();
-        
-        if (result.success) {
-            abrirFormularioTrabajador(result.data);
+        const submitBtn = trabajadorForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.className = 'btn btn-warning';
+            submitBtn.innerHTML = `<i class="fas fa-save mr-2"></i>Actualizar Datos`;
         }
-    } catch (error) {
-        alert('Error al buscar trabajador');
-    }
-}
 
-async function guardarTrabajador() {
-    const editando = document.getElementById('editandoTrabajador').value === 'true';
-    const codigo = document.getElementById('codigotrabajador').value;
-    
-    const datos = {
-        codigotrabajador: parseInt(codigo),
-        apellidosnombres: document.getElementById('apellidosnombres').value,
-        puestotrabajo: document.getElementById('puestotrabajo').value,
-        tipotrabajo: document.getElementById('tipotrabajo').value,
-        productividad: parseFloat(document.getElementById('productividad').value) || 0.85,
-        sueldobasico: parseFloat(document.getElementById('sueldobasico').value) || 0,
-        bonificacion: parseFloat(document.getElementById('bonificacion').value) || 0,
-        asigfamiliar: parseFloat(document.getElementById('asigfamiliar').value) || 0
-    };
-    
-    if (!datos.codigotrabajador || !datos.apellidosnombres) {
-        alert('Código y Nombres son campos requeridos');
-        return;
+        if (trabajadorModal) trabajadorModal.show();
     }
-    
-    try {
-        const url = editando ? `${API_URL}/trabajadores/${codigo}` : `${API_URL}/trabajadores`;
-        const method = editando ? 'PUT' : 'POST';
-        
-        const response = await fetch(url, {
-            method: method,
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(datos)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert(editando ? 'Trabajador actualizado' : 'Trabajador creado');
-            cerrarModalTrabajador();
-            cargarTrabajadores();
-        } else {
-            alert('Error: ' + result.error);
-        }
-    } catch (error) {
-        alert('Error al guardar: ' + error.message);
-    }
-}
 
-async function eliminarTrabajador(codigo) {
-    if (confirm('¿Está seguro de eliminar este trabajador?')) {
-        try {
-            const response = await fetch(`${API_URL}/trabajadores/${codigo}`, {
-                method: 'DELETE'
-            });
-            const result = await response.json();
-            
-            if (result.success) {
-                alert('Trabajador eliminado');
-                cargarTrabajadores();
-            } else {
-                alert('Error: ' + result.error);
+    // Eliminar un trabajador de la planilla
+    async function executeDeleteTrabajador(id) {
+        if (!id) return;
+        
+        if (confirm('🚨 ¿Está completamente seguro de dar de BAJA a este trabajador del sistema de costos?\nEsta acción alterará el cálculo del MOD unitario.')) {
+            try {
+                const response = await fetch(`/api/trabajadores/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('Trabajador removido de la planilla industrial.', 'success');
+                    loadTrabajadores();
+                } else {
+                    showNotification('Error al eliminar registro: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                console.error('Error de red en la baja de trabajador:', error);
+                showNotification('Error de comunicación al procesar la baja.', 'danger');
             }
-        } catch (error) {
-            alert('Error al eliminar: ' + error.message);
         }
     }
-}
 
-// ============================================
-// FUNCIONES DE TIEMPOS POR PRODUCTO
-// ============================================
-async function cargarProductosEnSelectTiempos() {
-    try {
-        const response = await fetch(`${API_URL}/productos`);
-        const result = await response.json();
-        
-        if (result.success) {
-            const select = document.getElementById('productoSelectTiempos');
-            select.innerHTML = '<option value="">-- Seleccione un producto --</option>';
-            
-            result.data.forEach(producto => {
-                select.innerHTML += `<option value="${producto.codigoproducto}">${producto.codigoproducto} - ${producto.producto}</option>`;
-            });
+    // =========================================================================
+    // 🔍 6. BUSCADORES, FILTROS Y VALIDACIONES EN TIEMPO REAL
+    // =========================================================================
+    
+    // Filtros combinados (Buscador general por Nombre + Puesto + Tipo de trabajo)
+    function applyCombinedFilters() {
+        const searchText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const puestoValue = filterPuesto ? filterPuesto.value : '';
+        const tipoValue = filterTipo ? filterTipo.value : '';
+
+        const filteredList = trabajadoresMasterList.filter(t => {
+            const matchesSearch = (t.apellidosnombres || '').toLowerCase().includes(searchText) || 
+                                  (t.codigo_trabajador || '').toString().includes(searchText);
+            const matchesPuesto = puestoValue === '' || t.puestotrabajo === puestoValue;
+            const matchesTipo = tipoValue === '' || t.tipotrabajo === tipoValue;
+
+            return matchesSearch && matchesPuesto && matchesTipo;
+        });
+
+        renderTrabajadoresTable(filteredList);
+    }
+
+    // Listeners para los inputs de búsqueda y filtros adaptativos
+    if (searchInput) searchInput.addEventListener('input', applyCombinedFilters);
+    if (filterPuesto) filterPuesto.addEventListener('change', applyCombinedFilters);
+    if (filterTipo) filterTipo.addEventListener('change', applyCombinedFilters);
+
+    // Limpieza e inicialización completa del formulario al cerrar el modal
+    function resetTrabajadorForm() {
+        if (!trabajadorForm) return;
+        trabajadorForm.reset();
+        document.getElementById('trabajadorId').value = '';
+
+        const modalTitle = document.getElementById('trabajadorModalLabel');
+        if (modalTitle) modalTitle.innerHTML = `<i class="fas fa-user-plus mr-2 text-success"></i>Registrar Nuevo Trabajador`;
+
+        const submitBtn = trabajadorForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.className = 'btn btn-success';
+            submitBtn.innerHTML = `<i class="fas fa-plus mr-2"></i>Registrar Colaborador`;
         }
-    } catch (error) {
-        alert('Error al cargar productos: ' + error.message);
     }
-}
 
-async function cargarTiempos() {
-    const codigoProducto = document.getElementById('productoSelectTiempos').value;
-    
-    if (!codigoProducto) {
-        document.querySelector('#tablaTiempos tbody').innerHTML = '';
-        return;
+    // Listener para resetear el formulario si el modal se cierra por cualquier vía
+    if (trabajadorModalEl) {
+        trabajadorModalEl.addEventListener('hidden.bs.modal', resetTrabajadorForm);
     }
-    
-    productoSeleccionadoTiempos = {
-        codigo: codigoProducto,
-        nombre: document.getElementById('productoSelectTiempos').selectedOptions[0].text.split(' - ')[1]
-    };
-    
-    try {
-        // Cargar tiempos
-        const responseTiempos = await fetch(`${API_URL}/recetas-mo?codigoproducto=${codigoProducto}`);
-        const resultTiempos = await responseTiempos.json();
-        
-        // Cargar trabajadores para obtener eficiencia
-        const responseTrab = await fetch(`${API_URL}/trabajadores`);
-        const resultTrab = await responseTrab.json();
-        
-        if (resultTiempos.success) {
-            const tbody = document.querySelector('#tablaTiempos tbody');
-            tbody.innerHTML = '';
-            
-            resultTiempos.data.forEach(tiempo => {
-                const trabajador = resultTrab.success 
-                    ? resultTrab.data.find(t => t.codigotrabajador == tiempo.codigotrabajador)
-                    : null;
-                
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${tiempo.codigotrabajador || ''}</td>
-                    <td>${trabajador ? trabajador.puestotrabajo : 'N/A'}</td>
-                    <td>${tiempo.tiempotrabajo || ''}</td>
-                    <td>${trabajador ? (trabajador.productividad * 100).toFixed(1) + '%' : 'N/A'}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarAsignacion('${tiempo.codigotrabajador}')">🗑️</button>
+
+    // Validaciones preventivas de negocio (Evitar registros basura)
+    function validateForm() {
+        const nombres = document.getElementById('apellidosnombres').value.trim();
+        const sueldoBasico = parseFloat(document.getElementById('sueldobasico').value) || 0;
+        const productividad = parseFloat(document.getElementById('productividad').value) || 0;
+
+        if (nombres.length < 5) {
+            alert('Por favor, ingrese el nombre completo del colaborador (mínimo 5 caracteres).');
+            return false;
+        }
+        if (sueldoBasico <= 0) {
+            alert('El Sueldo Básico ingresado debe ser una cantidad industrial mayor a S/. 0.00.');
+            return false;
+        }
+        if (productividad < 0 || productividad > 2.0) {
+            alert('El factor de productividad debe encontrarse en un rango lógico entre 0.00 y 2.00.');
+            return false;
+        }
+        return true;
+    }
+
+    // Helper para mostrar un spinner de carga en la tabla HTML
+    function showTableLoading(show) {
+        if (!trabajadoresTableBody) return;
+        if (show) {
+            trabajadoresTableBody.innerHTML = `
+                <tr>
+                    <td colspan="17" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Sincronizando con Supabase ERP...</span>
+                        </div>
+                        <p class="text-muted mt-2 mb-0">Consultando base de datos laboral en tiempo real...</p>
                     </td>
-                `;
-            });
+                </tr>
+            `;
         }
-    } catch (error) {
-        alert('Error al cargar tiempos: ' + error.message);
     }
-}
 
-async function asignarTrabajador() {
-    if (!productoSeleccionadoTiempos) {
-        alert('Primero seleccione un producto');
-        return;
-    }
-    
-    // Cargar trabajadores en el select
-    try {
-        const response = await fetch(`${API_URL}/trabajadores`);
-        const result = await response.json();
+    // Helper de notificaciones flotantes temporales de Bootstrap
+    function showNotification(message, type = 'info') {
+        const alertBox = document.createElement('div');
+        alertBox.className = `alert alert-${type} alert-dismissible fade show`;
+        alertBox.role = 'alert';
+        alertBox.style.position = 'fixed';
+        alertBox.style.top = '20px';
+        alertBox.style.right = '20px';
+        alertBox.style.zIndex = '9999';
+        alertBox.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
         
-        if (result.success) {
-            const select = document.getElementById('trabajadorSelect');
-            select.innerHTML = '';
-            
-            result.data.forEach(trabajador => {
-                select.innerHTML += `<option value="${trabajador.codigotrabajador}">${trabajador.codigotrabajador} - ${trabajador.apellidosnombres} (${trabajador.puestotrabajo})</option>`;
-            });
-        }
-    } catch (error) {
-        alert('Error al cargar trabajadores');
-        return;
-    }
-    
-    document.getElementById('formAsignacion').reset();
-    modalAsignacion.classList.add('show');
-}
+        alertBox.innerHTML = `
+            ${type === 'success' ? '<i class="fas fa-check-circle mr-2"></i>' : '<i class="fas fa-exclamation-circle mr-2"></i>'}
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        `;
 
-function cerrarModalAsignacion() {
-    modalAsignacion.classList.remove('show');
-}
+        document.body.appendChild(alertBox);
 
-async function guardarAsignacion() {
-    const trabajadorSelect = document.getElementById('trabajadorSelect');
-    const tiempo = document.getElementById('tiempotrabajo').value;
-    
-    if (!trabajadorSelect.value || !tiempo) {
-        alert('Complete todos los campos');
-        return;
+        // Auto-eliminar la notificación a los 4 segundos
+        setTimeout(() => {
+            $(alertBox).alert('close');
+        }, 4000);
     }
-    
-    const datos = {
-        codigoproducto: parseInt(productoSeleccionadoTiempos.codigo),
-        producto: productoSeleccionadoTiempos.nombre,
-        codigotrabajador: parseInt(trabajadorSelect.value),
-        tiempotrabajo: parseFloat(tiempo)
-    };
-    
-    try {
-        const response = await fetch(`${API_URL}/recetas-mo`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(datos)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert('Trabajador asignado correctamente');
-            cerrarModalAsignacion();
-            cargarTiempos();
-        } else {
-            alert('Error: ' + result.error);
-        }
-    } catch (error) {
-        alert('Error al guardar: ' + error.message);
-    }
-}
-
-async function eliminarAsignacion(codigoTrabajador) {
-    if (confirm('¿Eliminar esta asignación?')) {
-        try {
-            const response = await fetch(`${API_URL}/recetas-mo/${codigoTrabajador}`, {
-                method: 'DELETE'
-            });
-            const result = await response.json();
-            
-            if (result.success) {
-                alert('Asignación eliminada');
-                cargarTiempos();
-            } else {
-                alert('Error: ' + result.error);
-            }
-        } catch (error) {
-            alert('Error al eliminar: ' + error.message);
-        }
-    }
-}
-
-// Cerrar modales al hacer clic fuera
-window.onclick = function(event) {
-    if (event.target === modalTrabajador) cerrarModalTrabajador();
-    if (event.target === modalAsignacion) cerrarModalAsignacion();
-}
+});

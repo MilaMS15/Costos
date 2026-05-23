@@ -23,72 +23,76 @@
                     <span class="material-symbols-outlined text-[#FF9F1C]">storefront</span>
                     Catálogo Comercial & Cotizador
                 </h1>
-                <p class="text-gray-500 text-sm">Selecciona nuestros productos exclusivos y gestiona tu orden de compra en vivo.</p>
+                <p class="text-gray-400 text-sm mt-1">Simulador de Pedidos Mayoristas con Estructura de Costos Industriales por Absorción.</p>
             </div>
-            <button onclick="toggleCarrito()" class="bg-[#1B263B] hover:bg-[#2c3d5e] text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 relative transition-all shadow-md">
-                <span class="material-symbols-outlined">shopping_cart</span>
-                <span>Mi Carrito</span>
-                <span id="contadorCarrito" class="absolute -top-2 -right-2 bg-[#FF9F1C] text-white text-xs font-black rounded-full h-6 w-6 flex items-center justify-center border-2 border-white">0</span>
+            
+            <button onclick="toggleCarrito()" class="relative bg-[#1B263B] text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:bg-[#2C3E50] transition-all">
+                <span class="material-symbols-outlined text-lg">shopping_cart</span>
+                Ver Pedido
+                <span id="contadorCarrito" class="absolute -top-2 -right-2 bg-[#FF9F1C] text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-black border-2 border-white">0</span>
             </button>
         </div>
 
-        <div id="contenedorProductos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            </div>
-    </main>
-
-    <div id="modalFicha" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl transform scale-95 transition-transform duration-300">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 id="fichaNombre" class="text-xl font-bold text-gray-900">Ficha Técnica</h3>
-                <button onclick="cerrarModalFicha()" class="text-gray-400 hover:text-gray-600">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div class="space-y-4">
-                <div class="flex justify-center bg-gray-50 rounded-xl p-4">
-                    <img id="fichaImagen" src="" alt="Producto" class="h-48 object-contain rounded-lg">
+                <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+                    <h3 class="font-bold text-gray-800 text-sm flex items-center gap-2 border-b pb-3 mb-3">
+                        <span class="material-symbols-outlined text-emerald-500">verified_user</span>
+                        Condiciones de Fábrica (UNI)
+                    </h3>
+                    <ul class="space-y-3 text-xs text-gray-500">
+                        <li class="flex items-start gap-2">
+                            <span class="material-symbols-outlined text-amber-500 text-base shrink-0">info</span>
+                            <span><strong>Pedido Mínimo (MOQ):</strong> 100 unidades por modelo.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="material-symbols-outlined text-blue-500 text-base shrink-0">package_2</span>
+                            <span><strong>Lotes de Producción:</strong> Múltiplos cerrados de 50 unidades.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="material-symbols-outlined text-purple-500 text-base shrink-0">percent</span>
+                            <span><strong>Estructura de Precios:</strong> Costo Absorbido + 10% Utilidad + 18% IGV Corporativo.</span>
+                        </li>
+                    </ul>
                 </div>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div class="bg-gray-50 p-3 rounded-xl">
-                        <span class="block text-xs text-gray-400 font-bold uppercase">Código PT</span>
-                        <span id="fichaCodigo" class="font-bold text-gray-800">-</span>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div id="productosContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
+                        <div class="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-[#FF9F1C] mb-3"></div>
+                        <p class="font-medium text-sm">Conectando con Supabase y calculando costos...</p>
                     </div>
-                    <div class="bg-gray-50 p-3 rounded-xl">
-                        <span class="block text-xs text-gray-400 font-bold uppercase">Precio Unitario</span>
-                        <span id="fichaPrecio" class="font-black text-primary text-emerald-600">-</span>
-                    </div>
-                </div>
-                <div>
-                    <span class="block text-xs text-gray-400 font-bold uppercase mb-1">Descripción Comercial</span>
-                    <p id="fichaDescripcion" class="text-gray-600 text-sm bg-gray-50 p-3 rounded-xl leading-relaxed">-</p>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <div id="panelCarrito" class="fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
-        <div class="p-6 border-b flex justify-between items-center bg-[#1B263B] text-white">
-            <h3 class="text-lg font-bold flex items-center gap-2">
-                <span class="material-symbols-outlined">shopping_basket</span> Resumen del Pedido
-            </h3>
-            <button onclick="toggleCarrito()" class="text-gray-300 hover:text-white">
+    <div id="panelCarrito" class="fixed inset-y-0 right-0 w-96 bg-gray-50 shadow-2xl border-l border-gray-100 z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
+        <div class="p-5 border-b bg-white flex justify-between items-center">
+            <h2 class="font-bold text-gray-800 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#FF9F1C]">shopping_bag</span>
+                Resumen de Orden
+            </h2>
+            <button onclick="toggleCarrito()" class="text-gray-400 hover:text-gray-600">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-        
-        <div id="listaCarrito" class="flex-1 overflow-y-auto p-6 space-y-4 divide-y divide-gray-100">
-            </div>
 
-        <div class="p-6 border-t bg-gray-50 space-y-4">
-            <div class="flex justify-between items-center text-lg font-black text-gray-900 mb-2">
-                <span>Total a Pagar:</span>
-                <span id="totalCarrito">S/. 0.00</span>
+        <div id="listaCarrito" class="p-5 overflow-y-auto flex-1 divide-y space-y-1">
+            <p class="text-center text-gray-400 text-xs py-8">No hay requerimientos en la lista.</p>
+        </div>
+
+        <div class="p-5 bg-white border-t space-y-4">
+            <div class="flex justify-between items-center font-black text-gray-900 text-base">
+                <span>Total Cotizado (c/IGV):</span>
+                <span id="totalCarrito" class="text-emerald-600">S/. 0.00</span>
             </div>
             
-            <form id="formCheckout" onsubmit="procesarOrdenCompra(e)" class="space-y-3">
-                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Datos del Cliente Facturación</h4>
-                <input type="text" id="cliNombre" required placeholder="Nombre Completo / Razón Social" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-sm">
-                <input type="email" id="cliCorreo" required placeholder="Correo Electrónico" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-sm">
+            <form id="formCheckout" class="space-y-3 pt-2">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Datos del Cliente Mayorista</h4>
+                <input type="text" id="cliNombre" required placeholder="Razón Social / Nombre" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-sm focus:outline-none focus:border-[#FF9F1C]">
+                <input type="email" id="cliCorreo" required placeholder="Correo Electrónico" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-sm focus:outline-none focus:border-[#FF9F1C]">
                 
                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider pt-2">Pasarela de Pago (Simulada)</h4>
                 <div class="bg-white border border-gray-200 rounded-xl p-3 space-y-2 shadow-inner">
@@ -100,9 +104,27 @@
                 </div>
                 
                 <button type="submit" class="w-full mt-4 bg-[#FF9F1C] hover:bg-[#e08a10] text-white p-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined">lock</span> Confirmar y Cargar Orden
+                    <span class="material-symbols-outlined text-sm">lock</span>
+                    Procesar Requerimiento e Inyectar Kardex
                 </button>
             </form>
+        </div>
+    </div>
+
+    <div id="modalFicha" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full mx-4 shadow-xl relative">
+            <button onclick="cerrarModalFicha()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="flex flex-col items-center">
+                <div class="w-32 h-32 bg-gray-50 rounded-2xl overflow-hidden mb-4 border flex items-center justify-center">
+                    <img id="fichaImagen" src="" alt="Prenda" class="h-full w-full object-cover">
+                </div>
+                <h3 id="fichaNombre" class="font-black text-gray-800 text-lg">Polo Camisero Rip</h3>
+                <span id="fichaCodigo" class="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md mt-1">COD PT: 21001</span>
+                <div id="fichaPrecio" class="text-xl font-extrabold text-emerald-600 mt-2">S/. 0.00</div>
+                <p id="fichaDescripcion" class="text-xs text-gray-500 text-center mt-3 leading-relaxed border-t pt-3">Cargando especificaciones...</p>
+            </div>
         </div>
     </div>
 

@@ -1,13 +1,16 @@
+from unittest import result
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from ia_service import register_ia_routes
 from flask import send_from_directory
 from servicios import (
-    MaterialesService, PersonalService, ProductoService,
+    CIFMensualService, MaterialesService, PersonalService, ProductoService,
     CIFService, GAService, GVService, MODService,
     RecetaProductoService, RecetaManoObraService,
     OrdenTrabajoService, OrdenMaterialesService, 
     OrdenManoObraService, OrdenCIFService  # ← NUEVOS
+    
 )
 from menu1_backend import register_menu1_routes
 from menu2_backend import register_menu2_routes
@@ -16,10 +19,30 @@ from menu4_backend import register_menu4_routes
 from menu5_backend import register_menu5_routes
 from menu6_backend import register_menu6_routes
 from menu7_backend import register_menu7_routes
-from datetime import date
+from datetime import date, datetime
 from database import SupabaseBrain  # ← Agregar esta línea
 import traceback
-app = Flask(__name__)
+import os
+# ✅ Crear el cliente de Supabase correctamente
+try:
+    supabase_client = SupabaseBrain.get_client()
+    print("✅ Conexión a Supabase establecida correctamente")
+except Exception as e:
+    print(f"❌ Error al conectar a Supabase: {e}")
+    supabase_client = None
+
+
+# Configuramos las rutas absolutas para no perder el rastro del FRONTEND
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'FRONTEND'))
+
+# Inicializamos Flask apuntando nativamente a la carpeta static dentro de FRONTEND
+app = Flask(
+    __name__, 
+    static_folder=os.path.join(FRONTEND_DIR, 'static'),
+    static_url_path='/static'
+)
+
 CORS(app)
 
 # ============================================
@@ -57,7 +80,7 @@ def info_api():
             'recetas_mo': {
                 'GET': '/api/recetas-mo?codigoproducto=ID',
                 'POST': '/api/recetas-mo',
-                'DELETE': '/api/recetas-mo/<codigo_trabajador>'
+                'DELETE': '/api/recetas-mo/<codigotrabajador>'
             }
         }
     })
@@ -200,6 +223,9 @@ def api_eliminar_receta_producto(codigo):
 @app.route('/api/trabajadores', methods=['GET'])
 def api_trabajadores():
     try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'No hay conexión a Supabase'}), 500
+        
         trabajadores = PersonalService.listar_todo()
         return jsonify({'success': True, 'data': trabajadores})
     except Exception as e:
@@ -216,113 +242,159 @@ def api_obtener_trabajador(codigo):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/trabajadores', methods=['POST'])
-def api_crear_trabajador():
+def crear_trabajador():
     try:
-        datos = request.json
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'No hay conexión a Supabase'}), 500
+            
+        data = request.json
+        sueldobasico = float(data.get('sueldobasico', 0))
+        bonificacion = float(data.get('bonificacion', 0))
+        asigfamiliar = float(data.get('asigfamiliar', 0))
         
-        # Calcular sueldo total
-        sueldo_base = float(datos.get('sueldobasico', 0))
-        bonificacion = float(datos.get('bonificacion', 0))
-        asig_familiar = float(datos.get('asigfamiliar', 0))
-        sueldo = sueldo_base + bonificacion + asig_familiar
-        sueldo_total = sueldo + (sueldo * 0.09) + (sueldo_base / 6 * 2) + (sueldo_base / 12)
+        # Fórmula correcta
+        gratificacionjulio = sueldobasico / 24.0
+        gratificaciondiciembre = sueldobasico / 24.0
+        cts = sueldobasico / 12.0
+        sueldo = sueldobasico + bonificacion + asigfamiliar
+        essalud = sueldo * 0.09
+        sueldototal = sueldo + essalud + gratificacionjulio + gratificaciondiciembre + cts
         
-        # Datos para insertar
-        datos_completos = {
-            **datos,
-            'sueldo': sueldo,
-            'essalud': sueldo * 0.09,
-            'gratificacionjulio': sueldo_base / 6,
-            'gratificaciondiciembre': sueldo_base / 6,
-            'cts': sueldo_base / 12,
-            'sueldototal': sueldo_total,
-            'fecharegistro': date.today().isoformat()
-        }
-        
-        # Insertar en ambas tablas
-        resultado_personal = PersonalService.insertar(datos_completos)
-        
-        # Insertar en MOD
-        MODService.insertar({
-            'codigotrabajador': datos['codigotrabajador'],
-            'puestotrabajo': datos.get('puestotrabajo', ''),
-            'sueldototal': sueldo_total
-        })
-        
-        return jsonify({'success': True, 'data': resultado_personal}), 201
-        
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({
-            'success': False, 
-            'error': f'Error al crear trabajador: {str(e)}'
-        }), 500
-    
-@app.route('/api/trabajadores/<codigo>', methods=['PUT'])
-def api_actualizar_trabajador(codigo):
-    try:
-        datos = request.json
-        codigo_int = int(codigo)
-        
-        # Calcular sueldo total
-        sueldo_base = float(datos.get('sueldobasico', 0))
-        bonificacion = float(datos.get('bonificacion', 0))
-        asig_familiar = float(datos.get('asigfamiliar', 0))
-        sueldo = sueldo_base + bonificacion + asig_familiar
-        sueldo_total = sueldo + (sueldo * 0.09) + (sueldo_base / 6 * 2) + (sueldo_base / 12)
-        
-        # ⭐ DATOS PARA tablapersonal (INCLUYE productividad)
-        datos_personal = {
-            'apellidosnombres': datos.get('apellidosnombres'),
-            'puestotrabajo': datos.get('puestotrabajo'),
-            'tipotrabajo': datos.get('tipotrabajo'),
-            'productividad': float(datos.get('productividad', 0.85)),
-            'sueldobasico': sueldo_base,
+        res = supabase_client.table('tablapersonal').insert({
+            'puestotrabajo': data.get('puestotrabajo'),
+            'tipotrabajo': data.get('tipotrabajo'),
+            'productividad': float(data.get('productividad', 0)),
+            'tiempototal_min': int(data.get('tiempototal_min', 0)),
+            'apellidosnombres': data.get('apellidosnombres'),
+            'sueldobasico': sueldobasico,
             'bonificacion': bonificacion,
-            'asigfamiliar': asig_familiar,
-            'sueldo': sueldo,
-            'essalud': sueldo * 0.09,
-            'gratificacionjulio': sueldo_base / 6,
-            'gratificaciondiciembre': sueldo_base / 6,
-            'cts': sueldo_base / 12,
-            'sueldototal': sueldo_total
-        }
+            'gratificacionjulio': round(gratificacionjulio, 2),
+            'gratificaciondiciembre': round(gratificaciondiciembre, 2),
+            'asigfamiliar': asigfamiliar,
+            'cts': round(cts, 2),
+            'sueldo': round(sueldo, 2),
+            'essalud': round(essalud, 2),
+            'sueldototal': round(sueldototal, 2)
+            # ✅ 'proveedr' eliminado
+        }).execute()
         
-        # ⭐ DATOS PARA tablamod (SIN productividad)
-        datos_mod = {
-            'puestotrabajo': datos.get('puestotrabajo', ''),
-            'sueldototal': sueldo_total
-        }
-        
-        # Actualizar tablapersonal
-        resultado_personal = PersonalService.actualizar('codigotrabajador', codigo_int, datos_personal)
-        
-        # Actualizar tablamod
-        MODService.actualizar('codigotrabajador', codigo_int, datos_mod)
-        
-        return jsonify({
-            'success': True, 
-            'data': resultado_personal[0] if resultado_personal else datos_personal,
-            'mensaje': f'Trabajador {codigo_int} actualizado correctamente'
-        })
-        
+        return jsonify({'success': True, 'data': res.data}), 201
     except Exception as e:
+        print(f"Error en crear_trabajador: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/trabajadores/<id>', methods=['PUT'])
+def actualizar_trabajador(id):
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'No hay conexión a Supabase'}), 500
+            
+        trabajador_id = int(id)
+        data = request.json
+        
+        # ✅ LOG 1: Ver qué llega
+        print("="*60)
+        print(f"📥 PUT /api/trabajadores/{trabajador_id}")
+        print(f"📦 Datos recibidos del frontend: {data}")
+        
+        # Extraer valores
+        sueldobasico = float(data.get('sueldobasico', 0))
+        bonificacion = float(data.get('bonificacion', 0))
+        asigfamiliar = float(data.get('asigfamiliar', 0))
+        productividad = float(data.get('productividad', 0))
+        tiempototal_min = int(data.get('tiempototal_min', 0))
+        apellidosnombres = data.get('apellidosnombres', '')
+        puestotrabajo = data.get('puestotrabajo', '')
+        tipotrabajo = data.get('tipotrabajo', '')
+        
+        print(f"📊 Valores extraídos:")
+        print(f"   - sueldobasico: {sueldobasico}")
+        print(f"   - bonificacion: {bonificacion}")
+        print(f"   - asigfamiliar: {asigfamiliar}")
+        print(f"   - productividad: {productividad}")
+        print(f"   - tiempototal_min: {tiempototal_min}")
+        print(f"   - apellidosnombres: {apellidosnombres}")
+        
+        # Calcular según fórmula correcta
+        gratificacionjulio = sueldobasico / 24.0
+        gratificaciondiciembre = sueldobasico / 24.0
+        cts = sueldobasico / 12.0
+        sueldo = sueldobasico + bonificacion + asigfamiliar
+        essalud = sueldo * 0.09
+        sueldototal = sueldo + essalud + gratificacionjulio + gratificaciondiciembre + cts
+        
+        print(f"🧮 Cálculos realizados:")
+        print(f"   - gratificacionjulio: {gratificacionjulio:.2f}")
+        print(f"   - cts: {cts:.2f}")
+        print(f"   - sueldo: {sueldo:.2f}")
+        print(f"   - essalud: {essalud:.2f}")
+        print(f"   - sueldototal: {sueldototal:.2f}")
+        
+        update_data = {
+            'puestotrabajo': puestotrabajo,
+            'tipotrabajo': tipotrabajo,
+            'productividad': productividad,
+            'tiempototal_min': tiempototal_min,
+            'apellidosnombres': apellidosnombres,
+            'sueldobasico': sueldobasico,
+            'bonificacion': bonificacion,
+            'gratificacionjulio': round(gratificacionjulio, 2),
+            'gratificaciondiciembre': round(gratificaciondiciembre, 2),
+            'asigfamiliar': asigfamiliar,
+            'cts': round(cts, 2),
+            'sueldo': round(sueldo, 2),
+            'essalud': round(essalud, 2),
+            'sueldototal': round(sueldototal, 2)
+        }
+        
+        print(f"📝 Datos a enviar a Supabase: {update_data}")
+        
+        # Verificar si el trabajador existe
+        check = supabase_client.table('tablapersonal').select('*').eq('codigotrabajador', trabajador_id).execute()
+        print(f"🔍 Verificación: trabajador existe? {len(check.data) > 0}")
+        if len(check.data) > 0:
+            print(f"   - Nombre actual: {check.data[0].get('apellidosnombres')}")
+            print(f"   - Sueldo actual: {check.data[0].get('sueldobasico')}")
+        
+        # Ejecutar UPDATE
+        res = supabase_client.table('tablapersonal').update(update_data).eq('codigotrabajador', trabajador_id).execute()
+        
+        print(f"✅ Respuesta de Supabase: {res}")
+        print(f"📊 Registros afectados: {len(res.data) if res.data else 0}")
+        print("="*60)
+        
+        if res.data and len(res.data) > 0:
+            return jsonify({'success': True, 'data': res.data[0]}), 200
+        else:
+            return jsonify({'success': False, 'error': 'No se pudo actualizar el trabajador'}), 500
+            
+    except Exception as e:
+        print(f"❌ Error en actualizar_trabajador: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({
-            'success': False, 
-            'error': f'Error al actualizar trabajador: {str(e)}'
-        }), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 @app.route('/api/trabajadores/<codigo>', methods=['DELETE'])
+
 def api_eliminar_trabajador(codigo):
     try:
-        MODService.eliminar('codigotrabajador', int(codigo))
-        PersonalService.eliminar('codigotrabajador', int(codigo))
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'No hay conexión a Supabase'}), 500
+            
+        trabajador_id = int(codigo)
+        
+        # Primero eliminar de recetas_mo si existe
+        try:
+            supabase_client.table('recetas_mo').delete().eq('codigotrabajador', trabajador_id).execute()
+        except:
+            pass  # Si no existe la tabla, ignorar
+        
+        # Eliminar trabajador
+        res = supabase_client.table('tablapersonal').delete().eq('codigotrabajador', trabajador_id).execute()
+        
         return jsonify({'success': True, 'mensaje': 'Trabajador eliminado'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-
 # ============================================
 # API RECETAS MANO DE OBRA
 # ============================================
@@ -594,22 +666,33 @@ def campo(dic, nombres):
 
 @app.route('/api/mod-cif/meses', methods=['GET'])
 def api_mod_cif_meses():
-    """Obtener meses disponibles de productos"""
+    """Obtener meses disponibles de CIF desde cif_mensual"""
     try:
-        productos = ProductoService.listar_todo()
+        from datetime import datetime
+        
+        # Consultar directamente la tabla cif_mensual
+        result = supabase_client.table('cif_mensual').select('periodo').execute()
+        
+        # Extraer períodos únicos
         meses_set = set()
+        for r in (result.data or []):
+            periodo = r.get('periodo')
+            if periodo:
+                meses_set.add(periodo)
         
-        for p in productos:
-            fecha = campo(p, ['fecharegistro', 'FechaRegistro'])
-            if fecha:
-                try:
-                    mes_num = fecha.split('-')[1]
-                    meses_set.add(mes_num)
-                except:
-                    pass
-        
+        # Ordenar de más reciente a más antiguo
         meses_ordenados = sorted(meses_set, reverse=True)
-        meses_formato = [MESES_ES.get(m, m) for m in meses_ordenados]
+        
+        # Formatear nombres de meses
+        meses_formato = []
+        for m in meses_ordenados:
+            try:
+                mes_num = m.split('-')[1]
+                meses_formato.append(MESES_ES.get(mes_num, mes_num))
+            except:
+                meses_formato.append(m)
+        
+        print(f"📅 Períodos disponibles en cif_mensual: {meses_ordenados}")
         
         return jsonify({
             'success': True,
@@ -619,89 +702,193 @@ def api_mod_cif_meses():
             }
         })
     except Exception as e:
+        print(f"Error en api_mod_cif_meses: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @app.route('/api/mod-cif/productos', methods=['GET'])
 def api_mod_cif_productos():
-    """Obtener productos filtrados por mes"""
+    """Obtener productos filtrados por período (año-mes)"""
     try:
-        mes = request.args.get('mes', 'TODOS')
+        periodo = request.args.get('mes', 'TODOS')  # Ahora recibe '2026-04' o 'TODOS'
         productos = ProductoService.listar_todo()
         
+        # Si periodo es 'TODOS', mostrar todos los productos
+        if periodo == 'TODOS':
+            productos_filtrados = []
+            for p in productos:
+                codigo = campo(p, ['codigoproducto', 'CodigoProducto'])
+                nombre = campo(p, ['producto', 'Producto'])
+                if codigo and nombre:
+                    productos_filtrados.append({
+                        'codigo': codigo,
+                        'nombre': nombre,
+                        'fecha': campo(p, ['fecharegistro', 'FechaRegistro'])
+                    })
+            return jsonify({'success': True, 'data': productos_filtrados})
+        
+        # Filtrar productos que tengan fecha de registro en el período
+        anio, mes = periodo.split('-')
         productos_filtrados = []
         for p in productos:
             codigo = campo(p, ['codigoproducto', 'CodigoProducto'])
             nombre = campo(p, ['producto', 'Producto'])
             fecha = campo(p, ['fecharegistro', 'FechaRegistro'])
             
-            mostrar = True
-            if mes != 'TODOS':
+            if fecha and codigo and nombre:
                 try:
-                    from datetime import datetime
                     fecha_obj = datetime.strptime(str(fecha), "%Y-%m-%d")
-                    mostrar = fecha_obj.strftime("%m") == mes
+                    if fecha_obj.strftime("%Y-%m") == periodo:
+                        productos_filtrados.append({
+                            'codigo': codigo,
+                            'nombre': nombre,
+                            'fecha': fecha
+                        })
                 except:
-                    mostrar = False
-            
-            if mostrar:
-                productos_filtrados.append({
-                    'codigo': codigo,
-                    'nombre': nombre,
-                    'fecha': fecha
-                })
+                    pass
+        
+        # Si no hay productos con fecha exacta, mostrar todos (o al menos los que existen)
+        if not productos_filtrados:
+            for p in productos:
+                codigo = campo(p, ['codigoproducto', 'CodigoProducto'])
+                nombre = campo(p, ['producto', 'Producto'])
+                if codigo and nombre:
+                    productos_filtrados.append({
+                        'codigo': codigo,
+                        'nombre': nombre,
+                        'fecha': campo(p, ['fecharegistro', 'FechaRegistro'])
+                    })
         
         return jsonify({'success': True, 'data': productos_filtrados})
     except Exception as e:
+        print(f"Error en api_mod_cif_productos: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
 @app.route('/api/mod-cif/calcular/<int:codigo_producto>', methods=['GET'])
 def api_mod_cif_calcular(codigo_producto):
-    """Calcular MOD y CIF para un producto específico"""
+    """
+    Calcula MOD y CIF para un producto específico.
+    El CIF se obtiene de la tabla cif_mensual según el período seleccionado.
+    Por defecto usa el mes anterior (último mes cerrado).
+    """
     try:
-        # Obtener datos
-        personal = PersonalService.listar_todo()
-        cif = CIFService.listar_todo()
-        receta_mo = RecetaManoObraService.listar_todo()
-        productos = ProductoService.listar_todo()
+        from datetime import datetime
+        from dateutil.relativedelta import relativedelta
         
-        # Filtrar receta del producto
+        # ============================================
+        # 1. OBTENER PERÍODO PARA CIF
+        # ============================================
+        periodo_solicitado = request.args.get('periodo')
+        mes_actual = datetime.now().strftime("%Y-%m")
+        
+        # Determinar período a usar
+        if periodo_solicitado:
+            # Verificar que no sea el mes actual
+            if periodo_solicitado == mes_actual:
+                # Si es mes actual, usar mes anterior
+                periodo_usado = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m")
+                print(f"⚠️ Período solicitado {periodo_solicitado} es mes actual. Usando {periodo_usado}")
+            else:
+                periodo_usado = periodo_solicitado
+        else:
+            # Por defecto: mes anterior (último mes cerrado)
+            periodo_usado = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m")
+        
+        print(f"📅 Calculando CIF para período: {periodo_usado}")
+        
+        # ============================================
+        # 2. OBTENER DATOS DE LAS TABLAS
+        # ============================================
+        personal = PersonalService.listar_todo()
+        productos = ProductoService.listar_todo()
+        receta_mo = RecetaManoObraService.listar_todo()
+        
+     
+        # Obtener CIF del período específico desde cif_mensual
+        print(f"🔍 Buscando CIF para período: {periodo_usado}")
+
+        try:
+            # Consulta directa a Supabase
+            cif_result = supabase_client.table('cif_mensual').select('*').eq('periodo', periodo_usado).execute()
+            cif_data = cif_result.data or []
+            print(f"📊 CIF encontrados para {periodo_usado}: {len(cif_data)}")
+            
+            if cif_data:
+                for c in cif_data[:3]:
+                    print(f"   - {c.get('codigocif')}: {c.get('denominacion')} - S/ {c.get('monto')}")
+        except Exception as e:
+            print(f"❌ Error consultando cif_mensual: {e}")
+            cif_data = []
+
+        print(f"📋 Total CIF encontrados: {len(cif_data)}")
+        if cif_data:
+            print(f"   - Primer CIF: {cif_data[0].get('codigocif')} - {cif_data[0].get('denominacion')} - S/ {cif_data[0].get('monto')}")
+        
+        # Obtener GA y GV (estáticos o también por período?)
+        ga_data = GAService.listar_todo()
+        gv_data = GVService.listar_todo()
+        
+        # ============================================
+        # 3. FILTRAR RECETA DEL PRODUCTO
+        # ============================================
         receta_producto = [
             r for r in receta_mo
             if str(campo(r, ['codigoproducto', 'CodigoProducto'])) == str(codigo_producto)
         ]
         
-        # Si no tiene receta, usar producto base 21001
         usa_base = False
         if not receta_producto:
+            # Si no tiene receta, usar producto base 21001
             receta_producto = [
                 r for r in receta_mo
                 if str(campo(r, ['codigoproducto', 'CodigoProducto'])) == "21001"
             ]
             usa_base = True
+            print(f"📌 Usando MOD base del producto 21001 para {codigo_producto}")
         
-        # ── OBTENER DATOS DEL PLAN DE PRODUCCIÓN ──
-        from datetime import datetime
-        mes_actual = datetime.now().strftime("%Y-%m")
-        ventas_mes = VENTAS_DEMO.get(mes_actual, {})
+        # ============================================
+        # 4. OBTENER DATOS DEL PLAN DE PRODUCCIÓN
+        # ============================================
+        ventas_mes = VENTAS_DEMO.get(periodo_usado, {})
         
-        # Buscar el producto en las ventas del mes
         cantidad_vendida = 0
         pct_ventas = 0.0
         
         if codigo_producto in ventas_mes:
             cantidad_vendida = ventas_mes[codigo_producto][0]
         
-        # Calcular total de ventas del mes
         total_ventas_mes = sum(v[0] * v[1] for v in ventas_mes.values()) if ventas_mes else 1
         ventas_producto = cantidad_vendida * (ventas_mes.get(codigo_producto, (0, 0))[1] if codigo_producto in ventas_mes else 0)
         
         if total_ventas_mes > 0 and ventas_producto > 0:
             pct_ventas = (ventas_producto / total_ventas_mes) * 100
         
-        # ── CALCULAR MOD ──
+        print(f"📊 Ventas para {periodo_usado}: {cantidad_vendida} unidades ({pct_ventas:.1f}% del total)")
+        
+        # ============================================
+        # 5. CALCULAR MOD (MANO DE OBRA DIRECTA)
+        # ============================================
         mod_items = []
         total_mod = 0.0
+        minutos_mod_producto = 0.0  # Para usar en distribución de CIF
         
+        # Calcular total de minutos efectivos de TODOS los trabajadores (para factor CIF)
+        total_minutos_efectivos = 0
+        
+        for p in personal:
+            tiempo_total = n(campo(p, ['tiempototal_min', 'TiempoTotal_min']))
+            productividad = n(campo(p, ['productividad', 'Productividad']))
+            
+            if productividad == 0:
+                productividad = 1.0
+            
+            tiempo_efectivo = tiempo_total * productividad
+            total_minutos_efectivos += tiempo_efectivo
+        
+        if total_minutos_efectivos == 0:
+            total_minutos_efectivos = 1
+            print("⚠️ Total minutos efectivos = 0, usando 1 para evitar división")
+        
+        # Calcular MOD del producto
         for r in receta_producto:
             cod_trabajador = campo(r, ['codigotrabajador', 'CodigoTrabajador'])
             minutos = n(campo(r, ['tiempotrabajo', 'TiempoTrabajo']))
@@ -715,72 +902,125 @@ def api_mod_cif_calcular(codigo_producto):
                     break
             
             if trabajador is None:
+                print(f"⚠️ Trabajador {cod_trabajador} no encontrado")
                 continue
             
             puesto = campo(trabajador, ['puestotrabajo', 'PuestoTrabajo']) or 'N/A'
             sueldo_total = n(campo(trabajador, ['sueldototal', 'SueldoTotal']))
             tiempo_total = n(campo(trabajador, ['tiempototal_min', 'TiempoTotal_min']))
-            productividad = n(campo(trabajador, ['productividad', 'Productividad']))
+            productividad_trab = n(campo(trabajador, ['productividad', 'Productividad']))
             
-            # Si la productividad es 0 o no existe, usar 1 (100%)
-            if productividad == 0:
-                productividad = 1.0
+            if productividad_trab == 0:
+                productividad_trab = 1.0
             
-            # Costo por minuto considerando productividad
-            tiempo_efectivo = tiempo_total * productividad
-            costo_min = sueldo_total / tiempo_efectivo if tiempo_efectivo else 0
+            # Tiempo efectivo del trabajador
+            tiempo_efectivo_trab = tiempo_total * productividad_trab
             
-            importe = costo_min * minutos
-            total_mod += importe
+            # Costo por minuto
+            costo_min = sueldo_total / tiempo_efectivo_trab if tiempo_efectivo_trab else 0
+            
+            # Importe MOD para este trabajador en este producto
+            importe_mod = costo_min * minutos
+            total_mod += importe_mod
+            
+            # Acumular minutos MOD del producto (considerando productividad)
+            minutos_mod_producto += minutos * productividad_trab
             
             mod_items.append({
                 'personal': puesto,
+                'codigo_trabajador': cod_trabajador,
                 'sueldo': round(sueldo_total, 2),
                 'minutos': round(minutos, 2),
-                'productividad': round(productividad * 100, 1),
+                'minutos_efectivos': round(minutos * productividad_trab, 2),
+                'productividad': round(productividad_trab * 100, 1),
                 'tiempo_total': round(tiempo_total, 2),
-                'tiempo_efectivo': round(tiempo_efectivo, 2),
-                'costo_min': round(costo_min, 8),
-                'importe': round(importe, 8)
+                'tiempo_efectivo': round(tiempo_efectivo_trab, 2),
+                'costo_min': round(costo_min, 6),
+                'importe': round(importe_mod, 4)
             })
         
-        # ── CALCULAR MOI / CIF ──
-        moi_items = []
-        total_moi = 0.0
+        print(f"✅ MOD calculado: {total_mod:.4f}")
+        print(f"📊 Minutos MOD producto (efectivos): {minutos_mod_producto:.2f}")
         
-        for c in cif:
-            concepto = campo(c, ['denominacion', 'Denominacion']) or 'N/A'
-            monto = n(campo(c, ['monto', 'Monto']))
-            
-            # FACTOR = % Ventas del producto (pct_ventas / 100 para convertirlo a decimal)
-            factor = pct_ventas / 100 if pct_ventas > 0 else 0
-            
-            # BASE = Cantidad de productos vendidos
-            base = cantidad_vendida
-            
-            # IMPORTE = MONTO * BASE * FACTOR
-            importe = (monto * factor) / base if base > 0 else 0
-            
-            total_moi += importe
-            
-            moi_items.append({
-                'concepto': concepto,
-                'monto': round(monto, 2),
-                'factor': round(factor*100, 8),
-                'base': round(base, 2),
-                'importe': round(importe, 8)
-            })
+        # ============================================
+        # 6. CALCULAR CIF (COSTOS INDIRECTOS) desde cif_mensual
+        # ============================================
+        cif_items = []
+        total_cif = 0.0
         
-        # ── TOTAL GENERAL ──
-        total_general = total_mod + total_moi
+        if cif_data:
+            print(f"📋 Procesando {len(cif_data)} conceptos CIF para período {periodo_usado}")
+            
+            for c in cif_data:
+                codigo_cif = c.get('codigocif', '')
+                concepto = c.get('denominacion', 'N/A')
+                monto_mensual = n(c.get('monto', 0))
+                
+                # Distribuir CIF según minutos MOD del producto
+                # Fórmula: (Minutos MOD del producto / Total minutos efectivos) * Monto CIF mensual
+                factor_distribucion = minutos_mod_producto / total_minutos_efectivos if total_minutos_efectivos > 0 else 0
+                importe_cif = monto_mensual * factor_distribucion
+                
+                total_cif += importe_cif
+                
+                cif_items.append({
+                    'codigo': codigo_cif,
+                    'concepto': concepto,
+                    'monto_mensual': round(monto_mensual, 2),
+                    'total_minutos_efectivos': round(total_minutos_efectivos, 2),
+                    'minutos_mod_producto': round(minutos_mod_producto, 2),
+                    'factor_distribucion': round(factor_distribucion * 100, 4),
+                    'importe_unitario': round(importe_cif, 4)
+                })
+        else:
+            print(f"⚠️ No hay CIF registrados para {periodo_usado}, usando CIF estáticos de tablacif")
+            # Fallback: usar CIF de la tabla original (estática)
+            cif_static = CIFService.listar_todo()
+            for c in cif_static:
+                concepto = campo(c, ['denominacion', 'Denominacion']) or 'N/A'
+                monto_mensual = n(campo(c, ['monto', 'Monto']))
+                
+                factor_distribucion = minutos_mod_producto / total_minutos_efectivos if total_minutos_efectivos > 0 else 0
+                importe_cif = monto_mensual * factor_distribucion
+                total_cif += importe_cif
+                
+                cif_items.append({
+                    'concepto': concepto,
+                    'monto_mensual': round(monto_mensual, 2),
+                    'factor_distribucion': round(factor_distribucion * 100, 4),
+                    'importe_unitario': round(importe_cif, 4),
+                    'es_demo': True
+                })
         
-        # Buscar nombre del producto
+        print(f"✅ CIF calculado: {total_cif:.4f}")
+        
+        # ============================================
+        # 7. CALCULAR GA Y GV (Gastos Administrativos y Ventas)
+        # ============================================
+        total_ga = sum(n(campo(g, ['monto', 'Monto'])) for g in ga_data)
+        total_gv = sum(n(campo(g, ['monto', 'Monto'])) for g in gv_data)
+        total_unidades_mes = sum(v[0] for v in ventas_mes.values()) if ventas_mes else 1
+        
+        ga_por_unidad = total_ga / total_unidades_mes if total_unidades_mes > 0 else 0
+        gv_por_unidad = total_gv / total_unidades_mes if total_unidades_mes > 0 else 0
+        
+        # ============================================
+        # 8. TOTAL GENERAL DEL PRODUCTO
+        # ============================================
+        total_general = total_mod + total_cif + ga_por_unidad + gv_por_unidad
+        
+        # ============================================
+        # 9. OBTENER NOMBRE DEL PRODUCTO
+        # ============================================
         nombre_producto = ''
         for p in productos:
             if campo(p, ['codigoproducto', 'CodigoProducto']) == codigo_producto:
                 nombre_producto = campo(p, ['producto', 'Producto']) or ''
                 break
         
+        # ============================================
+        # 10. RESPONDER CON RESULTADOS
+        # ============================================
         return jsonify({
             'success': True,
             'data': {
@@ -788,32 +1028,257 @@ def api_mod_cif_calcular(codigo_producto):
                     'codigo': codigo_producto,
                     'nombre': nombre_producto
                 },
+                'periodo_cif': {
+                    'usado': periodo_usado,
+                    'solicitado': periodo_solicitado,
+                    'es_mes_actual': periodo_usado == mes_actual,
+                    'hay_datos_cif': len(cif_data) > 0
+                },
                 'mod': {
                     'items': mod_items,
-                    'total': round(total_mod, 8)
+                    'total': round(total_mod, 4),
+                    'minutos_totales_producto': round(minutos_mod_producto, 2)
                 },
-                'moi': {
-                    'items': moi_items,
-                    'total': round(total_moi, 8)
+                'moi': {  # Mantener por si el frontend espera 'moi'
+                    'items': cif_items,
+                    'total': round(total_cif, 4)
                 },
-                'total_general': round(total_general, 8),
-                'usa_base': usa_base,
+
+
+                'cif': {
+                    'items': cif_items,
+                    'total': round(total_cif, 4),
+                    'total_minutos_efectivos': round(total_minutos_efectivos, 2)
+                },
+
+
+
+                'ga': round(ga_por_unidad, 4),
+                'gv': round(gv_por_unidad, 4),
+                'total_general': round(total_general, 4),
+                'usa_base_mod': usa_base,
                 'info_plan': {
-                    'mes': mes_actual,
+                    'mes': periodo_usado,
                     'cantidad_vendida': cantidad_vendida,
                     'pct_ventas': round(pct_ventas, 2),
                     'ventas_producto': round(ventas_producto, 2),
-                    'total_ventas_mes': round(total_ventas_mes, 2)
+                    'total_ventas_mes': round(total_ventas_mes, 2),
+                    'total_unidades_mes': total_unidades_mes
                 }
             }
         })
+        
+    except Exception as e:
+        print(f"❌ Error en api_mod_cif_calcular: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================
+# API CIF MENSUAL (NUEVO)
+# ============================================
+
+@app.route('/api/cif-mensual/meses-disponibles', methods=['GET'])
+def obtener_meses_cif():
+    """Obtener meses con CIF registrados (excluye mes actual si no está cerrado)"""
+    try:
+        from datetime import datetime
+        mes_actual = datetime.now().strftime("%Y-%m")
+        
+        # Obtener meses distintos de la tabla
+        result = supabase_client.table('cif_mensual').select('periodo').execute()
+        meses = list(set([r['periodo'] for r in result.data])) if result.data else []
+        meses.sort(reverse=True)
+        
+        # Excluir mes actual (porque aún no está cerrado)
+        meses_disponibles = [m for m in meses if m != mes_actual]
+        
+        # Si no hay meses, crear enero 2026 por defecto
+        if not meses_disponibles:
+            meses_disponibles = ['2026-01']
+            
+        return jsonify({'success': True, 'data': meses_disponibles})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/cif-mensual', methods=['GET'])
+def obtener_cif_por_periodo():
+    """Obtener CIF para un período específico"""
+    try:
+        periodo = request.args.get('periodo')
+        if not periodo:
+            return jsonify({'success': False, 'error': 'Se requiere periodo'}), 400
+            
+        result = supabase_client.table('cif_mensual').select('*').eq('periodo', periodo).execute()
+        
+        # Formatear respuesta
+        cif_items = []
+        for item in (result.data or []):
+            cif_items.append({
+                'codigocif': item.get('codigocif'),
+                'denominacion': item.get('denominacion'),
+                'monto': float(item.get('monto', 0))
+            })
+            
+        return jsonify({'success': True, 'data': cif_items, 'periodo': periodo})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/cif-mensual/ultimos-meses', methods=['GET'])
+def obtener_ultimos_meses_cif():
+    """Obtener CIF de los últimos N meses (excluye mes actual)"""
+    try:
+        from datetime import datetime, timedelta
+        from dateutil.relativedelta import relativedelta
+        
+        # Mes actual
+        hoy = datetime.now()
+        mes_actual = hoy.strftime("%Y-%m")
+        
+        # Últimos 3 meses completos (excluyendo mes actual)
+        meses = []
+        for i in range(1, 4):  # 1, 2, 3 meses atrás
+            mes = (hoy - relativedelta(months=i)).strftime("%Y-%m")
+            meses.append(mes)
+        
+        # Obtener CIF para cada mes
+        resultado = {}
+        for mes in meses:
+            result = supabase_client.table('cif_mensual').select('*').eq('periodo', mes).execute()
+            if result.data:
+                resultado[mes] = [{
+                    'codigocif': r.get('codigocif'),
+                    'denominacion': r.get('denominacion'),
+                    'monto': float(r.get('monto', 0))
+                } for r in result.data]
+            else:
+                resultado[mes] = []  # Sin datos para ese mes
+                
+        return jsonify({'success': True, 'data': resultado, 'mes_actual': mes_actual})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/cif-mensual', methods=['POST'])
+def guardar_cif_mensual():
+    """Guardar o actualizar CIF para un período"""
+    try:
+        data = request.json
+        periodo = data.get('periodo')
+        items = data.get('items', [])
+        
+        if not periodo:
+            return jsonify({'success': False, 'error': 'Se requiere período'}), 400
+        
+        # Verificar que el período no sea el mes actual
+        from datetime import datetime
+        mes_actual = datetime.now().strftime("%Y-%m")
+        if periodo == mes_actual:
+            return jsonify({'success': False, 'error': 'No se puede modificar el mes actual'}), 400
+        
+        # Guardar cada item (upsert)
+        for item in items:
+            supabase_client.table('cif_mensual').upsert({
+                'codigocif': item.get('codigocif'),
+                'denominacion': item.get('denominacion'),
+                'periodo': periodo,
+                'monto': float(item.get('monto', 0))
+            }, on_conflict='codigocif,periodo').execute()
+        
+        return jsonify({'success': True, 'mensaje': f'CIF guardados para {periodo}'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/cif-mensual/<periodo>', methods=['DELETE'])
+def eliminar_cif_mensual(periodo):
+    """Eliminar todos los CIF de un período"""
+    try:
+        from datetime import datetime
+        mes_actual = datetime.now().strftime("%Y-%m")
+        if periodo == mes_actual:
+            return jsonify({'success': False, 'error': 'No se puede eliminar el mes actual'}), 400
+            
+        supabase_client.table('cif_mensual').delete().eq('periodo', periodo).execute()
+        return jsonify({'success': True, 'mensaje': f'CIF de {periodo} eliminados'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+# ============================================
+# DIAGNÓSTICO CIF MENSUAL
+# ============================================
+
+@app.route('/api/debug-cif-directo', methods=['GET'])
+def debug_cif_directo():
+    """Diagnóstico directo de cif_mensual"""
+    try:
+        resultados = {}
+        
+        # Método 1: Usar el servicio
+        try:
+            from servicios import CIFMensualService
+            cif_service = CIFMensualService
+            data = cif_service.listar_todo()
+            resultados['servicio_listar_todo'] = {
+                'registros': len(data),
+                'primeros': data[:3] if data else []
+            }
+        except Exception as e:
+            resultados['servicio_error'] = str(e)
+        
+        # Método 2: Usar supabase_client directamente
+        try:
+            result = supabase_client.table('cif_mensual').select('*').execute()
+            resultados['supabase_directo'] = {
+                'registros': len(result.data or []),
+                'primeros': (result.data or [])[:3]
+            }
+        except Exception as e:
+            resultados['supabase_error'] = str(e)
+        
+        # Método 3: Ver si la tabla existe
+        try:
+            result = supabase_client.table('cif_mensual').select('periodo').limit(1).execute()
+            resultados['tabla_existe'] = len(result.data or []) >= 0
+        except Exception as e:
+            resultados['tabla_existe_error'] = str(e)
+        
+        return jsonify(resultados)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 # ============================================
 # AUTENTICACIÓN
 # ============================================
-
+# ✅ AGREGAR ESTE ENDPOINT DE PRUEBA AQUÍ (al final de la sección)
+@app.route('/api/test-cif', methods=['GET'])
+def test_cif():
+    """Endpoint de prueba para verificar cif_mensual"""
+    try:
+        from datetime import datetime
+        
+        # Probar obtener todos los períodos
+        result = supabase_client.table('cif_mensual').select('periodo').execute()
+        periodos = list(set([r['periodo'] for r in (result.data or [])]))
+        
+        # Probar obtener abril 2026 específicamente
+        abril_result = supabase_client.table('cif_mensual').select('*').eq('periodo', '2026-04').execute()
+        
+        # Probar obtener datos completos
+        all_result = supabase_client.table('cif_mensual').select('*').execute()
+        
+        return jsonify({
+            'success': True,
+            'periodos_disponibles': sorted(periodos),
+            'abril_2026': abril_result.data or [],
+            'total_registros': len(all_result.data or []),
+            'fecha_actual': datetime.now().strftime("%Y-%m-%d"),
+            'mensaje': 'Prueba exitosa - CIF mensual funcionando'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 @app.route('/api/auth/registro', methods=['POST'])
 def api_registro():
     """Registrar nuevo usuario"""
@@ -1023,7 +1488,7 @@ def api_costo_total_mensual(year_month):
                     costo_mod_unitario += importe_mod
                     
                     mod_detalle.append({
-                        'codigo_trabajador': cod_trabajador,
+                        'codigotrabajador': cod_trabajador,
                         'minutos': minutos,
                         'productividad': round(productividad_trab * 100, 1),
                         'costo_minuto': round(costo_min, 6),
@@ -1400,23 +1865,24 @@ register_menu5_routes(app)
 register_menu6_routes(app)
 register_menu7_routes(app)
 register_ia_routes(app)
+
+# ============================================
+# ENRUTAMIENTO DEL FRONTEND
+# ============================================
+
 @app.route('/')
 def servir_index():
-    return send_from_directory('../FRONTEND', 'index.html')
+    return send_from_directory(FRONTEND_DIR, 'index.html')
 
-
-# ============================================
-# SERVIR KARDEX MÓVIL
-# ============================================
 @app.route('/kardex_movil.html')
-def servir_kardex_celular(): # Nombre único cambiado para evitar el AssertionError
-    return send_from_directory('../FRONTEND', 'kardex_movil.html')
+def servir_kardex_celular(): 
+    return send_from_directory(FRONTEND_DIR, 'kardex_movil.html')
 
-# ESTA ES TU RUTA COMODÍN ORIGINAL (Déjala tal cual estaba, sin duplicar)
+# El comodín general atrapa dinámicamente páginas como menu1.html, login.html, etc.
 @app.route('/<path:path>')
 def servir_frontend(path):
-    return send_from_directory('../FRONTEND', path)
+    return send_from_directory(FRONTEND_DIR, path)
+
 
 if __name__ == '__main__':
-    # '0.0.0.0' obliga a Flask a escuchar tanto a la PC (127.0.0.1) como a tu celular a través de la IP de tu Wi-Fi
     app.run(host='0.0.0.0', port=5000, debug=True)
