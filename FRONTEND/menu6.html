@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unik'a | Menú 1</title>
+    <title>Unik'a | Finanzas de la Empresa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/config.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; padding-top: 70px; }
+        body { font-family: 'Inter', sans-serif; padding-top: 70px; background-color: #f8fafc; }
         .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; }
     </style>
 </head>
@@ -17,19 +17,80 @@
     <script src="js/navbar.js"></script>
     
     <main class="content-area">
-        <div class="bg-white rounded-2xl shadow-sm p-8">
-            <h1 class="text-2xl font-bold text-[#1B263B] mb-4">📋 Menú 1</h1>
-            <p class="text-gray-600 mb-6">Aquí va el contenido específico del Menú 1.</p>
-            
-            <!-- Aquí tu amigo puede poner su contenido -->
-            <div id="app">
-                <button onclick="cargarDatos()" class="bg-[#FF9F1C] text-white px-6 py-3 rounded-xl font-bold">
-                    Cargar Datos
-                </button>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">💼 Control Financiero y Costos</h1>
+                <p class="text-slate-500 text-sm">Información consolidada de rentabilidad y cuentas del taller textil</p>
+            </div>
+            <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 flex items-center gap-3">
+                <span class="text-sm font-semibold text-slate-700">Filtrar Periodo:</span>
+                <select id="mesSelector" class="bg-transparent border-none font-bold text-blue-600 outline-none cursor-pointer text-sm" onchange="cargarDashboard()">
+                    <option value="2026-05">Mayo 2026</option>
+                    <option value="2026-04" selected>Abril 2026</option>
+                    <option value="2026-03">Marzo 2026</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Ventas Totales</p>
+                <h3 class="text-2xl font-bold text-slate-800" id="kpi-ventas">S/ 0.00</h3>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Costo de Ventas</p>
+                <h3 class="text-2xl font-bold text-slate-800" id="kpi-costos">S/ 0.00</h3>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Gastos de Operación</p>
+                <h3 class="text-2xl font-bold text-slate-800" id="kpi-gastos">S/ 0.00</h3>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Utilidad Neta</p>
+                    <h3 class="text-2xl font-bold text-slate-800" id="kpi-utilidad">S/ 0.00</h3>
+                </div>
+                <div class="mt-2">
+                    <span id="kpi-margen" class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">0% Margen</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-base font-bold text-slate-800 mb-4">🍰 Distribución del Costo de Producción (Costo Ventas)</h3>
+                <div class="h-64 relative">
+                    <canvas id="chartEstructuraCostos"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-base font-bold text-slate-800 mb-4">📈 Top 5 Productos con Mayor Rentabilidad Bruta</h3>
+                <div class="h-64 relative">
+                    <canvas id="chartRentabilidad"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-800">📋 Desglose Analítico de Gastos Fijos Corporativos</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-100/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                            <th class="px-6 py-3.5">Clasificación</th>
+                            <th class="px-6 py-3.5">Descripción de Cuenta</th>
+                            <th class="px-6 py-3.5 text-right">Erogación Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-gastos-body" class="divide-y divide-slate-100">
+                        </tbody>
+                </table>
             </div>
         </div>
     </main>
 
-    <script src="js/menu1.js"></script>
+    <script src="js/menu6.js"></script>
 </body>
 </html>
