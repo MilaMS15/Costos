@@ -4,7 +4,7 @@ from database import SupabaseBrain
 from servicios import (
     OrdenTrabajoService, PersonalService, 
     ProductoService, MaterialesService,
-    RecetaManoObraService, OrdenMaterialesService
+    RecetaManoObraService,RecetaProductoService, OrdenMaterialesService
 )
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
