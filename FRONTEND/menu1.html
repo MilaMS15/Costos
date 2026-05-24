@@ -5,125 +5,199 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unik'a | Cotizador y Catálogo Comercial</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
     <script src="js/config.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0F172A',
+                            primary: '#1E293B',
+                            accent: '#FF9F1C',
+                            accentHover: '#F59000'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 1, boxShadow: '0 0 0 0 rgba(255, 159, 28, 0.4)' },
+                            '50%': { opacity: 0.8, boxShadow: '0 0 0 10px rgba(255, 159, 28, 0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; padding-top: 70px; }
-        .content-area { padding: 2rem; max-width: 1600px; margin: 0 auto; }
+        body { 
+            background-color: #F1F5F9; 
+            background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+            background-size: 32px 32px;
+            padding-top: 80px; 
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+        }
+        .hero-pattern {
+            background-color: #0F172A;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e293b' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="text-slate-800 antialiased">
     <script src="js/navbar.js"></script>
     
-    <main class="content-area">
-        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold text-[#1B263B] flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[#FF9F1C]">storefront</span>
-                    Catálogo Comercial & Cotizador
+    <main class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="hero-pattern rounded-[2rem] shadow-2xl p-8 lg:p-10 mb-10 relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-6 border border-slate-800">
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-brand-accent opacity-20 rounded-full blur-3xl"></div>
+            
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-brand-accent text-xs font-bold tracking-widest uppercase mb-4">
+                    <span class="w-2 h-2 rounded-full bg-brand-accent animate-pulse"></span>
+                    Módulo Comercial
+                </div>
+                <h1 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-2">
+                    Catálogo de Productos y Cotizador
                 </h1>
-                <p class="text-gray-400 text-sm mt-1">Simulador de Pedidos Mayoristas con Estructura de Costos Industriales por Absorción.</p>
+                <p class="text-slate-400 font-inter max-w-2xl text-sm lg:text-base">
+                    Simulador de pedidos mayoristas integrado con la estructura de costos industriales por absorción.
+                </p>
             </div>
             
-            <button onclick="toggleCarrito()" class="relative bg-[#1B263B] text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:bg-[#2C3E50] transition-all">
-                <span class="material-symbols-outlined text-lg">shopping_cart</span>
-                Ver Pedido
-                <span id="contadorCarrito" class="absolute -top-2 -right-2 bg-[#FF9F1C] text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-black border-2 border-white">0</span>
+            <button onclick="toggleCarrito()" class="relative z-10 group bg-brand-accent text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center gap-3 hover:bg-brand-accentHover transition-all shadow-lg shadow-brand-accent/30 hover:-translate-y-1">
+                <span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">shopping_cart_checkout</span>
+                Visualizar Requerimiento
+                <span id="contadorCarrito" class="absolute -top-3 -right-3 bg-white text-brand-dark text-xs w-7 h-7 rounded-full flex items-center justify-center font-extrabold shadow-sm animate-pulse-glow border-2 border-brand-accent">0</span>
             </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div class="space-y-4">
-                <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
-                    <h3 class="font-bold text-gray-800 text-sm flex items-center gap-2 border-b pb-3 mb-3">
-                        <span class="material-symbols-outlined text-emerald-500">verified_user</span>
-                        Condiciones de Fábrica (UNI)
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+            <div class="xl:col-span-1">
+                <div class="glass-panel rounded-3xl p-6 sticky top-28">
+                    <h3 class="font-bold text-brand-dark text-sm flex items-center gap-2 uppercase tracking-wider mb-6">
+                        <span class="material-symbols-outlined text-emerald-500 bg-emerald-50 p-1.5 rounded-lg">factory</span>
+                        Parámetros de Producción
                     </h3>
-                    <ul class="space-y-3 text-xs text-gray-500">
-                        <li class="flex items-start gap-2">
-                            <span class="material-symbols-outlined text-amber-500 text-base shrink-0">info</span>
-                            <span><strong>Pedido Mínimo (MOQ):</strong> 100 unidades por modelo.</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="material-symbols-outlined text-blue-500 text-base shrink-0">package_2</span>
-                            <span><strong>Lotes de Producción:</strong> Múltiplos cerrados de 50 unidades.</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="material-symbols-outlined text-purple-500 text-base shrink-0">percent</span>
-                            <span><strong>Estructura de Precios:</strong> Costo Absorbido + 10% Utilidad + 18% IGV Corporativo.</span>
-                        </li>
-                    </ul>
+                    <div class="space-y-4">
+                        <div class="group bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-amber-200 hover:shadow-md transition-all">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-amber-100 text-amber-600 p-2 rounded-xl group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-xl">inventory_2</span></div>
+                                <div><h4 class="text-xs font-bold text-slate-800 uppercase mb-1">Pedido Mínimo (MOQ)</h4><p class="text-xs font-inter text-slate-500">100 unidades por modelo requerido.</p></div>
+                            </div>
+                        </div>
+                        <div class="group bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 hover:shadow-md transition-all">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-blue-100 text-blue-600 p-2 rounded-xl group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-xl">conveyor_belt</span></div>
+                                <div><h4 class="text-xs font-bold text-slate-800 uppercase mb-1">Lotes de Producción</h4><p class="text-xs font-inter text-slate-500">Múltiplos cerrados de 50 unidades.</p></div>
+                            </div>
+                        </div>
+                        <div class="group bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-purple-200 hover:shadow-md transition-all">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-purple-100 text-purple-600 p-2 rounded-xl group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-xl">account_balance</span></div>
+                                <div><h4 class="text-xs font-bold text-slate-800 uppercase mb-1">Estructura de Precios</h4><p class="text-xs font-inter text-slate-500">Costo Absorbido + 10% Utilidad + 18% IGV.</p></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-3">
-                <div id="productosContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-                        <div class="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-[#FF9F1C] mb-3"></div>
-                        <p class="font-medium text-sm">Conectando con Supabase y calculando costos...</p>
+            <div class="xl:col-span-3">
+                <div id="productosContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="col-span-full flex flex-col items-center justify-center py-32 glass-panel rounded-3xl">
+                        <div class="relative w-20 h-20 mb-6 flex items-center justify-center">
+                            <div class="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+                            <div class="absolute inset-0 border-4 border-brand-accent rounded-full border-t-transparent animate-spin"></div>
+                            <span class="material-symbols-outlined text-slate-300 text-3xl">database</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-brand-dark mb-2">Sincronizando con Base de Datos</h2>
+                        <p class="text-slate-500 font-inter text-sm text-center max-w-md">Recuperando catálogo de artículos y calculando la estructura de costos...</p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="panelCarrito" class="fixed inset-y-0 right-0 w-96 bg-gray-50 shadow-2xl border-l border-gray-100 z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
-        <div class="p-5 border-b bg-white flex justify-between items-center">
-            <h2 class="font-bold text-gray-800 flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#FF9F1C]">shopping_bag</span>
-                Resumen de Orden
+    <div id="panelCarrito" class="fixed inset-y-0 right-0 w-full md:w-[450px] bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.1)] z-[999] transform translate-x-full transition-transform duration-500 ease-out flex flex-col">
+        <div class="bg-brand-dark p-6 text-white flex justify-between items-center rounded-bl-3xl relative">
+            <h2 class="font-bold text-lg flex items-center gap-3">
+                <span class="material-symbols-outlined text-brand-accent text-2xl">shopping_bag</span>
+                Resumen del Requerimiento
             </h2>
-            <button onclick="toggleCarrito()" class="text-gray-400 hover:text-gray-600">
-                <span class="material-symbols-outlined">close</span>
+            <button onclick="toggleCarrito()" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-red-500 border border-slate-700 hover:border-red-500 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer z-50">
+                <span class="material-symbols-outlined text-xl">close</span>
             </button>
         </div>
 
-        <div id="listaCarrito" class="p-5 overflow-y-auto flex-1 divide-y space-y-1">
-            <p class="text-center text-gray-400 text-xs py-8">No hay requerimientos en la lista.</p>
-        </div>
+        <div id="listaCarrito" class="flex-1 overflow-y-auto p-6 bg-slate-50"></div>
 
-        <div class="p-5 bg-white border-t space-y-4">
-            <div class="flex justify-between items-center font-black text-gray-900 text-base">
-                <span>Total Cotizado (c/IGV):</span>
-                <span id="totalCarrito" class="text-emerald-600">S/. 0.00</span>
+        <div class="bg-white p-6 border-t border-slate-100 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+            <div class="flex justify-between items-end mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <span class="font-bold text-slate-500 text-sm uppercase tracking-wider">Total Inversión</span>
+                <span id="totalCarrito" class="text-3xl font-black text-brand-dark">S/. 0.00</span>
             </div>
             
-            <form id="formCheckout" class="space-y-3 pt-2">
-                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Datos del Cliente Mayorista</h4>
-                <input type="text" id="cliNombre" required placeholder="Razón Social / Nombre" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-sm focus:outline-none focus:border-[#FF9F1C]">
-                <input type="email" id="cliCorreo" required placeholder="Correo Electrónico" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-sm focus:outline-none focus:border-[#FF9F1C]">
-                
-                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider pt-2">Pasarela de Pago (Simulada)</h4>
-                <div class="bg-white border border-gray-200 rounded-xl p-3 space-y-2 shadow-inner">
-                    <input type="text" id="bankTarjeta" required maxlength="16" placeholder="💳 Número de Tarjeta (16 dígitos)" class="w-full bg-gray-50 p-2 text-sm border-b focus:outline-none">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="bankExp" required maxlength="5" placeholder="MM/AA" class="bg-gray-50 p-2 text-sm border-r text-center focus:outline-none">
-                        <input type="password" id="bankCvv" required maxlength="3" placeholder="CVV" class="bg-gray-50 p-2 text-sm text-center focus:outline-none">
+            <form id="formCheckout" class="space-y-5">
+                <div class="space-y-3">
+                    <input type="text" id="cliNombre" required placeholder="Razón Social del Cliente" class="w-full bg-white border border-slate-200 rounded-xl p-3.5 text-sm font-inter focus:ring-2 focus:ring-brand-accent outline-none">
+                    <input type="email" id="cliCorreo" required placeholder="Correo de Contacto" class="w-full bg-white border border-slate-200 rounded-xl p-3.5 text-sm font-inter focus:ring-2 focus:ring-brand-accent outline-none">
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-800 text-white relative overflow-hidden">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">lock</span> Pasarela de Pago</h4>
+                    <input type="text" id="bankTarjeta" required maxlength="16" placeholder="0000 0000 0000 0000" class="w-full bg-transparent border-b border-slate-600 pb-2 mb-3 text-lg font-mono tracking-widest outline-none focus:border-brand-accent">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="bankExp" required maxlength="5" placeholder="MM/AA" class="bg-transparent border-b border-slate-600 pb-1 text-sm font-mono text-center outline-none focus:border-brand-accent">
+                        <input type="password" id="bankCvv" required maxlength="3" placeholder="CVV" class="bg-transparent border-b border-slate-600 pb-1 text-sm font-mono text-center outline-none focus:border-brand-accent">
                     </div>
                 </div>
-                
-                <button type="submit" class="w-full mt-4 bg-[#FF9F1C] hover:bg-[#e08a10] text-white p-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-sm">lock</span>
-                    Procesar Requerimiento e Inyectar Kardex
+                <button type="submit" class="w-full bg-brand-dark hover:bg-slate-800 text-white p-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-xl hover:-translate-y-0.5">
+                    Generar Orden e Integrar a Kardex
+                    <span class="material-symbols-outlined text-brand-accent">arrow_forward</span>
                 </button>
             </form>
         </div>
     </div>
 
-    <div id="modalFicha" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-3xl p-6 max-w-md w-full mx-4 shadow-xl relative">
-            <button onclick="cerrarModalFicha()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                <span class="material-symbols-outlined">close</span>
+    <div id="modalFicha" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[999] hidden opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-white rounded-[2rem] max-w-md w-full shadow-2xl relative overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-100 to-white"></div>
+            
+            <button onclick="cerrarModalFicha()" class="absolute top-4 right-4 w-10 h-10 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center text-slate-500 hover:text-white hover:bg-red-500 z-50 transition-all cursor-pointer">
+                <span class="material-symbols-outlined font-bold">close</span>
             </button>
-            <div class="flex flex-col items-center">
-                <div class="w-32 h-32 bg-gray-50 rounded-2xl overflow-hidden mb-4 border flex items-center justify-center">
-                    <img id="fichaImagen" src="" alt="Prenda" class="h-full w-full object-cover">
+            
+            <div class="relative z-10 px-8 pt-8 pb-10 flex flex-col items-center">
+                <div class="w-48 h-48 bg-white rounded-3xl shadow-xl mb-6 p-4 border border-slate-50 flex items-center justify-center relative group">
+                    <img id="fichaImagen" src="" alt="Prenda" class="h-full w-full object-contain drop-shadow-md">
                 </div>
-                <h3 id="fichaNombre" class="font-black text-gray-800 text-lg">Polo Camisero Rip</h3>
-                <span id="fichaCodigo" class="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md mt-1">COD PT: 21001</span>
-                <div id="fichaPrecio" class="text-xl font-extrabold text-emerald-600 mt-2">S/. 0.00</div>
-                <p id="fichaDescripcion" class="text-xs text-gray-500 text-center mt-3 leading-relaxed border-t pt-3">Cargando especificaciones...</p>
+                <span id="fichaCodigo" class="text-xs font-mono font-bold text-brand-accent bg-amber-50 px-3 py-1 rounded-full mb-3 border border-amber-100">COD: 00000</span>
+                <h3 id="fichaNombre" class="font-extrabold text-brand-dark text-2xl text-center mb-2">Producto Industrial</h3>
+                <div id="fichaPrecio" class="text-3xl font-black text-emerald-600 mb-6">S/. 0.00</div>
+                <div class="w-full bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                    <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[14px]">tune</span> Especificaciones Técnicas
+                    </h5>
+                    <p id="fichaDescripcion" class="text-sm font-inter text-slate-600 leading-relaxed">Cargando datos...</p>
+                </div>
             </div>
         </div>
     </div>

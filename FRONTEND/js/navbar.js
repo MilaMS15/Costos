@@ -44,7 +44,7 @@ function cargarNavbar() {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            z-index: 1000;
+            z-index: 50; /* <--- ¡ESTE ES EL CAMBIO CLAVE! Antes era 1000 */
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             font-family: 'Inter', sans-serif;
             font-size: 14px;
