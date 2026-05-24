@@ -766,9 +766,8 @@ def api_mod_cif_productos():
 @app.route('/api/mod-cif/calcular/<int:codigo_producto>', methods=['GET'])
 def api_mod_cif_calcular(codigo_producto):
     """
-    Calcula MOD y CIF para un producto específico.
-    El CIF se obtiene de la tabla cif_mensual según el período seleccionado.
-    Por defecto usa el mes anterior (último mes cerrado).
+    Calcula MOD, CIF, GA y GV para un producto específico.
+    GA y GV se calculan usando % Part. Ventas del producto.
     """
     try:
         from datetime import datetime
@@ -782,53 +781,101 @@ def api_mod_cif_calcular(codigo_producto):
         
         # Determinar período a usar
         if periodo_solicitado:
-            # Verificar que no sea el mes actual
             if periodo_solicitado == mes_actual:
-                # Si es mes actual, usar mes anterior
                 periodo_usado = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m")
-                print(f"⚠️ Período solicitado {periodo_solicitado} es mes actual. Usando {periodo_usado}")
             else:
                 periodo_usado = periodo_solicitado
         else:
-            # Por defecto: mes anterior (último mes cerrado)
             periodo_usado = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m")
         
-        print(f"📅 Calculando CIF para período: {periodo_usado}")
+        print(f"📅 Calculando para período: {periodo_usado}")
         
         # ============================================
-        # 2. OBTENER DATOS DE LAS TABLAS
+        # 2. OBTENER DATOS DE VENTAS DEL PERÍODO
+        # ============================================
+        # 🔥 NUEVO: Usar VENTAS_DEMO pero estructurado para obtener % ventas
+        ventas_mes = VENTAS_DEMO.get(periodo_usado, {})
+        
+        # Calcular total de ventas del mes (en soles)
+        total_ventas_mes = sum(v[0] * v[1] for v in ventas_mes.values()) if ventas_mes else 1
+        
+        # Obtener ventas del producto específico
+        if codigo_producto in ventas_mes:
+            cantidad_vendida = ventas_mes[codigo_producto][0]
+            precio_producto = ventas_mes[codigo_producto][1]
+            ventas_producto = cantidad_vendida * precio_producto
+        else:
+            cantidad_vendida = 0
+            ventas_producto = 0
+            precio_producto = 0
+        
+        # Calcular % Part. Ventas del producto
+        if total_ventas_mes > 0 and ventas_producto > 0:
+            pct_ventas = (ventas_producto / total_ventas_mes) * 100
+        else:
+            pct_ventas = 0
+        
+        print(f"📊 Ventas producto: S/ {ventas_producto:.2f} ({pct_ventas:.2f}% del total)")
+        
+        # ============================================
+        # 3. OBTENER GA TOTAL (desde tablaga)
+        # ============================================
+        try:
+            ga_result = supabase_client.table('tablaga').select('monto').execute()
+            ga_total = sum(float(g.get('monto', 0) or 0) for g in (ga_result.data or []))
+            print(f"💰 GA Total desde tablaga: S/ {ga_total:.2f}")
+        except Exception as e:
+            print(f"❌ Error obteniendo GA: {e}")
+            ga_total = 0
+        
+        # ============================================
+        # 4. OBTENER GV TOTAL (desde tablagv)
+        # ============================================
+        try:
+            gv_result = supabase_client.table('tablagv').select('monto').execute()
+            gv_total = sum(float(g.get('monto', 0) or 0) for g in (gv_result.data or []))
+            print(f"💰 GV Total desde tablagv: S/ {gv_total:.2f}")
+        except Exception as e:
+            print(f"❌ Error obteniendo GV: {e}")
+            gv_total = 0
+        
+        # ============================================
+        # 5. CALCULAR GA Y GV POR PRODUCTO (usando % Ventas)
+        # ============================================
+        # 🔥 FÓRMULA CORRECTA: GA_producto = GA_total * (%Ventas_producto / 100)
+        factor_ventas = pct_ventas / 100 if pct_ventas > 0 else 0
+        
+        ga_producto = ga_total * factor_ventas
+        gv_producto = gv_total * factor_ventas
+        
+        # GA y GV POR UNIDAD (lo que se muestra en el frontend)
+        if cantidad_vendida > 0:
+            ga_por_unidad = ga_producto / cantidad_vendida
+            gv_por_unidad = gv_producto / cantidad_vendida
+        else:
+            ga_por_unidad = 0
+            gv_por_unidad = 0
+        
+        print(f"📊 GA asignado al producto: S/ {ga_producto:.2f} (por unidad: S/ {ga_por_unidad:.4f})")
+        print(f"📊 GV asignado al producto: S/ {gv_producto:.2f} (por unidad: S/ {gv_por_unidad:.4f})")
+        
+        # ============================================
+        # 6. OBTENER DATOS DE LAS DEMÁS TABLAS
         # ============================================
         personal = PersonalService.listar_todo()
         productos = ProductoService.listar_todo()
         receta_mo = RecetaManoObraService.listar_todo()
         
-     
         # Obtener CIF del período específico desde cif_mensual
-        print(f"🔍 Buscando CIF para período: {periodo_usado}")
-
         try:
-            # Consulta directa a Supabase
             cif_result = supabase_client.table('cif_mensual').select('*').eq('periodo', periodo_usado).execute()
             cif_data = cif_result.data or []
-            print(f"📊 CIF encontrados para {periodo_usado}: {len(cif_data)}")
-            
-            if cif_data:
-                for c in cif_data[:3]:
-                    print(f"   - {c.get('codigocif')}: {c.get('denominacion')} - S/ {c.get('monto')}")
         except Exception as e:
             print(f"❌ Error consultando cif_mensual: {e}")
             cif_data = []
-
-        print(f"📋 Total CIF encontrados: {len(cif_data)}")
-        if cif_data:
-            print(f"   - Primer CIF: {cif_data[0].get('codigocif')} - {cif_data[0].get('denominacion')} - S/ {cif_data[0].get('monto')}")
-        
-        # Obtener GA y GV (estáticos o también por período?)
-        ga_data = GAService.listar_todo()
-        gv_data = GVService.listar_todo()
         
         # ============================================
-        # 3. FILTRAR RECETA DEL PRODUCTO
+        # 7. FILTRAR RECETA DEL PRODUCTO
         # ============================================
         receta_producto = [
             r for r in receta_mo
@@ -837,56 +884,33 @@ def api_mod_cif_calcular(codigo_producto):
         
         usa_base = False
         if not receta_producto:
-            # Si no tiene receta, usar producto base 21001
             receta_producto = [
                 r for r in receta_mo
                 if str(campo(r, ['codigoproducto', 'CodigoProducto'])) == "21001"
             ]
             usa_base = True
-            print(f"📌 Usando MOD base del producto 21001 para {codigo_producto}")
+            print(f"📌 Usando MOD base del producto 21001")
         
         # ============================================
-        # 4. OBTENER DATOS DEL PLAN DE PRODUCCIÓN
-        # ============================================
-        ventas_mes = VENTAS_DEMO.get(periodo_usado, {})
-        
-        cantidad_vendida = 0
-        pct_ventas = 0.0
-        
-        if codigo_producto in ventas_mes:
-            cantidad_vendida = ventas_mes[codigo_producto][0]
-        
-        total_ventas_mes = sum(v[0] * v[1] for v in ventas_mes.values()) if ventas_mes else 1
-        ventas_producto = cantidad_vendida * (ventas_mes.get(codigo_producto, (0, 0))[1] if codigo_producto in ventas_mes else 0)
-        
-        if total_ventas_mes > 0 and ventas_producto > 0:
-            pct_ventas = (ventas_producto / total_ventas_mes) * 100
-        
-        print(f"📊 Ventas para {periodo_usado}: {cantidad_vendida} unidades ({pct_ventas:.1f}% del total)")
-        
-        # ============================================
-        # 5. CALCULAR MOD (MANO DE OBRA DIRECTA)
+        # 8. CALCULAR MOD (MANO DE OBRA DIRECTA)
         # ============================================
         mod_items = []
         total_mod = 0.0
-        minutos_mod_producto = 0.0  # Para usar en distribución de CIF
+        minutos_mod_producto = 0.0
         
-        # Calcular total de minutos efectivos de TODOS los trabajadores (para factor CIF)
+        # Calcular total de minutos efectivos de TODOS los trabajadores
         total_minutos_efectivos = 0
         
         for p in personal:
             tiempo_total = n(campo(p, ['tiempototal_min', 'TiempoTotal_min']))
             productividad = n(campo(p, ['productividad', 'Productividad']))
-            
             if productividad == 0:
                 productividad = 1.0
-            
             tiempo_efectivo = tiempo_total * productividad
             total_minutos_efectivos += tiempo_efectivo
         
         if total_minutos_efectivos == 0:
             total_minutos_efectivos = 1
-            print("⚠️ Total minutos efectivos = 0, usando 1 para evitar división")
         
         # Calcular MOD del producto
         for r in receta_producto:
@@ -902,7 +926,6 @@ def api_mod_cif_calcular(codigo_producto):
                     break
             
             if trabajador is None:
-                print(f"⚠️ Trabajador {cod_trabajador} no encontrado")
                 continue
             
             puesto = campo(trabajador, ['puestotrabajo', 'PuestoTrabajo']) or 'N/A'
@@ -913,7 +936,6 @@ def api_mod_cif_calcular(codigo_producto):
             if productividad_trab == 0:
                 productividad_trab = 1.0
             
-            # Tiempo efectivo del trabajador
             tiempo_efectivo_trab = tiempo_total * productividad_trab
             
             # Costo por minuto
@@ -939,25 +961,19 @@ def api_mod_cif_calcular(codigo_producto):
                 'importe': round(importe_mod, 4)
             })
         
-        print(f"✅ MOD calculado: {total_mod:.4f}")
-        print(f"📊 Minutos MOD producto (efectivos): {minutos_mod_producto:.2f}")
-        
         # ============================================
-        # 6. CALCULAR CIF (COSTOS INDIRECTOS) desde cif_mensual
+        # 9. CALCULAR CIF (COSTOS INDIRECTOS)
         # ============================================
         cif_items = []
         total_cif = 0.0
         
         if cif_data:
-            print(f"📋 Procesando {len(cif_data)} conceptos CIF para período {periodo_usado}")
-            
             for c in cif_data:
                 codigo_cif = c.get('codigocif', '')
                 concepto = c.get('denominacion', 'N/A')
                 monto_mensual = n(c.get('monto', 0))
                 
                 # Distribuir CIF según minutos MOD del producto
-                # Fórmula: (Minutos MOD del producto / Total minutos efectivos) * Monto CIF mensual
                 factor_distribucion = minutos_mod_producto / total_minutos_efectivos if total_minutos_efectivos > 0 else 0
                 importe_cif = monto_mensual * factor_distribucion
                 
@@ -967,14 +983,11 @@ def api_mod_cif_calcular(codigo_producto):
                     'codigo': codigo_cif,
                     'concepto': concepto,
                     'monto_mensual': round(monto_mensual, 2),
-                    'total_minutos_efectivos': round(total_minutos_efectivos, 2),
-                    'minutos_mod_producto': round(minutos_mod_producto, 2),
                     'factor_distribucion': round(factor_distribucion * 100, 4),
                     'importe_unitario': round(importe_cif, 4)
                 })
         else:
-            print(f"⚠️ No hay CIF registrados para {periodo_usado}, usando CIF estáticos de tablacif")
-            # Fallback: usar CIF de la tabla original (estática)
+            # Fallback
             cif_static = CIFService.listar_todo()
             for c in cif_static:
                 concepto = campo(c, ['denominacion', 'Denominacion']) or 'N/A'
@@ -992,25 +1005,13 @@ def api_mod_cif_calcular(codigo_producto):
                     'es_demo': True
                 })
         
-        print(f"✅ CIF calculado: {total_cif:.4f}")
-        
         # ============================================
-        # 7. CALCULAR GA Y GV (Gastos Administrativos y Ventas)
-        # ============================================
-        total_ga = sum(n(campo(g, ['monto', 'Monto'])) for g in ga_data)
-        total_gv = sum(n(campo(g, ['monto', 'Monto'])) for g in gv_data)
-        total_unidades_mes = sum(v[0] for v in ventas_mes.values()) if ventas_mes else 1
-        
-        ga_por_unidad = total_ga / total_unidades_mes if total_unidades_mes > 0 else 0
-        gv_por_unidad = total_gv / total_unidades_mes if total_unidades_mes > 0 else 0
-        
-        # ============================================
-        # 8. TOTAL GENERAL DEL PRODUCTO
+        # 10. TOTAL GENERAL DEL PRODUCTO
         # ============================================
         total_general = total_mod + total_cif + ga_por_unidad + gv_por_unidad
         
         # ============================================
-        # 9. OBTENER NOMBRE DEL PRODUCTO
+        # 11. OBTENER NOMBRE DEL PRODUCTO
         # ============================================
         nombre_producto = ''
         for p in productos:
@@ -1019,7 +1020,7 @@ def api_mod_cif_calcular(codigo_producto):
                 break
         
         # ============================================
-        # 10. RESPONDER CON RESULTADOS
+        # 12. RESPONDER CON RESULTADOS
         # ============================================
         return jsonify({
             'success': True,
@@ -1031,40 +1032,33 @@ def api_mod_cif_calcular(codigo_producto):
                 'periodo_cif': {
                     'usado': periodo_usado,
                     'solicitado': periodo_solicitado,
-                    'es_mes_actual': periodo_usado == mes_actual,
                     'hay_datos_cif': len(cif_data) > 0
                 },
-                'mod': {
-                    'items': mod_items,
-                    'total': round(total_mod, 4),
-                    'minutos_totales_producto': round(minutos_mod_producto, 2)
-                },
-                'moi': {  # Mantener por si el frontend espera 'moi'
-                    'items': cif_items,
-                    'total': round(total_cif, 4)
-                },
-
-
-                'cif': {
-                    'items': cif_items,
-                    'total': round(total_cif, 4),
-                    'total_minutos_efectivos': round(total_minutos_efectivos, 2)
-                },
-
-
-
-                'ga': round(ga_por_unidad, 4),
-                'gv': round(gv_por_unidad, 4),
-                'total_general': round(total_general, 4),
-                'usa_base_mod': usa_base,
                 'info_plan': {
                     'mes': periodo_usado,
                     'cantidad_vendida': cantidad_vendida,
                     'pct_ventas': round(pct_ventas, 2),
                     'ventas_producto': round(ventas_producto, 2),
                     'total_ventas_mes': round(total_ventas_mes, 2),
-                    'total_unidades_mes': total_unidades_mes
-                }
+                    'ga_total': round(ga_total, 2),
+                    'gv_total': round(gv_total, 2),
+                    'ga_producto': round(ga_producto, 2),
+                    'gv_producto': round(gv_producto, 2)
+                },
+                'mod': {
+                    'items': mod_items,
+                    'total': round(total_mod, 4),
+                    'minutos_totales_producto': round(minutos_mod_producto, 2)
+                },
+                'cif': {
+                    'items': cif_items,
+                    'total': round(total_cif, 4),
+                    'total_minutos_efectivos': round(total_minutos_efectivos, 2)
+                },
+                'ga': round(ga_por_unidad, 4),
+                'gv': round(gv_por_unidad, 4),
+                'total_general': round(total_general, 4),
+                'usa_base_mod': usa_base
             }
         })
         
@@ -1073,7 +1067,6 @@ def api_mod_cif_calcular(codigo_producto):
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-
 # ============================================
 # API CIF MENSUAL (NUEVO)
 # ============================================
@@ -1205,6 +1198,55 @@ def eliminar_cif_mensual(periodo):
         return jsonify({'success': True, 'mensaje': f'CIF de {periodo} eliminados'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+# ============================================
+# API GA (Gastos Administrativos)
+# ============================================
+
+@app.route('/api/ga', methods=['GET'])
+def api_listar_ga():
+    """Listar todos los gastos administrativos"""
+    try:
+        result = supabase_client.table('tablaga').select('*').execute()
+        return jsonify({'success': True, 'data': result.data or []})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/ga/total', methods=['GET'])
+def api_total_ga():
+    """Obtener total de gastos administrativos"""
+    try:
+        result = supabase_client.table('tablaga').select('monto').execute()
+        total = sum(float(r.get('monto', 0) or 0) for r in (result.data or []))
+        return jsonify({'success': True, 'total': round(total, 2)})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============================================
+# API GV (Gastos de Ventas)
+# ============================================
+
+@app.route('/api/gv', methods=['GET'])
+def api_listar_gv():
+    """Listar todos los gastos de ventas"""
+    try:
+        result = supabase_client.table('tablagv').select('*').execute()
+        return jsonify({'success': True, 'data': result.data or []})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/gv/total', methods=['GET'])
+def api_total_gv():
+    """Obtener total de gastos de ventas"""
+    try:
+        result = supabase_client.table('tablagv').select('monto').execute()
+        total = sum(float(r.get('monto', 0) or 0) for r in (result.data or []))
+        return jsonify({'success': True, 'total': round(total, 2)})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 # ============================================
 # DIAGNÓSTICO CIF MENSUAL
 # ============================================

@@ -5,28 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unik'a | Costos Industriales</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="js/config.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; padding-top: 70px; }
-        .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        body { font-family: 'Inter', sans-serif; padding-top: 70px; background: #f0fdf4; }
+        .kpi-card { transition: all 0.3s ease; backdrop-filter: blur(10px); }
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.15); }
+        .profit-positive { border-left: 4px solid #10b981; }
+        .profit-negative { border-left: 4px solid #ef4444; }
+        .animate-pulse-slow { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
     <script src="js/navbar.js"></script>
     
-    <main class="content-area">
-        <div class="bg-white rounded-2xl shadow-sm p-8 max-w-2xl mx-auto text-center mt-12">
-            <div class="w-16 h-16 bg-blue-50 text-[#1B263B] rounded-full flex items-center justify-center mx-auto mb-4">
-                <span class="material-symbols-outlined text-3xl">calculate</span>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header con selector de período -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-[#1B263B] mb-2">💰 Costos Industriales</h1>
+                <p class="text-gray-600">Análisis financiero - Estructura de costos y rentabilidad</p>
             </div>
-            <h1 class="text-2xl font-bold text-[#1B263B] mb-2">📐 Menú 4: Costos Industriales</h1>
-            <p class="text-gray-500 mb-6 text-sm">Este espacio está reservado para la gestión de costos de producción, análisis de puntos de equilibrio y hojas de costos por órdenes.</p>
-            
-            <div class="p-4 bg-gray-50 rounded-xl inline-flex items-center gap-2 border border-gray-100 text-sm font-medium text-gray-600">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span id="status-backend">Verificando conexión con el servidor...</span>
+            <div class="flex gap-3">
+                <select id="periodoSelector" class="px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                    <option value="2026-04">Abril 2026</option>
+                    <option value="2026-03">Marzo 2026</option>
+                    <option value="2026-02">Febrero 2026</option>
+                    <option value="2026-01">Enero 2026</option>
+                </select>
+                <button onclick="cargarDashboard()" class="bg-[#FF9F1C] text-white px-6 py-2 rounded-xl font-semibold hover:bg-[#e88a0a] transition flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">refresh</span>
+                    Actualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIs Principales -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="kpisPrincipales">
+            <!-- Se llena con JS -->
+        </div>
+
+        <!-- Gráficos de Estructura -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4">📊 Estructura de Costos de Producción</h3>
+                <canvas id="costosChart" height="250"></canvas>
+                <div class="mt-4 text-center text-sm text-gray-500" id="costosTotales"></div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4">📈 Rentabilidad vs Mes Anterior</h3>
+                <canvas id="comparativaChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <!-- KPIs Clave -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-blue-50 to-white rounded-2xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="material-symbols-outlined text-blue-600 text-3xl">shopping_cart</span>
+                    <span class="text-xs text-gray-400">Punto de Equilibrio</span>
+                </div>
+                <p class="text-2xl font-bold text-blue-800" id="puntoEquilibrio">-</p>
+                <p class="text-sm text-gray-600 mt-2">Unidades necesarias para cubrir costos fijos</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-50 to-white rounded-2xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="material-symbols-outlined text-green-600 text-3xl">trending_up</span>
+                    <span class="text-xs text-gray-400">Margen de Contribución</span>
+                </div>
+                <p class="text-2xl font-bold text-green-800" id="margenContribucion">-</p>
+                <p class="text-sm text-gray-600 mt-2">Porcentaje que cubre costos fijos</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-50 to-white rounded-2xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="material-symbols-outlined text-purple-600 text-3xl">payments</span>
+                    <span class="text-xs text-gray-400">ROI Estimado</span>
+                </div>
+                <p class="text-2xl font-bold text-purple-800" id="roi">-</p>
+                <p class="text-sm text-gray-600 mt-2">Retorno sobre inversión</p>
+            </div>
+        </div>
+
+        <!-- Rentabilidad por Producto -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-4">🏆 Rentabilidad por Producto</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ventas</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Costo Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utilidad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Margen</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaProductos" class="divide-y divide-gray-200">
+                        <!-- Se llena con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Alertas y Recomendaciones -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-yellow-600">warning</span>
+                    Alertas de Gestión
+                </h3>
+                <div id="alertasContainer"></div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-blue-600">lightbulb</span>
+                    Recomendaciones
+                </h3>
+                <div id="recomendacionesContainer"></div>
             </div>
         </div>
     </main>

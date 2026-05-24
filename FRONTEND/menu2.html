@@ -3,33 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unik'a | Menú 1</title>
+    <title>Unik'a | Dashboard de Producción</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="js/config.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; padding-top: 70px; }
-        .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        body { font-family: 'Inter', sans-serif; padding-top: 70px; background: #f8fafc; }
+        .kpi-card { transition: all 0.3s ease; }
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1); }
+        .alert-critical { background: linear-gradient(135deg, #fee2e2 0%, #ffc4c4 100%); border-left: 4px solid #dc2626; }
+        .alert-warning { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; }
     </style>
 </head>
 <body>
     <script src="js/navbar.js"></script>
     
-    <main class="content-area">
-        <div class="bg-white rounded-2xl shadow-sm p-8">
-            <h1 class="text-2xl font-bold text-[#1B263B] mb-4">📋 Menú 1</h1>
-            <p class="text-gray-600 mb-6">Aquí va el contenido específico del Menú 1.</p>
-            
-            <!-- Aquí tu amigo puede poner su contenido -->
-            <div id="app">
-                <button onclick="cargarDatos()" class="bg-[#FF9F1C] text-white px-6 py-3 rounded-xl font-bold">
-                    Cargar Datos
-                </button>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-[#1B263B] mb-2">📊 Dashboard de Producción</h1>
+            <p class="text-gray-600">KPIs en tiempo real - Monitoreo de eficiencia y costos</p>
+        </div>
+
+        <!-- KPIs Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="kpisGrid">
+            <!-- Se llenará con JS -->
+        </div>
+
+        <!-- Gráficos -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4">📈 Evolución de Órdenes</h3>
+                <canvas id="ordenesChart" height="200"></canvas>
             </div>
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4">💰 Costos de Producción</h3>
+                <canvas id="costosChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Tabla de Alertas -->
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+            <h3 class="text-lg font-semibold mb-4">⚠️ Alertas de Producción</h3>
+            <div id="alertasContainer"></div>
         </div>
     </main>
 
-    <script src="js/menu1.js"></script>
+    <script src="js/menu2.js"></script>
 </body>
 </html>

@@ -3,33 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unik'a | Menú 1</title>
+    <title>Unik'a | Configuración del Sistema</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="js/config.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; padding-top: 70px; }
-        .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        body { font-family: 'Inter', sans-serif; padding-top: 70px; background: #f1f5f9; }
+        .settings-card { transition: all 0.3s ease; }
+        .settings-card:hover { transform: translateY(-2px); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1); }
+        .nav-tab-active { background: #FF9F1C; color: white; }
+        .nav-tab-inactive { background: #f1f5f9; color: #64748b; }
     </style>
 </head>
 <body>
     <script src="js/navbar.js"></script>
-    
-    <main class="content-area">
-        <div class="bg-white rounded-2xl shadow-sm p-8">
-            <h1 class="text-2xl font-bold text-[#1B263B] mb-4">📋 Menú 1</h1>
-            <p class="text-gray-600 mb-6">Aquí va el contenido específico del Menú 1.</p>
-            
-            <!-- Aquí tu amigo puede poner su contenido -->
-            <div id="app">
-                <button onclick="cargarDatos()" class="bg-[#FF9F1C] text-white px-6 py-3 rounded-xl font-bold">
-                    Cargar Datos
-                </button>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">⚙️ Configuración del Sistema</h1>
+            <p class="text-gray-500 mt-1">Administra usuarios, parámetros y mantenimiento del sistema</p>
+        </div>
+
+        <!-- Navegación por tabs -->
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-200">
+            <button onclick="mostrarTab('general')" id="tab-general" class="px-6 py-3 rounded-t-xl font-medium transition nav-tab-active">
+                🏢 General
+            </button>
+            <button onclick="mostrarTab('usuarios')" id="tab-usuarios" class="px-6 py-3 rounded-t-xl font-medium transition nav-tab-inactive">
+                👥 Usuarios
+            </button>
+            <button onclick="mostrarTab('respaldo')" id="tab-respaldo" class="px-6 py-3 rounded-t-xl font-medium transition nav-tab-inactive">
+                💾 Respaldos
+            </button>
+            <button onclick="mostrarTab('auditoria')" id="tab-auditoria" class="px-6 py-3 rounded-t-xl font-medium transition nav-tab-inactive">
+                📋 Auditoría
+            </button>
+            <button onclick="mostrarTab('sistema')" id="tab-sistema" class="px-6 py-3 rounded-t-xl font-medium transition nav-tab-inactive">
+                🖥️ Estado Sistema
+            </button>
+            <button onclick="mostrarTab('notificaciones')" id="tab-notificaciones" class="px-6 py-3 rounded-t-xl font-medium transition nav-tab-inactive">
+                🔔 Notificaciones
+            </button>
+        </div>
+
+        <!-- Contenido de las tabs -->
+        <div id="tab-general-content" class="tab-content">
+            <!-- Configuración General -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">🏢 Configuración de la Empresa</h2>
+                <form id="configForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de la Empresa</label>
+                        <input type="text" id="empresa_nombre" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">RUC</label>
+                        <input type="text" id="empresa_ruc" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
+                        <input type="text" id="empresa_direccion" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
+                        <input type="text" id="empresa_telefono" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="empresa_email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Moneda</label>
+                        <select id="moneda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                            <option value="PEN">Sol Peruano (S/)</option>
+                            <option value="USD">Dólar Americano ($)</option>
+                            <option value="EUR">Euro (€)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">IGV (%)</label>
+                        <input type="number" id="impuesto_igv" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Impuesto a la Renta (%)</label>
+                        <input type="number" id="impuesto_renta" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9F1C] focus:border-transparent">
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="bg-[#FF9F1C] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#e88a0a] transition">
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="tab-usuarios-content" class="tab-content hidden">
+            <!-- Gestión de Usuarios -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">👥 Usuarios del Sistema</h2>
+                    <button onclick="mostrarModalUsuario()" class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                        Nuevo Usuario
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Email</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Rol</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Fecha Registro</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Último Acceso</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuariosTable" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-respaldo-content" class="tab-content hidden">
+            <!-- Respaldos -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">💾 Respaldos de Base de Datos</h2>
+                    <button onclick="crearRespaldo()" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">backup</span>
+                        Crear Respaldo
+                    </button>
+                </div>
+                
+                <div class="mb-6 p-4 bg-yellow-50 rounded-lg">
+                    <p class="text-sm text-yellow-800">⚠️ Los respaldos se guardan automáticamente cada 24 horas. Recomendamos crear un respaldo manual antes de hacer cambios importantes.</p>
+                </div>
+                
+                <div id="respaldosLista" class="space-y-2"></div>
+                
+                <div class="mt-6 p-4 bg-red-50 rounded-lg">
+                    <h3 class="font-semibold text-red-800 mb-2">🗑️ Limpieza de Datos</h3>
+                    <div class="flex gap-3 flex-wrap">
+                        <button onclick="limpiarDatos('logs_antiguos')" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm">Limpiar Logs Antiguos</button>
+                        <button onclick="limpiarDatos('cache')" class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm">Limpiar Caché</button>
+                        <button onclick="limpiarDatos('temporales')" class="px-4 py-2 bg-gray-600 text-white rounded-lg text-sm">Limpiar Archivos Temporales</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-auditoria-content" class="tab-content hidden">
+            <!-- Auditoría -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">📋 Registro de Auditoría</h2>
+                <div class="mb-4 flex justify-between items-center">
+                    <p class="text-sm text-gray-500">Últimas 100 acciones registradas</p>
+                    <button onclick="exportarAuditoria()" class="text-sm text-blue-600 hover:text-blue-800">Exportar CSV</button>
+                </div>
+                <div class="overflow-x-auto max-h-96 overflow-y-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Fecha</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Usuario</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Acción</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditoriaTable" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-sistema-content" class="tab-content hidden">
+            <!-- Estado del Sistema -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl shadow-sm p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">🖥️ Estado del Sistema</h2>
+                    <div id="estadoSistema" class="space-y-4"></div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">📊 Estadísticas de Base de Datos</h2>
+                    <div id="estadisticasDB" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-notificaciones-content" class="tab-content hidden">
+            <!-- Notificaciones -->
+            <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">🔔 Configuración de Notificaciones</h2>
+                <form id="notificacionesForm" class="space-y-6">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-800">Alertas de Stock Bajo</p>
+                            <p class="text-sm text-gray-500">Recibir alertas cuando el stock de materiales esté por debajo del mínimo</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="alertas_stock" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-800">Reportes Automáticos</p>
+                            <p class="text-sm text-gray-500">Enviar reportes de costos por correo automáticamente</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="reportes_automaticos" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email para Notificaciones</label>
+                        <input type="email" id="email_admin" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Frecuencia de Reportes</label>
+                        <select id="frecuencia_reportes" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="diario">Diario</option>
+                            <option value="semanal">Semanal</option>
+                            <option value="mensual">Mensual</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-[#FF9F1C] text-white px-6 py-2 rounded-lg font-semibold">Guardar Configuración</button>
+                </form>
             </div>
         </div>
     </main>
 
-    <script src="js/menu1.js"></script>
+    <!-- Modal para nuevo usuario (simplificado) -->
+    <div id="modalUsuario" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Nuevo Usuario</h3>
+            <input type="email" id="nuevo_email" placeholder="Email" class="w-full px-4 py-2 border rounded-lg mb-3">
+            <input type="password" id="nuevo_password" placeholder="Contraseña" class="w-full px-4 py-2 border rounded-lg mb-3">
+            <select id="nuevo_rol" class="w-full px-4 py-2 border rounded-lg mb-4">
+                <option value="usuario">Usuario</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <div class="flex gap-3">
+                <button onclick="crearUsuario()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Crear</button>
+                <button onclick="cerrarModalUsuario()" class="flex-1 bg-gray-300 py-2 rounded-lg">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/menu7.js"></script>
 </body>
 </html>

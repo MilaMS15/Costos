@@ -1,173 +1,288 @@
 // FRONTEND/js/menu6.js
+let proyeccionChart;
 
-let chartCostosInstance = null;
-let chartRentabilidadInstance = null;
-
-// Formateador estándar para moneda peruana (Soles)
 const formatMoney = (amount) => {
     const val = parseFloat(amount) || 0;
     return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(val);
 };
 
 async function cargarDashboard() {
-    const mesSeleccionado = document.getElementById('mesSelector').value;
-    const baseApiUrl = (typeof API_URL !== 'undefined' && API_URL) ? API_URL : 'http://localhost:5000/api';
+    const periodo = document.getElementById('periodoSelector').value;
     
-    console.log(`Cargando datos financieros para el periodo: ${mesSeleccionado}`);
-
+    mostrarLoading();
+    
     try {
-        // 1. Llamada al Estado de Resultados Dinámico de app.py
-        const responseER = await fetch(`${baseApiUrl}/estado-resultados/${mesSeleccionado}`);
-        const resultER = await responseER.json();
+        // Cargar datos en paralelo
+        const [flujoCaja, indicadores, alertas, gastos] = await Promise.all([
+            fetch(`${API_URL}/menu6/flujo-caja?periodo=${periodo}`).then(r => r.json()),
+            fetch(`${API_URL}/menu6/indicadores-financieros`).then(r => r.json()),
+            fetch(`${API_URL}/menu6/alertas-financieras`).then(r => r.json()),
+            fetch(`${API_URL}/menu6/gastos-fijos`).then(r => r.json())
+        ]);
         
-        // 2. Llamada al Desglose de Gastos Fijos Reales (GA y GV)
-        const responseGastos = await fetch(`${baseApiUrl}/menu6/finanzas/gastos-fijos`);
-        const resultGastos = await responseGastos.json();
-
-        // Procesar e inyectar Estado de Resultados si es exitoso
-        if (resultER.success && resultER.data) {
-            actualizarKPIs(resultER.data);
-            renderizarGraficoCostos(resultER.data.costos_detalle);
-            renderizarGraficoRentabilidad(resultER.data.productos_rentabilidad || []);
-        } else {
-            console.warn("No se encontraron cálculos de producción para este periodo. Mostrando valores por defecto.");
-            mostrarKPIsVacios();
-        }
-
-        // Procesar e inyectar Gastos Fijos (GA / GV)
-        if (resultGastos.success && resultGastos.data) {
-            actualizarTablaGastos(resultGastos.data);
-        } else {
-            document.getElementById('tabla-gastos-body').innerHTML = `
-                <tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">No se pudieron recuperar las tablas de gastos fijos.</td></tr>
-            `;
-        }
-
+        if (flujoCaja.success) renderFlujoCaja(flujoCaja.data);
+        if (indicadores.success) renderIndicadores(indicadores.data);
+        if (alertas.success) renderAlertas(alertas.data);
+        if (gastos.success) renderGastos(gastos.data, gastos.total);
+        
     } catch (error) {
-        console.error('Error crítico al conectar con la API de finanzas:', error);
-        mostrarKPIsVacios();
+        console.error('Error:', error);
+        mostrarError('Error al cargar datos financieros');
     }
 }
 
-function actualizarKPIs(data) {
-    document.getElementById('kpi-ventas').textContent = formatMoney(data.ventas_netas);
-    document.getElementById('kpi-costos').textContent = formatMoney(data.costos_detalle ? data.costos_detalle.total_costo_ventas : 0);
-    document.getElementById('kpi-gastos').textContent = formatMoney(data.total_gastos_operativos);
+function renderFlujoCaja(data) {
+    document.getElementById('saldoInicial').textContent = formatMoney(data.saldo_inicial);
+    document.getElementById('ingresos').textContent = formatMoney(data.ingresos_periodo);
+    document.getElementById('egresos').textContent = formatMoney(data.egresos_periodo);
     
-    const utilidad = data.utilidad_neta || 0;
-    const utilidadElem = document.getElementById('kpi-utilidad');
-    utilidadElem.textContent = formatMoney(utilidad);
-    utilidadElem.className = utilidad >= 0 ? "text-2xl font-bold text-green-600" : "text-2xl font-bold text-red-600";
+    const flujoNeto = data.flujo_caja_periodo;
+    const flujoElement = document.getElementById('flujoNeto');
+    const cardFlujo = document.getElementById('cardFlujo');
+    const flujoIcon = document.getElementById('flujoIcon');
+    const flujoDesc = document.getElementById('flujoDescripcion');
     
-    const margen = data.margen_neto || 0;
-    const margenElem = document.getElementById('kpi-margen');
-    margenElem.textContent = `${margen}%`;
-    margenElem.className = margen >= 0 
-        ? "text-sm font-medium bg-green-100 text-green-700 px-2 py-1 rounded-full"
-        : "text-sm font-medium bg-red-100 text-red-700 px-2 py-1 rounded-full";
-}
-
-function mostrarKPIsVacios() {
-    document.getElementById('kpi-ventas').textContent = formatMoney(0);
-    document.getElementById('kpi-costos').textContent = formatMoney(0);
-    document.getElementById('kpi-gastos').textContent = formatMoney(0);
-    document.getElementById('kpi-utilidad').textContent = formatMoney(0);
-    document.getElementById('kpi-utilidad').className = "text-2xl font-bold text-gray-400";
-    document.getElementById('kpi-margen').textContent = "0%";
-    document.getElementById('kpi-margen').className = "text-sm font-medium bg-gray-100 text-gray-500 px-2 py-1 rounded-full";
+    flujoElement.textContent = formatMoney(flujoNeto);
     
-    // Resetear gráficos con datos vacíos
-    renderizarGraficoCostos({ materia_prima: 0, mano_obra_directa: 0, costos_indirectos: 0 });
-    renderizarGraficoRentabilidad([]);
-}
-
-function renderizarGraficoCostos(costos) {
-    const ctx = document.getElementById('chartEstructuraCostos').getContext('2d');
-    if (chartCostosInstance) chartCostosInstance.destroy();
-
-    const mp = costos ? (costos.materia_prima || 0) : 0;
-    const mod = costos ? (costos.mano_obra_directa || 0) : 0;
-    const cif = costos ? (costos.costos_indirectos || 0) : 0;
-
-    chartCostosInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Materia Prima', 'Mano de Obra (MOD)', 'Costos Indirectos (CIF)'],
-            datasets: [{
-                data: [mp, mod, cif],
-                backgroundColor: ['#2563EB', '#F59E0B', '#10B981'],
-                borderWidth: 0
-            }]
+    if (flujoNeto >= 0) {
+        flujoElement.className = 'text-3xl font-bold text-green-600';
+        flujoIcon.className = 'material-symbols-outlined text-green-600 text-3xl';
+        flujoIcon.textContent = 'trending_up';
+        flujoDesc.textContent = 'Flujo de caja positivo ✓';
+        cardFlujo.classList.add('border-l-4', 'border-green-500');
+    } else {
+        flujoElement.className = 'text-3xl font-bold text-red-600';
+        flujoIcon.className = 'material-symbols-outlined text-red-600 text-3xl';
+        flujoIcon.textContent = 'trending_down';
+        flujoDesc.textContent = 'Flujo de caja negativo ⚠️';
+        cardFlujo.classList.add('border-l-4', 'border-red-500');
+    }
+    
+    // Renderizar gráfico de proyección con ApexCharts
+    const proyecciones = data.proyecciones;
+    const opciones = {
+        series: [{
+            name: 'Ingresos',
+            type: 'column',
+            data: proyecciones.map(p => p.ingresos)
+        }, {
+            name: 'Egresos',
+            type: 'column',
+            data: proyecciones.map(p => p.egresos)
+        }, {
+            name: 'Flujo Neto',
+            type: 'line',
+            data: proyecciones.map(p => p.flujo_neto)
+        }],
+        chart: {
+            type: 'line',
+            height: 400,
+            toolbar: { show: true },
+            background: 'transparent'
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } },
-            cutout: '70%'
-        }
-    });
-}
-
-function renderizarGraficoRentabilidad(productos) {
-    const ctx = document.getElementById('chartRentabilidad').getContext('2d');
-    if (chartRentabilidadInstance) chartRentabilidadInstance.destroy();
-
-    const topProductos = productos.slice(0, 5);
-    const labels = topProductos.length > 0 ? topProductos.map(p => p.nombre || `Prod ${p.codigo_producto}`) : ['Sin datos'];
-    const dataValues = topProductos.length > 0 ? topProductos.map(p => p.utilidad_bruta || 0) : [0];
-
-    chartRentabilidadInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Utilidad Bruta (S/)',
-                data: dataValues,
-                backgroundColor: '#6366F1',
-                borderRadius: 6
-            }]
+        colors: ['#3b82f6', '#ef4444', '#10b981'],
+        title: { text: undefined },
+        xaxis: {
+            categories: proyecciones.map(p => p.nombre_mes),
+            title: { text: 'Meses' }
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true, grid: { color: '#E5E7EB' } },
-                x: { grid: { display: false } }
-            },
-            plugins: { legend: { display: false } }
+        yaxis: {
+            title: { text: 'Soles (S/)' },
+            labels: {
+                formatter: function(val) {
+                    return 'S/ ' + val.toLocaleString();
+                }
+            }
+        },
+        tooltip: {
+            shared: true,
+            intersect: false,
+            y: {
+                formatter: function(val) {
+                    return 'S/ ' + val.toLocaleString();
+                }
+            }
+        },
+        stroke: {
+            width: [0, 0, 3],
+            curve: 'smooth'
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: '50%',
+                borderRadius: 8
+            }
         }
-    });
+    };
+    
+    if (proyeccionChart) proyeccionChart.destroy();
+    proyeccionChart = new ApexCharts(document.querySelector("#proyeccionChart"), opciones);
+    proyeccionChart.render();
 }
 
-function actualizarTablaGastos(gastos) {
-    const tbody = document.getElementById('tabla-gastos-body');
-    tbody.innerHTML = '';
+function renderIndicadores(data) {
+    // Liquidez
+    const liquidezHtml = `
+        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+            <div>
+                <p class="text-sm text-gray-600">Liquidez Corriente</p>
+                <p class="text-2xl font-bold ${data.liquidez.liquidez_corriente >= 1.5 ? 'text-green-600' : 'text-red-600'}">${data.liquidez.liquidez_corriente}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-500">Ideal > 1.5</p>
+                <span class="text-xs px-2 py-1 rounded-full ${data.liquidez.liquidez_corriente >= 1.5 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                    ${data.liquidez.rating}
+                </span>
+            </div>
+        </div>
+        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+            <div>
+                <p class="text-sm text-gray-600">Prueba Ácida</p>
+                <p class="text-2xl font-bold ${data.liquidez.prueba_acida >= 1 ? 'text-green-600' : 'text-orange-600'}">${data.liquidez.prueba_acida}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-500">Ideal > 1.0</p>
+            </div>
+        </div>
+        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+            <div>
+                <p class="text-sm text-gray-600">Días de Cobertura</p>
+                <p class="text-2xl font-bold text-blue-600">${data.liquidez.dias_cobertura} días</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-500">Días operando sin ventas</p>
+            </div>
+        </div>
+    `;
+    
+    // Eficiencia
+    const eficienciaHtml = `
+        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+            <div>
+                <p class="text-sm text-gray-600">Ciclo de Efectivo</p>
+                <p class="text-2xl font-bold text-purple-600">${data.eficiencia.ciclo_conversion_efectivo} días</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-500">Días desde pagar hasta cobrar</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+            <div class="text-center p-2 bg-blue-50 rounded-lg">
+                <p class="text-xs text-gray-600">Inventario</p>
+                <p class="text-lg font-bold text-blue-600">${data.eficiencia.dias_inventario}d</p>
+            </div>
+            <div class="text-center p-2 bg-green-50 rounded-lg">
+                <p class="text-xs text-gray-600">Cobro</p>
+                <p class="text-lg font-bold text-green-600">${data.eficiencia.dias_cobro}d</p>
+            </div>
+            <div class="text-center p-2 bg-orange-50 rounded-lg">
+                <p class="text-xs text-gray-600">Pago</p>
+                <p class="text-lg font-bold text-orange-600">${data.eficiencia.dias_pago}d</p>
+            </div>
+        </div>
+        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+            <div>
+                <p class="text-sm text-gray-600">Rentabilidad (ROA)</p>
+                <p class="text-2xl font-bold text-green-600">${data.rentabilidad.roa}%</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-500">Retorno sobre activos</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('indicadoresLiquidez').innerHTML = liquidezHtml;
+    document.getElementById('indicadoresEficiencia').innerHTML = eficienciaHtml;
+}
 
-    if (gastos.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">No hay gastos administrativos ni de ventas registrados.</td></tr>`;
+function renderAlertas(alertas) {
+    const container = document.getElementById('alertasContainer');
+    
+    if (!alertas || alertas.length === 0) {
+        container.innerHTML = `
+            <div class="bg-green-50 rounded-xl p-4 text-center">
+                <span class="material-symbols-outlined text-green-600">check_circle</span>
+                <p class="text-green-700 mt-2">No hay alertas financieras</p>
+            </div>
+        `;
         return;
     }
-
-    gastos.forEach(gasto => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-gray-50 transition-colors border-b border-gray-100";
-        
-        const badgeClass = gasto.tipo.includes('GA') ? "bg-purple-100 text-purple-700" : "bg-pink-100 text-pink-700";
-
-        tr.innerHTML = `
-            <td class="px-4 py-3">
-                <span class="px-2.py-0.5 text-xs font-semibold rounded-full ${badgeClass}">
-                    ${gasto.tipo}
-                </span>
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-700 font-medium">${gasto.denominacion}</td>
-            <td class="px-4 py-3 text-sm font-bold text-gray-900 text-right">${formatMoney(gasto.monto)}</td>
+    
+    const colores = {
+        critical: { bg: 'bg-red-50', border: 'border-red-500', icon: 'error', color: 'text-red-600' },
+        warning: { bg: 'bg-yellow-50', border: 'border-yellow-500', icon: 'warning', color: 'text-yellow-600' },
+        info: { bg: 'bg-blue-50', border: 'border-blue-500', icon: 'info', color: 'text-blue-600' }
+    };
+    
+    container.innerHTML = alertas.map(alerta => {
+        const estilo = colores[alerta.tipo] || colores.info;
+        return `
+            <div class="${estilo.bg} border-l-4 ${estilo.border} p-4 rounded-xl mb-3">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined ${estilo.color}">${estilo.icon}</span>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-800">${alerta.titulo}</p>
+                        <p class="text-sm text-gray-600 mt-1">${alerta.mensaje}</p>
+                        <p class="text-xs text-gray-500 mt-2">🔧 ${alerta.accion}</p>
+                    </div>
+                </div>
+            </div>
         `;
-        tbody.appendChild(tr);
-    });
+    }).join('');
 }
 
-// Inicialización automática al cargar el documento
+function renderGastos(gastos, total) {
+    const container = document.getElementById('gastosLista');
+    
+    if (!gastos || gastos.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay gastos registrados</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="bg-purple-50 rounded-xl p-3 mb-4">
+            <div class="flex justify-between items-center">
+                <span class="font-semibold text-gray-700">Total Gastos Fijos:</span>
+                <span class="text-2xl font-bold text-purple-600">${formatMoney(total)}</span>
+            </div>
+        </div>
+        ${gastos.map(g => `
+            <div class="flex justify-between items-center p-3 border-b border-gray-100 hover:bg-gray-50 transition">
+                <div>
+                    <p class="font-medium text-gray-800">${g.nombre}</p>
+                    <p class="text-xs text-gray-500">${g.tipo}</p>
+                </div>
+                <p class="font-bold text-gray-700">${formatMoney(g.monto)}</p>
+            </div>
+        `).join('')}
+    `;
+}
+
+function mostrarLoading() {
+    const container = document.getElementById('saldoInicial');
+    if (container) container.textContent = 'Cargando...';
+}
+
+function mostrarError(mensaje) {
+    console.error(mensaje);
+}
+
+// Auto-refresh cada 60 segundos
+let interval;
+function iniciarAutoRefresh() {
+    if (interval) clearInterval(interval);
+    interval = setInterval(() => {
+        console.log('🔄 Auto-refresh finanzas');
+        cargarDashboard();
+    }, 60000);
+}
+
+// Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     cargarDashboard();
+    iniciarAutoRefresh();
+    
+    document.getElementById('periodoSelector').addEventListener('change', () => {
+        cargarDashboard();
+    });
 });

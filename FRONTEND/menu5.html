@@ -3,103 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unik'a | Costos de Recursos Humanos</title>
+    <title>Unik'a | Gestión de Talento Humano</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/config.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; padding-top: 70px; background-color: #f8fafc; }
-        .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-        .card { transition: transform 0.2s, box-shadow 0.2s; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1); }
-        .table-container { max-height: 500px; overflow-y: auto; }
+        body { font-family: 'Inter', sans-serif; padding-top: 70px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 1.5rem; }
+        .productivity-excellent { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .productivity-good { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .productivity-regular { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .productivity-critical { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .animate-pulse-slow { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
     </style>
 </head>
 <body>
     <script src="js/navbar.js"></script>
 
-    <main class="content-area">
-        <!-- Encabezado -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-[#1B263B]">💰 Gestión de Costos – Recursos Humanos</h1>
-            <p class="text-gray-600 mt-1">Sueldos, bonificaciones, planillas y costos laborales</p>
-        </div>
-
-        <!-- Tarjetas de KPIs -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="card bg-white rounded-2xl shadow-md p-6 border-l-8 border-[#FF9F1C]">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Total Trabajadores</p>
-                        <p id="totalTrabajadores" class="text-3xl font-bold text-[#1B263B]">0</p>
-                    </div>
-                    <span class="material-symbols-outlined text-4xl text-[#FF9F1C]">groups</span>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="glass-card shadow-xl p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">👥 Gestión de Talento Humano</h1>
+                    <p class="text-gray-600 mt-1">Productividad, costos laborales y eficiencia del equipo</p>
                 </div>
-            </div>
-            <div class="card bg-white rounded-2xl shadow-md p-6 border-l-8 border-[#2EC4B6]">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Costo Total Planilla (mes)</p>
-                        <p id="totalPlanilla" class="text-3xl font-bold text-[#1B263B]">S/ 0.00</p>
-                    </div>
-                    <span class="material-symbols-outlined text-4xl text-[#2EC4B6]">payments</span>
-                </div>
-            </div>
-            <div class="card bg-white rounded-2xl shadow-md p-6 border-l-8 border-[#E71D36]">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Promedio por Trabajador</p>
-                        <p id="promedioSueldo" class="text-3xl font-bold text-[#1B263B]">S/ 0.00</p>
-                    </div>
-                    <span class="material-symbols-outlined text-4xl text-[#E71D36]">bar_chart</span>
-                </div>
-            </div>
-            <div class="card bg-white rounded-2xl shadow-md p-6 border-l-8 border-[#FFB703]">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">ESSALUD (9%)</p>
-                        <p id="totalEssalud" class="text-3xl font-bold text-[#1B263B]">S/ 0.00</p>
-                    </div>
-                    <span class="material-symbols-outlined text-4xl text-[#FFB703]">health_and_safety</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gráfico y tabla -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Gráfico de barras (top 5 costos) -->
-            <div class="bg-white rounded-2xl shadow-md p-6 lg:col-span-1">
-                <h2 class="text-xl font-bold text-[#1B263B] mb-4">📊 Top 5 mayores costos</h2>
-                <canvas id="costosChart" width="400" height="300"></canvas>
-            </div>
-            <!-- Tabla de trabajadores -->
-            <div class="bg-white rounded-2xl shadow-md p-6 lg:col-span-2">
-                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-                    <h2 class="text-xl font-bold text-[#1B263B]">📋 Detalle de trabajadores</h2>
-                    <button id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">download</span> Exportar CSV
+                <div class="flex gap-3">
+                    <button onclick="exportarReporteCompleto()" class="bg-green-600 text-white px-5 py-2 rounded-xl hover:bg-green-700 transition flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">download</span>
+                        Exportar Reporte
+                    </button>
+                    <button onclick="location.reload()" class="bg-gray-600 text-white px-5 py-2 rounded-xl hover:bg-gray-700 transition flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">refresh</span>
+                        Actualizar
                     </button>
                 </div>
-                <div class="table-container">
-                    <table id="tablaTrabajadores" class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50 sticky top-0">
+            </div>
+        </div>
+
+        <!-- KPIs Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="kpisContainer">
+            <!-- Se llena con JS -->
+        </div>
+
+        <!-- Gráficos principales -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="glass-card shadow-xl p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-blue-600">trending_up</span>
+                    Evolución de Costos Laborales
+                </h3>
+                <canvas id="evolucionChart" height="250"></canvas>
+            </div>
+            <div class="glass-card shadow-xl p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-purple-600">groups</span>
+                    Distribución por Puesto
+                </h3>
+                <canvas id="puestosChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <!-- Análisis de Productividad por Trabajador -->
+        <div class="glass-card shadow-xl p-6 mb-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-yellow-600">speed</span>
+                Ranking de Productividad por Trabajador
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Trabajador</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Puesto</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500">Productividad</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500">Costo x Hora Efectiva</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productividadTable" class="divide-y divide-gray-100">
+                        <!-- Se llena con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Análisis por Puesto y Detalle -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-card shadow-xl p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-orange-600">analytics</span>
+                    Costo por Puesto de Trabajo
+                </h3>
+                <div class="overflow-x-auto max-h-80 overflow-y-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100 sticky top-0">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Puesto</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sueldo Base</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bonificación</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Asig. Familiar</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sueldo Total</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Puesto</th>
+                                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500">Cantidad</th>
+                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500">Costo Total</th>
+                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500">Promedio</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaBody" class="divide-y divide-gray-200 bg-white">
-                            <tr><td colspan="7" class="text-center py-8 text-gray-500">Cargando datos...</td></tr>
-                        </tbody>
+                        <tbody id="puestosTable"></tbody>
                     </table>
                 </div>
+            </div>
+            <div class="glass-card shadow-xl p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-red-600">warning</span>
+                    Alertas de Gestión Humana
+                </h3>
+                <div id="alertasRHContainer"></div>
             </div>
         </div>
     </main>

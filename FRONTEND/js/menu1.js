@@ -41,6 +41,8 @@ async function cargarCatalogoProductos() {
                 const md = parseFloat(prod.materia_prima || 0);
                 const mod = parseFloat(prod.mod || 0);
                 const cif = parseFloat(prod.cif || 0);
+                const ga = parseFloat(prod.ga || 0);      // ← NUEVO
+                const gv = parseFloat(prod.gv || 0);      // ← NUEVO
                 const costoTotalUnitario = parseFloat(prod.costo_total_unitario || 0);
                 
                 const precioNeto = parseFloat(prod.precio_neto || 0);
@@ -67,7 +69,12 @@ async function cargarCatalogoProductos() {
                             <div class="flex justify-between"><span>🧵 Mat. Prima (MD):</span><span class="font-bold text-gray-700">S/. ${md.toFixed(2)}</span></div>
                             <div class="flex justify-between"><span>👥 Mano Obra (MOD):</span><span class="font-bold text-gray-700">S/. ${mod.toFixed(2)}</span></div>
                             <div class="flex justify-between"><span>🏭 Indir. Fab (CIF):</span><span class="font-bold text-gray-700">S/. ${cif.toFixed(2)}</span></div>
-                            <div class="border-t pt-1 mt-1 flex justify-between text-gray-900 font-bold"><span>Total Costo U:</span><span>S/. ${costoTotalUnitario.toFixed(2)}</span></div>
+                            <div class="flex justify-between"><span>📊 Gastos Admin (GA):</span><span class="font-bold text-gray-700">S/. ${ga.toFixed(2)}</span></div>
+                            <div class="flex justify-between"><span>📈 Gastos Ventas (GV):</span><span class="font-bold text-gray-700">S/. ${gv.toFixed(2)}</span></div>
+                            <div class="border-t pt-1 mt-1 flex justify-between text-gray-900 font-bold">
+                                <span>Total Costo U:</span>
+                                <span>S/. ${costoTotalUnitario.toFixed(2)}</span>
+                            </div>
                         </div>
                         
                         <div class="mt-2 text-xs text-gray-400 space-y-0.5 px-1 font-sans">

@@ -3,90 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unik'a | Finanzas de la Empresa</title>
+    <title>Unik'a | Finanzas - Flujo de Caja</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="js/config.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; padding-top: 70px; background-color: #f8fafc; }
-        .content-area { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        body { font-family: 'Inter', sans-serif; padding-top: 70px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .cash-positive { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .cash-negative { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
     </style>
 </head>
 <body>
     <script src="js/navbar.js"></script>
     
-    <main class="content-area">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">💼 Control Financiero y Costos</h1>
-                <p class="text-slate-500 text-sm">Información consolidada de rentabilidad y cuentas del taller textil</p>
-            </div>
-            <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 flex items-center gap-3">
-                <span class="text-sm font-semibold text-slate-700">Filtrar Periodo:</span>
-                <select id="mesSelector" class="bg-transparent border-none font-bold text-blue-600 outline-none cursor-pointer text-sm" onchange="cargarDashboard()">
-                    <option value="2026-05">Mayo 2026</option>
-                    <option value="2026-04" selected>Abril 2026</option>
-                    <option value="2026-03">Marzo 2026</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Ventas Totales</p>
-                <h3 class="text-2xl font-bold text-slate-800" id="kpi-ventas">S/ 0.00</h3>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Costo de Ventas</p>
-                <h3 class="text-2xl font-bold text-slate-800" id="kpi-costos">S/ 0.00</h3>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Gastos de Operación</p>
-                <h3 class="text-2xl font-bold text-slate-800" id="kpi-gastos">S/ 0.00</h3>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header con estilo moderno -->
+        <div class="glass-card rounded-3xl shadow-2xl p-8 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Utilidad Neta</p>
-                    <h3 class="text-2xl font-bold text-slate-800" id="kpi-utilidad">S/ 0.00</h3>
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2">💰 Tesorería & Flujo de Caja</h1>
+                    <p class="text-gray-600">Gestión de liquidez y planificación financiera</p>
                 </div>
-                <div class="mt-2">
-                    <span id="kpi-margen" class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">0% Margen</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <h3 class="text-base font-bold text-slate-800 mb-4">🍰 Distribución del Costo de Producción (Costo Ventas)</h3>
-                <div class="h-64 relative">
-                    <canvas id="chartEstructuraCostos"></canvas>
-                </div>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <h3 class="text-base font-bold text-slate-800 mb-4">📈 Top 5 Productos con Mayor Rentabilidad Bruta</h3>
-                <div class="h-64 relative">
-                    <canvas id="chartRentabilidad"></canvas>
+                <div class="flex gap-3">
+                    <select id="periodoSelector" class="px-4 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500">
+                        <option value="2026-04">Abril 2026</option>
+                        <option value="2026-05">Mayo 2026</option>
+                        <option value="2026-06">Junio 2026</option>
+                    </select>
+                    <button onclick="cargarDashboard()" class="bg-purple-600 text-white px-6 py-2 rounded-xl hover:bg-purple-700 transition flex items-center gap-2">
+                        <span class="material-symbols-outlined">refresh</span>
+                        Actualizar
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="px-6 py-4 bg-slate-50 border-b border-slate-100">
-                <h3 class="text-base font-bold text-slate-800">📋 Desglose Analítico de Gastos Fijos Corporativos</h3>
+        <!-- Tarjetas de Flujo de Caja -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="material-symbols-outlined text-green-600 text-3xl">account_balance</span>
+                    <span class="text-xs text-gray-400">Saldo Inicial</span>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="saldoInicial">S/ 0</p>
+                <p class="text-sm text-gray-500 mt-2">Inicio del período</p>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-slate-100/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                            <th class="px-6 py-3.5">Clasificación</th>
-                            <th class="px-6 py-3.5">Descripción de Cuenta</th>
-                            <th class="px-6 py-3.5 text-right">Erogación Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-gastos-body" class="divide-y divide-slate-100">
-                        </tbody>
-                </table>
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="material-symbols-outlined text-blue-600 text-3xl">trending_up</span>
+                    <span class="text-xs text-gray-400">Ingresos del Mes</span>
+                </div>
+                <p class="text-3xl font-bold text-blue-600" id="ingresos">S/ 0</p>
+                <p class="text-sm text-gray-500 mt-2">Ventas + otros ingresos</p>
+            </div>
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="material-symbols-outlined text-red-600 text-3xl">trending_down</span>
+                    <span class="text-xs text-gray-400">Egresos del Mes</span>
+                </div>
+                <p class="text-3xl font-bold text-red-600" id="egresos">S/ 0</p>
+                <p class="text-sm text-gray-500 mt-2">Costos + gastos + impuestos</p>
+            </div>
+            <div class="glass-card rounded-2xl p-6 shadow-xl" id="cardFlujo">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="material-symbols-outlined text-3xl" id="flujoIcon">account_balance_wallet</span>
+                    <span class="text-xs text-gray-400">Flujo de Caja Neto</span>
+                </div>
+                <p class="text-3xl font-bold" id="flujoNeto">S/ 0</p>
+                <p class="text-sm text-gray-500 mt-2" id="flujoDescripcion">Resultado del período</p>
+            </div>
+        </div>
+
+        <!-- Gráfico de Proyección -->
+        <div class="glass-card rounded-2xl p-6 shadow-xl mb-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-purple-600">timeline</span>
+                Proyección de Flujo de Caja - Próximos 3 Meses
+            </h3>
+            <div id="proyeccionChart" style="height: 400px;"></div>
+        </div>
+
+        <!-- Indicadores Financieros -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-blue-600">assessment</span>
+                    Liquidez y Solvencia
+                </h3>
+                <div class="space-y-4" id="indicadoresLiquidez"></div>
+            </div>
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-green-600">speed</span>
+                    Eficiencia Operativa
+                </h3>
+                <div class="space-y-4" id="indicadoresEficiencia"></div>
+            </div>
+        </div>
+
+        <!-- Alertas y Gastos -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-red-600">warning</span>
+                    Alertas Tempranas
+                </h3>
+                <div id="alertasContainer"></div>
+            </div>
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-orange-600">receipt</span>
+                    Gastos Fijos Mensuales
+                </h3>
+                <div class="max-h-96 overflow-y-auto" id="gastosLista"></div>
             </div>
         </div>
     </main>
