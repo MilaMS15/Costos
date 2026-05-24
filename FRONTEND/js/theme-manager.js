@@ -31,6 +31,20 @@
                 fallbackBtn.className = 'w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm border border-gray-200 bg-gray-50 hover:bg-gray-100 text-slate-600';
             }
         }
+
+        // C. Botón en el Login
+        const loginBtn = document.getElementById('theme-toggle-login');
+        if (loginBtn) {
+            if (activeTheme === 'dark') {
+                loginBtn.innerHTML = '<span class="material-symbols-outlined text-yellow-400" style="font-size: 20px;">light_mode</span>';
+                loginBtn.className = 'w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border border-slate-700 bg-slate-800 text-yellow-400 hover:bg-slate-700 hover:scale-105 active:scale-95';
+                loginBtn.title = 'Cambiar a modo día';
+            } else {
+                loginBtn.innerHTML = '<span class="material-symbols-outlined text-slate-600" style="font-size: 20px;">dark_mode</span>';
+                loginBtn.className = 'w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:scale-105 active:scale-95';
+                loginBtn.title = 'Cambiar a modo noche';
+            }
+        }
     };
 
     // Función central de alternancia de temas
@@ -52,9 +66,10 @@
 
     function initThemeManager() {
         const sidebarBtn = document.getElementById('theme-toggle-sidebar');
+        const loginBtn = document.getElementById('theme-toggle-login');
 
-        // Crear el botón flotante / fallback si no estamos en una página con Sidebar
-        if (!sidebarBtn) {
+        // Crear el botón flotante / fallback si no estamos en una página con Sidebar o Login
+        if (!sidebarBtn && !loginBtn) {
             const toggleBtn = document.createElement('button');
             toggleBtn.id = 'theme-toggle';
             toggleBtn.title = 'Cambiar modo noche/día';

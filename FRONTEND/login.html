@@ -96,37 +96,40 @@
         }
 
         .alert {
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
             font-size: 13px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             display: none;
-            font-weight: 500;
-            animation: fadeIn 0.3s ease;
+            font-weight: 600;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
+            from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .alert-error {
             background: rgba(239, 68, 68, 0.1);
             color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.25);
         }
 
         .alert-success {
             background: rgba(16, 185, 129, 0.1);
             color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.25);
         }
         
         /* Input focus outline styles */
         .custom-input:focus {
             outline: none !important;
             border-color: #FF9F1C !important;
-            box-shadow: 0 0 0 3px rgba(255, 159, 28, 0.15) !important;
+            box-shadow: 0 0 0 4px rgba(255, 159, 28, 0.22) !important;
         }
 
         /* Ambient Ken Burns & Floating Motion Animations */
@@ -160,6 +163,71 @@
 
         .delay-100 { animation-delay: 0.15s; }
         .delay-200 { animation-delay: 0.3s; }
+
+        /* Custom Glowing Blob Animation */
+        @keyframes blob-bounce {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(40px, -60px) scale(1.15); }
+            66% { transform: translate(-30px, 30px) scale(0.85); }
+        }
+        .animate-blob {
+            animation: blob-bounce 25s infinite ease-in-out;
+        }
+        .animation-delay-2000 {
+            animation-delay: 3s;
+        }
+
+        /* Spinner animation for loading button state */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-custom {
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Slide & Fade transitions for login/register swap */
+        .form-transition-container {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .form-transition-hidden {
+            opacity: 0;
+            transform: translateX(20px);
+            pointer-events: none;
+            display: none !important;
+        }
+        
+        /* Floating Card Tilt Effect & Glassmorphism */
+        .floating-tilt-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .floating-tilt-card:hover {
+            transform: translateY(-10px) scale(1.03) rotate(0.5deg);
+            box-shadow: 0 30px 60px -15px rgba(255, 159, 28, 0.3);
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 159, 28, 0.4) !important;
+        }
+
+        /* Styled inputs with left icons and glowing rings */
+        .input-group-container {
+            position: relative;
+        }
+        .input-icon-left {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8; /* Slate-400 */
+            transition: color 0.3s ease;
+            pointer-events: none;
+        }
+        .custom-input-with-icon {
+            padding-left: 42px !important;
+        }
+        .custom-input-with-icon:focus + .input-icon-left {
+            color: #FF9F1C !important;
+        }
     </style>
     <link rel="stylesheet" href="css/theme-dark.css">
     <script src="js/config.js"></script>
@@ -174,6 +242,13 @@
                 class="absolute inset-0 w-full h-full object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-700 z-0 animate-ken-burns"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyH05Kv4rwg1J0tn7QKtbMeQL8eWQEvzbScDtVi3Rdyt7Ni9BnO45feDMNIS2G-q0VlDZHyg0vHteLH6igGLaOfAkWzQnvaIKNsjmcIHwUKxHtS_27LlxpsQ9bkIdWGe3cUw6xKhQm7hKMwAeelcl1_gr5Y-GwBi43mMppUWDPN3WoXAzo8hZkpOJ9FmKIQ5KVanaBcs29oGlm1IHfCRG8cwGonxVVi6YKC1lzWI5n6O25NiAAFgXzhp8lEnmGnIkQkBjkXMUKMv7M" />
             <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/50 to-[#0f172a]/30 z-0"></div>
+            
+            <!-- Ambient Glowing Blobs -->
+            <div class="absolute -top-40 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-blob z-0 pointer-events-none"></div>
+            <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl animate-blob animation-delay-2000 z-0 pointer-events-none"></div>
+            
+            <!-- Interactive Particle Canvas -->
+            <canvas id="particle-canvas" class="absolute inset-0 z-0 pointer-events-none opacity-40"></canvas>
             
             <!-- Top Logo -->
             <div class="relative z-10 flex items-center space-x-2 animate-slide-up-fade">
@@ -196,7 +271,7 @@
             <div class="absolute top-12 right-12 hidden lg:block z-10 animate-slide-up-fade delay-200">
                 <!-- Floating Detail Card -->
                 <div
-                    class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-2xl transition-all duration-300 hover:bg-white/20 hover:scale-[1.03] animate-soft-float">
+                    class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-2xl transition-all duration-300 floating-tilt-card animate-soft-float cursor-pointer">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
                             <span class="material-symbols-outlined"
@@ -214,170 +289,188 @@
 
         <!-- Right Content Side (Forms) -->
         <div class="md:col-span-5 bg-white dark:bg-[#111827] p-8 lg:p-16 flex flex-col justify-between transition-colors duration-300 h-full overflow-y-auto animate-slide-up-fade delay-100">
-            <!-- Mobile Header Logo -->
-            <div class="md:hidden flex items-center justify-between mb-8">
-                <div class="flex items-center space-x-2">
+            <!-- Top Actions Bar -->
+            <div class="flex items-center justify-between mb-8">
+                <!-- Mobile Logo -->
+                <div class="md:hidden flex items-center space-x-2">
                     <span class="material-symbols-outlined text-primary text-2xl"
                         style="font-variation-settings: 'FILL' 1;">diamond</span>
                     <span class="font-headline font-black tracking-tighter text-xl uppercase text-[#1B263B] dark:text-white">Unik'a</span>
                 </div>
+                <!-- Spacer for desktop to align button to right -->
+                <div class="hidden md:block"></div>
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle-login" onclick="window.toggleTheme()" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:scale-105 active:scale-95 text-slate-700 dark:text-yellow-400" title="Cambiar modo noche/día">
+                    <span class="material-symbols-outlined text-[20px]">dark_mode</span>
+                </button>
             </div>
             
-            <div class="my-auto max-w-md w-full mx-auto space-y-8">
-                <!-- Formulario de Login -->
-                <div id="loginForm" class="space-y-6">
-                    <div>
-                        <h1 class="font-headline text-3xl font-extrabold text-[#1B263B] dark:text-white mb-2 leading-tight tracking-tight">Bienvenido de nuevo</h1>
-                        <p class="text-slate-500 dark:text-slate-400 font-medium text-sm">Acceda a su panel financiero</p>
-                    </div>
+            <div class="my-auto max-w-md w-full mx-auto relative">
+                <!-- Form container with sliding transition wrapper -->
+                <div class="w-full relative">
+                    <!-- Formulario de Login -->
+                    <div id="loginForm" class="form-transition-container space-y-6">
+                        <div>
+                            <h1 class="font-headline text-3xl font-extrabold text-[#1B263B] dark:text-white mb-2 leading-tight tracking-tight">Bienvenido de nuevo</h1>
+                            <p class="text-slate-500 dark:text-slate-400 font-medium text-sm">Acceda a su panel financiero</p>
+                        </div>
 
-                    <div class="alert alert-error" id="errorMsg"></div>
-                    <div class="alert alert-success" id="successMsg"></div>
+                        <div class="alert alert-error" id="errorMsg"></div>
+                        <div class="alert alert-success" id="successMsg"></div>
 
-                    <div class="space-y-4">
-                        <!-- Input Group: Username -->
-                        <div class="relative">
-                            <label
-                                class="block text-[10px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5 px-0.5"
-                                for="email">
-                                Correo electrónico
-                            </label>
-                            <input
-                                class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 py-3 px-4 text-[#1B263B] dark:text-white font-medium transition-all placeholder:text-slate-400/70 rounded-xl text-sm custom-input"
-                                id="email" placeholder="contador@atelier.com" type="email" autocomplete="email" />
+                        <div class="space-y-4">
+                            <!-- Input Group: Username -->
+                            <div class="relative">
+                                <label
+                                    class="block text-[10px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5 px-0.5"
+                                    for="email">
+                                    Correo electrónico
+                                </label>
+                                <div class="input-group-container">
+                                    <input
+                                        class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 py-3 px-4 text-[#1B263B] dark:text-white font-medium transition-all placeholder:text-slate-400/70 rounded-xl text-sm custom-input custom-input-with-icon"
+                                        id="email" placeholder="contador@atelier.com" type="email" autocomplete="email" />
+                                    <span class="material-symbols-outlined input-icon-left text-[20px]">mail</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Input Group: Password -->
+                            <div class="relative">
+                                <div class="flex justify-between items-center mb-1.5 px-0.5">
+                                    <label
+                                        class="block text-[10px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest"
+                                        for="password">
+                                        Contraseña
+                                    </label>
+                                    <a class="text-[10px] font-label font-bold text-[#FF9F1C] uppercase tracking-widest hover:text-[#e68a00] transition-colors"
+                                        href="#">
+                                        ¿Olvidaste?
+                                    </a>
+                                </div>
+                                <div class="input-group-container">
+                                    <input
+                                        class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 py-3 px-4 text-[#1B263B] dark:text-white font-medium transition-all placeholder:text-slate-400/70 rounded-xl text-sm custom-input custom-input-with-icon"
+                                        id="password" placeholder="••••••••" type="password"
+                                        autocomplete="current-password" />
+                                    <span class="material-symbols-outlined input-icon-left text-[20px]">lock</span>
+                                    <button
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                                        type="button"
+                                        onclick="const p = document.getElementById('password'); p.type = p.type === 'password' ? 'text' : 'password'">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="pt-2 space-y-4">
+                                <button
+                                    class="w-full py-3.5 bg-gradient-to-r from-[#FF9F1C] to-[#ffb23a] text-white font-bold text-sm lg:text-base rounded-xl shadow-lg shadow-orange-500/10 hover:shadow-orange-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer"
+                                    onclick="iniciarSesion()">
+                                    <span>Iniciar Sesión</span>
+                                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                </button>
+
+                                <div class="relative flex items-center py-2">
+                                    <div class="flex-grow border-t border-slate-100 dark:border-slate-800"></div>
+                                    <span
+                                        class="flex-shrink mx-4 text-[9px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">O continuar con</span>
+                                    <div class="flex-grow border-t border-slate-100 dark:border-slate-800"></div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button
+                                        class="flex items-center justify-center py-3 px-4 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl transition-all duration-200 text-slate-700 dark:text-slate-300 font-bold text-xs cursor-pointer"
+                                        type="button">
+                                        <img alt="Google" class="w-4 h-4 mr-2"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA99i3JlY0yKdN_sySMQiA42BjkhYRfh_vOkIgF6FVzfEFNmzFKIolFKJ7XtCAtT4eUbCLQ6hZZQYwjgp67YmO3iePdNGu40-adasjDWoQbzR0rk03MyYMk8WE3n_-8EY_hd8nX2Hz2A2_LWAFJYedMZu4_KAWAfQm-f_n7q8j9yKtNx2E_k5gxa7Zk4hVjGS6cS9dM97AI4pmOmtiGGK9HX7_osIPFku_Yke3gmRvYVgisk6Jk1HsxEjsNEdEWuiLRwTNY6bOInqTp" />
+                                        Google
+                                    </button>
+                                    <button
+                                        class="flex items-center justify-center py-3 px-4 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl transition-all duration-200 text-slate-700 dark:text-slate-300 font-bold text-xs cursor-pointer"
+                                        type="button">
+                                        <span class="material-symbols-outlined text-sm mr-2"
+                                            style="font-variation-settings: 'FILL' 1;">ios</span>
+                                        Apple
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         
-                        <!-- Input Group: Password -->
-                        <div class="relative">
-                            <div class="flex justify-between items-center mb-1.5 px-0.5">
+                        <div class="text-center pt-2">
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-medium">
+                                ¿Aún no tienes cuenta?
+                                <a class="text-[#FF9F1C] font-extrabold hover:underline ml-1 cursor-pointer"
+                                    onclick="mostrarRegistro()">Crear cuenta</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de Registro -->
+                    <div id="registerForm" class="form-transition-container form-transition-hidden space-y-6">
+                        <div>
+                            <h1 class="font-headline text-3xl font-extrabold text-[#1B263B] dark:text-white mb-2 leading-tight tracking-tight">Crear Cuenta</h1>
+                            <p class="text-slate-500 dark:text-slate-400 font-medium text-sm">Regístrate para gestionar tus costos</p>
+                        </div>
+
+                        <div class="alert alert-error" id="regErrorMsg"></div>
+                        <div class="alert alert-success" id="regSuccessMsg"></div>
+
+                        <div class="space-y-4">
+                            <!-- Input Group: Email -->
+                            <div class="relative">
                                 <label
-                                    class="block text-[10px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest"
-                                    for="password">
+                                    class="block text-[10px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5 px-0.5"
+                                    for="regEmail">
+                                    Correo electrónico
+                                </label>
+                                <div class="input-group-container">
+                                    <input
+                                        class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 py-3 px-4 text-[#1B263B] dark:text-white font-medium transition-all placeholder:text-slate-400/70 rounded-xl text-sm custom-input custom-input-with-icon"
+                                        id="regEmail" placeholder="tu@correo.com" type="email" />
+                                    <span class="material-symbols-outlined input-icon-left text-[20px]">mail</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Input Group: Password -->
+                            <div class="relative">
+                                <label
+                                    class="block text-[10px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5 px-0.5"
+                                    for="regPassword">
                                     Contraseña
                                 </label>
-                                <a class="text-[10px] font-label font-bold text-[#FF9F1C] uppercase tracking-widest hover:text-[#e68a00] transition-colors"
-                                    href="#">
-                                    ¿Olvidaste?
-                                </a>
+                                <div class="input-group-container">
+                                    <input
+                                        class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 py-3 px-4 text-[#1B263B] dark:text-white font-medium transition-all placeholder:text-slate-400/70 rounded-xl text-sm custom-input custom-input-with-icon"
+                                        id="regPassword" placeholder="Mínimo 6 caracteres" type="password" />
+                                    <span class="material-symbols-outlined input-icon-left text-[20px]">lock</span>
+                                    <button
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                                        type="button"
+                                        onclick="const p = document.getElementById('regPassword'); p.type = p.type === 'password' ? 'text' : 'password'">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="relative">
-                                <input
-                                    class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 py-3 px-4 text-[#1B263B] dark:text-white font-medium transition-all placeholder:text-slate-400/70 rounded-xl text-sm custom-input"
-                                    id="password" placeholder="••••••••" type="password"
-                                    autocomplete="current-password" />
+                            
+                            <!-- Actions -->
+                            <div class="pt-2">
                                 <button
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                                    type="button"
-                                    onclick="const p = document.getElementById('password'); p.type = p.type === 'password' ? 'text' : 'password'">
-                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    class="w-full py-3.5 bg-gradient-to-r from-[#FF9F1C] to-[#ffb23a] text-white font-bold text-sm lg:text-base rounded-xl shadow-lg shadow-orange-500/10 hover:shadow-orange-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer"
+                                    onclick="registrar()">
+                                    <span>Crear Cuenta</span>
+                                    <span class="material-symbols-outlined text-sm">person_add</span>
                                 </button>
                             </div>
                         </div>
                         
-                        <!-- Actions -->
-                        <div class="pt-2 space-y-4">
-                            <button
-                                class="w-full py-3.5 bg-gradient-to-r from-[#FF9F1C] to-[#ffb23a] text-white font-bold text-sm lg:text-base rounded-xl shadow-lg shadow-orange-500/10 hover:shadow-orange-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer"
-                                onclick="iniciarSesion()">
-                                <span>Iniciar Sesión</span>
-                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                            </button>
-
-                            <div class="relative flex items-center py-2">
-                                <div class="flex-grow border-t border-slate-100 dark:border-slate-800"></div>
-                                <span
-                                    class="flex-shrink mx-4 text-[9px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">O continuar con</span>
-                                <div class="flex-grow border-t border-slate-100 dark:border-slate-800"></div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-3">
-                                <button
-                                    class="flex items-center justify-center py-3 px-4 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl transition-all duration-200 text-slate-700 dark:text-slate-300 font-bold text-xs cursor-pointer"
-                                    type="button">
-                                    <img alt="Google" class="w-4 h-4 mr-2"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA99i3JlY0yKdN_sySMQiA42BjkhYRfh_vOkIgF6FVzfEFNmzFKIolFKJ7XtCAtT4eUbCLQ6hZZQYwjgp67YmO3iePdNGu40-adasjDWoQbzR0rk03MyYMk8WE3n_-8EY_hd8nX2Hz2A2_LWAFJYedMZu4_KAWAfQm-f_n7q8j9yKtNx2E_k5gxa7Zk4hVjGS6cS9dM97AI4pmOmtiGGK9HX7_osIPFku_Yke3gmRvYVgisk6Jk1HsxEjsNEdEWuiLRwTNY6bOInqTp" />
-                                    Google
-                                </button>
-                                <button
-                                    class="flex items-center justify-center py-3 px-4 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl transition-all duration-200 text-slate-700 dark:text-slate-300 font-bold text-xs cursor-pointer"
-                                    type="button">
-                                    <span class="material-symbols-outlined text-sm mr-2"
-                                        style="font-variation-settings: 'FILL' 1;">ios</span>
-                                    Apple
-                                </button>
-                            </div>
+                        <div class="text-center pt-2">
+                            <p class="text-slate-500 dark:text-slate-400 text-xs font-medium">
+                                ¿Ya tienes cuenta?
+                                <a class="text-[#FF9F1C] font-extrabold hover:underline ml-1 cursor-pointer"
+                                    onclick="mostrarLogin()">Iniciar Sesión</a>
+                            </p>
                         </div>
-                    </div>
-                    
-                    <div class="text-center pt-2">
-                        <p class="text-slate-500 dark:text-slate-400 text-xs font-medium">
-                            ¿Aún no tienes cuenta?
-                            <a class="text-[#FF9F1C] font-extrabold hover:underline ml-1 cursor-pointer"
-                                onclick="mostrarRegistro()">Crear cuenta</a>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Formulario de Registro -->
-                <div id="registerForm" style="display: none;" class="space-y-6">
-                    <div>
-                        <h1 class="font-headline text-3xl font-extrabold text-[#1B263B] dark:text-white mb-2 leading-tight tracking-tight">Crear Cuenta</h1>
-                        <p class="text-slate-500 dark:text-slate-400 font-medium text-sm">Regístrate para gestionar tus costos</p>
-                    </div>
-
-                    <div class="alert alert-error" id="regErrorMsg"></div>
-                    <div class="alert alert-success" id="regSuccessMsg"></div>
-
-                    <div class="space-y-4">
-                        <!-- Input Group: Email -->
-                        <div class="relative">
-                            <label
-                                class="block text-[10px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5 px-0.5"
-                                for="regEmail">
-                                Correo electrónico
-                            </label>
-                            <input
-                                class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 py-3 px-4 text-[#1B263B] dark:text-white font-medium transition-all placeholder:text-slate-400/70 rounded-xl text-sm custom-input"
-                                id="regEmail" placeholder="tu@correo.com" type="email" />
-                        </div>
-                        
-                        <!-- Input Group: Password -->
-                        <div class="relative">
-                            <label
-                                class="block text-[10px] font-label font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1.5 px-0.5"
-                                for="regPassword">
-                                Contraseña
-                            </label>
-                            <div class="relative">
-                                <input
-                                    class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 py-3 px-4 text-[#1B263B] dark:text-white font-medium transition-all placeholder:text-slate-400/70 rounded-xl text-sm custom-input"
-                                    id="regPassword" placeholder="Mínimo 6 caracteres" type="password" />
-                                <button
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                                    type="button"
-                                    onclick="const p = document.getElementById('regPassword'); p.type = p.type === 'password' ? 'text' : 'password'">
-                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Actions -->
-                        <div class="pt-2">
-                            <button
-                                class="w-full py-3.5 bg-gradient-to-r from-[#FF9F1C] to-[#ffb23a] text-white font-bold text-sm lg:text-base rounded-xl shadow-lg shadow-orange-500/10 hover:shadow-orange-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer"
-                                onclick="registrar()">
-                                <span>Crear Cuenta</span>
-                                <span class="material-symbols-outlined text-sm">person_add</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center pt-2">
-                        <p class="text-slate-500 dark:text-slate-400 text-xs font-medium">
-                            ¿Ya tienes cuenta?
-                            <a class="text-[#FF9F1C] font-extrabold hover:underline ml-1 cursor-pointer"
-                                onclick="mostrarLogin()">Iniciar Sesión</a>
-                        </p>
                     </div>
                 </div>
             </div>
@@ -402,28 +495,112 @@
     <script>
         /* API_URL definido en js/config.js */
 
+        // Particle Network Animation on Left Side
+        (function() {
+            const canvas = document.getElementById('particle-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let particles = [];
+            const particleCount = 40;
+            const connectionDistance = 120;
+            
+            function resizeCanvas() {
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.4;
+                    this.vy = (Math.random() - 0.5) * 0.4;
+                    this.radius = Math.random() * 2 + 1;
+                }
+                
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                }
+                
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 159, 28, 0.4)';
+                    ctx.fill();
+                }
+            }
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                
+                // Draw connections
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < connectionDistance) {
+                            const alpha = (1 - dist / connectionDistance) * 0.15;
+                            ctx.strokeStyle = `rgba(255, 159, 28, ${alpha})`;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        })();
+
         function mostrarError(msg, isRegister = false) {
             const el = document.getElementById(isRegister ? 'regErrorMsg' : 'errorMsg');
-            el.textContent = msg;
-            el.style.display = 'block';
+            el.innerHTML = `<span class="material-symbols-outlined text-[18px]">error</span><span>${msg}</span>`;
+            el.style.display = 'flex';
             setTimeout(() => el.style.display = 'none', 5000);
         }
 
         function mostrarExito(msg, isRegister = false) {
             const el = document.getElementById(isRegister ? 'regSuccessMsg' : 'successMsg');
-            el.textContent = msg;
-            el.style.display = 'block';
+            el.innerHTML = `<span class="material-symbols-outlined text-[18px]">check_circle</span><span>${msg}</span>`;
+            el.style.display = 'flex';
             setTimeout(() => el.style.display = 'none', 5000);
         }
 
         function mostrarRegistro() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            loginForm.classList.add('form-transition-hidden');
+            registerForm.classList.remove('form-transition-hidden');
         }
 
         function mostrarLogin() {
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'block';
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            registerForm.classList.add('form-transition-hidden');
+            loginForm.classList.remove('form-transition-hidden');
         }
 
         async function iniciarSesion() {
@@ -436,8 +613,8 @@
             }
 
             const btn = document.querySelector('#loginForm button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>Iniciando sesión...</span>';
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<svg class="animate-spin-custom h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Ingresando...</span>`;
             btn.disabled = true;
 
             try {
@@ -458,7 +635,7 @@
             } catch (error) {
                 mostrarError('Error de conexión con el servidor');
             } finally {
-                btn.innerHTML = originalText;
+                btn.innerHTML = originalContent;
                 btn.disabled = false;
             }
         }
@@ -478,8 +655,8 @@
             }
 
             const btn = document.querySelector('#registerForm button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>Creando cuenta...</span>';
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<svg class="animate-spin-custom h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Creando cuenta...</span>`;
             btn.disabled = true;
 
             try {
@@ -500,7 +677,7 @@
             } catch (error) {
                 mostrarError('Error de conexión con el servidor', true);
             } finally {
-                btn.innerHTML = originalText;
+                btn.innerHTML = originalContent;
                 btn.disabled = false;
             }
         }
