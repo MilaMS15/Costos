@@ -1,5 +1,5 @@
 /* ============================================
-   GLOBAL DARK MODE OVERRIDES
+   GLOBAL DARK MODE OVERRIDES - UNIK'A
    ============================================ */
 
 /* Base transitions */
@@ -7,8 +7,31 @@
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
+/* CSS Variables Overrides for style.css in Dark Mode */
+html.dark {
+    --primary: #3b82f6;
+    --primary-light: #60a5fa;
+    --primary-dark: #1d4ed8;
+    --secondary: #94a3b8;
+    --dark: #0f172a;
+    --dark-secondary: #1e293b;
+    --light: #0f172a;
+    --gray-50: #0f172a;
+    --gray-100: #0f172a;
+    --gray-200: #1e293b;
+    --gray-300: #334155;
+    --gray-400: #64748b;
+    --gray-500: #94a3b8;
+    --gray-600: #cbd5e1;
+    --gray-700: #cbd5e1;
+    --gray-800: #f1f5f9;
+    --gray-900: #f8fafc;
+}
+
+/* Force dark backgrounds on body and clear text colors */
 html.dark body {
     background-color: #0f172a !important;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px) !important; /* Darken dot grids in menus */
     color: #f8fafc !important;
 }
 
@@ -19,19 +42,92 @@ html.dark .bg-card { background-color: #1e293b !important; }
 html.dark .bg-surface-container-low { background-color: #0f172a !important; }
 html.dark .bg-surface-container { background-color: #1e293b !important; }
 html.dark .bg-surface-container-high { background-color: #334155 !important; }
+html.dark .bg-slate-50, 
+html.dark .bg-slate-100,
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark .bg-neutral-50,
+html.dark .bg-neutral-100,
+html.dark .bg-\[\#f3f4f0\],
+html.dark .bg-\[\#F5F5F5\] { 
+    background-color: #0f172a !important; 
+}
+html.dark .bg-slate-200,
+html.dark .bg-gray-200,
+html.dark .bg-neutral-200 { 
+    background-color: #1e293b !important; 
+}
+html.dark .bg-slate-300,
+html.dark .bg-gray-300,
+html.dark .bg-neutral-300 { 
+    background-color: #334155 !important; 
+}
+html.dark .bg-slate-800,
+html.dark .bg-gray-800,
+html.dark .bg-neutral-800 { 
+    background-color: #020617 !important; 
+}
+html.dark .bg-slate-900,
+html.dark .bg-gray-900,
+html.dark .bg-neutral-900 { 
+    background-color: #0f172a !important; 
+}
 
+/* Text elements */
 html.dark .text-on-surface { color: #f1f5f9 !important; }
 html.dark .text-unik-navy { color: #f8fafc !important; }
-html.dark .text-primary { color: #3b82f6 !important; } /* A bit lighter for visibility */
+html.dark .text-primary { color: #3b82f6 !important; } /* Lighter blue for dark mode contrast */
 html.dark .text-secondary { color: #94a3b8 !important; }
+html.dark .text-slate-800, 
+html.dark .text-gray-800, 
+html.dark .text-neutral-800, 
+html.dark .text-brand-dark, 
+html.dark .text-slate-700, 
+html.dark .text-gray-700, 
+html.dark .text-neutral-700, 
+html.dark .text-slate-900,
+html.dark .text-gray-900,
+html.dark .text-neutral-900,
+html.dark .text-\[\#1B263B\] {
+    color: #f1f5f9 !important;
+}
+html.dark .text-slate-600,
+html.dark .text-gray-600,
+html.dark .text-neutral-600,
+html.dark .text-slate-500, 
+html.dark .text-gray-500, 
+html.dark .text-neutral-500, 
+html.dark .text-slate-400, 
+html.dark .text-gray-400, 
+html.dark .text-neutral-400, 
+html.dark .text-slate-300,
+html.dark .text-gray-300,
+html.dark .text-neutral-300 {
+    color: #94a3b8 !important;
+}
+/* Color-coded warning, error, info, and success text elements overrides for high contrast readability */
+html.dark .text-red-500, html.dark .text-red-600, html.dark .text-red-700, html.dark .text-red-800 { color: #f87171 !important; }
+html.dark .text-amber-500, html.dark .text-amber-600, html.dark .text-amber-700, html.dark .text-amber-800 { color: #fbbf24 !important; }
+html.dark .text-yellow-500, html.dark .text-yellow-600, html.dark .text-yellow-700, html.dark .text-yellow-800 { color: #fde047 !important; }
+html.dark .text-green-500, html.dark .text-green-600, html.dark .text-green-700, html.dark .text-green-800 { color: #4ade80 !important; }
+html.dark .text-emerald-500, html.dark .text-emerald-600, html.dark .text-emerald-700, html.dark .text-emerald-800 { color: #34d399 !important; }
+html.dark .text-blue-500, html.dark .text-blue-600, html.dark .text-blue-700, html.dark .text-blue-800 { color: #60a5fa !important; }
+html.dark .text-indigo-500, html.dark .text-indigo-600, html.dark .text-indigo-700, html.dark .text-indigo-800 { color: #818cf8 !important; }
+html.dark .text-purple-500, html.dark .text-purple-600, html.dark .text-purple-700, html.dark .text-purple-800 { color: #c084fc !important; }
 
-/* Borders */
-html.dark .border-outline-variant\/10 { border-color: rgba(255, 255, 255, 0.1) !important; }
-html.dark .border-card { border-color: rgba(255, 255, 255, 0.1) !important; }
-html.dark .border-outline-variant\/20 { border-color: rgba(255, 255, 255, 0.2) !important; }
-html.dark .divide-outline-variant\/10 > * + * { border-color: rgba(255, 255, 255, 0.1) !important; }
+/* Borders overrides */
+html.dark .border-outline-variant\/10 { border-color: rgba(255, 255, 255, 0.08) !important; }
+html.dark .border-card { border-color: rgba(255, 255, 255, 0.08) !important; }
+html.dark .border-outline-variant\/20 { border-color: rgba(255, 255, 255, 0.15) !important; }
+html.dark .border-slate-100, 
+html.dark .border-slate-200,
+html.dark .border-slate-300 {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+html.dark .divide-outline-variant\/10 > * + * { border-color: rgba(255, 255, 255, 0.08) !important; }
+html.dark .divide-y > * + * { border-color: rgba(255, 255, 255, 0.08) !important; }
 
-/* Sidebar */
+/* Sidebar styling in Dark Mode */
 html.dark aside {
     background-color: #020617 !important;
     border-right-color: rgba(255, 255, 255, 0.05) !important;
@@ -49,16 +145,57 @@ html.dark aside a:hover:not(.bg-white) {
     color: #f8fafc !important;
 }
 
-/* Header */
+/* Header & Top Bar */
 html.dark header {
     background-color: #0f172a !important;
-    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Cards & Sections */
+/* Cards, Panels and Sections */
 html.dark section.bg-white, 
-html.dark div.bg-white {
+html.dark div.bg-white,
+html.dark .bg-white {
     background-color: #1e293b !important;
+}
+html.dark .glass-panel {
+    background: rgba(30, 41, 59, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f8fafc !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
+}
+html.dark .glass-card {
+    background: rgba(30, 41, 59, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f8fafc !important;
+}
+/* Tailwind CSS escaped slashed opacity background classes */
+html.dark .bg-white\/50,
+html.dark .bg-white\/40,
+html.dark .bg-white\/30,
+html.dark .bg-white\/20,
+html.dark .bg-white\/10,
+html.dark .bg-slate-50\/30,
+html.dark .bg-slate-50\/50,
+html.dark .bg-red-50\/50,
+html.dark .bg-amber-50\/50,
+html.dark .bg-emerald-50\/50,
+html.dark .bg-green-50\/50,
+html.dark .bg-blue-50\/50,
+html.dark .bg-\[\#f3f4f0\]\/50,
+/* Wildcard attribute selectors to catch any other custom background opacity classes */
+html.dark [class*="bg-white/"],
+html.dark [class*="bg-slate-50/"],
+html.dark [class*="bg-gray-50/"],
+html.dark [class*="bg-slate-100/"],
+html.dark [class*="bg-red-50/"],
+html.dark [class*="bg-amber-50/"],
+html.dark [class*="bg-yellow-50/"],
+html.dark [class*="bg-blue-50/"],
+html.dark [class*="bg-green-50/"],
+html.dark [class*="bg-emerald-50/"],
+html.dark [class*="bg-purple-50/"] {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Tables */
@@ -66,7 +203,8 @@ html.dark table {
     background-color: #1e293b !important;
     color: #f1f5f9 !important;
 }
-html.dark thead tr.bg-unik-navy {
+html.dark thead tr.bg-unik-navy,
+html.dark tr.bg-unik-navy {
     background-color: #020617 !important;
 }
 html.dark tbody tr:hover {
@@ -75,43 +213,372 @@ html.dark tbody tr:hover {
 html.dark tbody tr.even\:bg-surface-container-low\/20:nth-child(even) {
     background-color: rgba(255, 255, 255, 0.02) !important;
 }
+html.dark td {
+    color: #cbd5e1 !important;
+}
+html.dark th {
+    color: #f8fafc !important;
+}
 
-/* Stats Row */
-html.dark .bg-indigo-50 { background-color: rgba(79, 70, 229, 0.1) !important; border-color: rgba(79, 70, 229, 0.2) !important; }
-html.dark .bg-blue-50 { background-color: rgba(37, 99, 235, 0.1) !important; border-color: rgba(37, 99, 235, 0.2) !important; }
-html.dark .bg-orange-50 { background-color: rgba(245, 158, 11, 0.1) !important; border-color: rgba(245, 158, 11, 0.2) !important; }
-html.dark .bg-green-50 { background-color: rgba(16, 185, 129, 0.1) !important; border-color: rgba(16, 185, 129, 0.2) !important; }
+/* Stats Cards Indicators, Badges & Alerts overrides in dark mode */
+html.dark .bg-indigo-50 { background-color: rgba(79, 70, 229, 0.15) !important; border-color: rgba(79, 70, 229, 0.3) !important; }
+html.dark .bg-blue-50 { background-color: rgba(37, 99, 235, 0.15) !important; border-color: rgba(37, 99, 235, 0.3) !important; }
+html.dark .bg-orange-50 { background-color: rgba(245, 158, 11, 0.15) !important; border-color: rgba(245, 158, 11, 0.3) !important; }
+html.dark .bg-green-50 { background-color: rgba(16, 185, 129, 0.15) !important; border-color: rgba(16, 185, 129, 0.3) !important; }
+html.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.15) !important; border-color: rgba(239, 68, 68, 0.3) !important; }
+html.dark .bg-yellow-50 { background-color: rgba(245, 158, 11, 0.12) !important; border-color: rgba(245, 158, 11, 0.3) !important; }
+html.dark .bg-purple-50 { background-color: rgba(139, 92, 246, 0.15) !important; border-color: rgba(139, 92, 246, 0.3) !important; }
+
 html.dark .text-indigo-900, html.dark .text-blue-900, html.dark .text-orange-900, html.dark .text-green-900 { color: #f8fafc !important; }
 html.dark .text-indigo-700, html.dark .text-blue-700, html.dark .text-orange-700, html.dark .text-green-700 { color: #cbd5e1 !important; }
+
+/* Convert bright badges/icons/alerts into dark mode counterparts with readable text colors */
+html.dark .bg-amber-100,
+html.dark .bg-amber-50,
+html.dark .bg-yellow-100,
+html.dark .bg-yellow-50 { 
+    background-color: rgba(245, 158, 11, 0.15) !important; 
+    color: #fde047 !important; 
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+html.dark .bg-blue-100 { 
+    background-color: rgba(59, 130, 246, 0.15) !important; 
+    color: #93c5fd !important; 
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+html.dark .bg-purple-100 { 
+    background-color: rgba(139, 92, 246, 0.15) !important; 
+    color: #d8b4fe !important; 
+    border-color: rgba(139, 92, 246, 0.3) !important;
+}
+html.dark .bg-emerald-50, 
+html.dark .bg-emerald-100,
+html.dark .bg-green-100 { 
+    background-color: rgba(16, 185, 129, 0.15) !important; 
+    color: #86efac !important; 
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+html.dark .bg-red-100 { 
+    background-color: rgba(239, 68, 68, 0.15) !important; 
+    color: #fca5a5 !important; 
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Force light text in alert and badge wrappers in dark mode */
+html.dark .bg-red-50 p, html.dark .bg-red-50 div, html.dark .bg-red-50 span,
+html.dark [class*="bg-red-50/"] p, html.dark [class*="bg-red-50/"] div, html.dark [class*="bg-red-50/"] span,
+html.dark .bg-red-100 p, html.dark .bg-red-100 div, html.dark .bg-red-100 span {
+    color: #fee2e2 !important;
+}
+html.dark .bg-yellow-50 p, html.dark .bg-yellow-50 div, html.dark .bg-yellow-50 span,
+html.dark .bg-amber-50 p, html.dark .bg-amber-50 div, html.dark .bg-amber-50 span,
+html.dark [class*="bg-amber-50/"] p, html.dark [class*="bg-amber-50/"] div, html.dark [class*="bg-amber-50/"] span,
+html.dark .bg-amber-100 p, html.dark .bg-amber-100 div, html.dark .bg-amber-100 span,
+html.dark .bg-yellow-100 p, html.dark .bg-yellow-100 div, html.dark .bg-yellow-100 span {
+    color: #fef08a !important;
+}
+html.dark .bg-blue-50 p, html.dark .bg-blue-50 div, html.dark .bg-blue-50 span,
+html.dark [class*="bg-blue-50/"] p, html.dark [class*="bg-blue-50/"] div, html.dark [class*="bg-blue-50/"] span,
+html.dark .bg-blue-100 p, html.dark .bg-blue-100 div, html.dark .bg-blue-100 span,
+html.dark .bg-indigo-50 p, html.dark .bg-indigo-50 div, html.dark .bg-indigo-50 span {
+    color: #dbeafe !important;
+}
+html.dark .bg-green-50 p, html.dark .bg-green-50 div, html.dark .bg-green-50 span,
+html.dark [class*="bg-green-50/"] p, html.dark [class*="bg-green-50/"] div, html.dark [class*="bg-green-50/"] span,
+html.dark .bg-green-100 p, html.dark .bg-green-100 div, html.dark .bg-green-100 span,
+html.dark .bg-emerald-50 p, html.dark .bg-emerald-50 div, html.dark .bg-emerald-50 span,
+html.dark .bg-emerald-100 p, html.dark .bg-emerald-100 div, html.dark .bg-emerald-100 span {
+    color: #dcfce7 !important;
+}
+html.dark .bg-purple-50 p, html.dark .bg-purple-50 div, html.dark .bg-purple-50 span,
+html.dark .bg-purple-100 p, html.dark .bg-purple-100 div, html.dark .bg-purple-100 span {
+    color: #f3e8ff !important;
+}
+
+/* Force dark backgrounds on tables with background classes */
+html.dark th.bg-green-50,
+html.dark th.bg-red-50,
+html.dark th.bg-blue-50,
+html.dark th.bg-gray-50,
+html.dark th.bg-gray-100,
+html.dark td.bg-green-50,
+html.dark td.bg-red-50,
+html.dark td.bg-blue-50,
+html.dark td.bg-gray-50,
+html.dark td.bg-gray-100 {
+    background-color: #0f172a !important;
+}
+html.dark [class*="bg-green-50/"],
+html.dark [class*="bg-red-50/"],
+html.dark [class*="bg-blue-50/"] {
+    background-color: rgba(15, 23, 42, 0.75) !important;
+}
+
+/* Hover background overrides */
+html.dark .hover\:bg-white:hover,
+html.dark .hover\:bg-gray-50:hover,
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-100:hover,
+html.dark .hover\:bg-slate-200:hover {
+    background-color: #334155 !important;
+}
 
 /* Modals */
 html.dark .modal-content {
     background-color: #1e293b !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 html.dark .modal-content .bg-unik-navy { background-color: #020617 !important; }
 html.dark .modal-content .bg-surface-container-low { background-color: #0f172a !important; }
 
-/* Forms */
-html.dark input, html.dark select, html.dark textarea {
+/* Forms & Inputs */
+html.dark input, 
+html.dark select, 
+html.dark textarea,
+html.dark .bg-surface-container input {
     background-color: #0f172a !important;
     color: #f1f5f9 !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
-html.dark input::placeholder { color: #64748b !important; }
+html.dark input::placeholder,
+html.dark textarea::placeholder { 
+    color: #64748b !important; 
+}
 html.dark .bg-surface-container { background-color: #0f172a !important; }
+
+/* Shadow controls */
+html.dark .shadow-sm,
+html.dark .shadow-md,
+html.dark .shadow-lg,
+html.dark .shadow-2xl {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+}
 
 /* Scrollbar */
 html.dark ::-webkit-scrollbar-track { background: #020617 !important; }
 html.dark ::-webkit-scrollbar-thumb { background: #334155 !important; }
 html.dark ::-webkit-scrollbar-thumb:hover { background: #475569 !important; }
 
-/* Charts fixes */
+/* Charts and Canvas tuning */
 html.dark canvas {
-    filter: brightness(0.9) contrast(1.1);
+    filter: brightness(0.95) contrast(1.05);
 }
 
 /* Login Page Specifics */
 html.dark .login-card {
     background-color: #1e293b !important;
+}
+
+/* ============================================
+   COTIZADOR CARD & DETAIL BOX OVERRIDES FOR DARK MODE
+   ============================================ */
+
+/* Ficha / Contenedor de detalles del producto */
+html.dark [class*="bg-slate-50/"] {
+    background-color: rgba(15, 23, 42, 0.6) !important; /* Fondo del detalle y de la imagen en modo noche */
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Imagen mix-blend-multiply fix: 
+   Las imágenes con fondo blanco e indicador mix-blend-multiply se verán blancas. 
+   Para el modo oscuro las dejamos visibles pero con fondo del contenedor oscuro y brillo atenuado. */
+html.dark img {
+    mix-blend-mode: normal !important; /* Desactivar mix-blend-multiply para que no desaparezca en fondo oscuro */
+    filter: brightness(0.9) contrast(1.1) !important;
+}
+
+/* Etiquetas internas (MD, MOD, CIF, GA, GV) */
+html.dark [class*="bg-slate-200/"] {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #a3b1c6 !important;
+}
+
+/* Textos informativos de costos y subtítulos de detalles */
+html.dark .text-slate-600 {
+    color: #cbd5e1 !important;
+}
+html.dark .text-slate-700 {
+    color: #f1f5f9 !important;
+}
+
+/* Cajas de Costo Total y botones grises */
+html.dark .bg-slate-100 {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+}
+html.dark button.bg-slate-100:hover, 
+html.dark a.bg-slate-100:hover,
+html.dark .hover\:bg-slate-200:hover {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+/* Línea de división de costos */
+html.dark .border-slate-200,
+html.dark [class*="border-slate-"] {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Estructura del Carrito / Pedido */
+html.dark #panelCarrito {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.4) !important;
+}
+html.dark #listaCarrito {
+    background-color: #0f172a !important;
+}
+html.dark #listaCarrito .bg-white {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+html.dark #listaCarrito .bg-red-50 {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Pasarela de pago interna del checkout */
+html.dark #formCheckout .bg-slate-800 {
+    background-color: #020617 !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+html.dark #formCheckout input {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+html.dark #formCheckout .bg-slate-50 {
+    background-color: #020617 !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+html.dark #totalCarrito {
+    color: #FF9F1C !important;
+}
+
+/* Explicit overrides for Kardex table cell backgrounds (menu3.html) */
+html.dark .bg-green-50\/50,
+html.dark .bg-red-50\/50,
+html.dark .bg-blue-50\/50,
+html.dark .bg-green-50\/30,
+html.dark .bg-red-50\/30,
+html.dark .bg-blue-50\/30,
+html.dark td.bg-blue-50\/30 {
+    background-color: rgba(15, 23, 42, 0.75) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Card Gradient Overrides (like in menu4.html) */
+html.dark [class*="from-blue-50"].to-white,
+html.dark [class*="from-green-50"].to-white,
+html.dark [class*="from-purple-50"].to-white,
+html.dark [class*="from-blue-50"]\/50,
+html.dark [class*="from-green-50"]\/50,
+html.dark [class*="from-purple-50"]\/50 {
+    background-image: linear-gradient(to bottom right, #1e293b, #0f172a) !important;
+    background-color: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Legibility and semantic colors for tables and charts */
+html.dark .text-green-700,
+html.dark .text-green-800,
+html.dark .text-green-900 {
+    color: #4ade80 !important;
+}
+html.dark .text-red-700,
+html.dark .text-red-800,
+html.dark .text-red-900 {
+    color: #f87171 !important;
+}
+html.dark .text-blue-700,
+html.dark .text-blue-800,
+html.dark .text-blue-900 {
+    color: #60a5fa !important;
+}
+html.dark .text-indigo-700,
+html.dark .text-indigo-800,
+html.dark .text-indigo-900 {
+    color: #818cf8 !important;
+}
+html.dark .text-orange-700,
+html.dark .text-orange-800,
+html.dark .text-orange-900 {
+    color: #ff9f1c !important;
+}
+
+/* System settings navigation tab inactive state overrides (menu7.html) */
+html.dark .nav-tab-inactive {
+    background: #0f172a !important;
+    background-color: #0f172a !important;
+    color: #94a3b8 !important;
+}
+
+/* Specific opacity overrides for surface containers (like in plan_produccion.html) */
+html.dark [class*="bg-surface-container-low/"],
+html.dark [class*="bg-surface-container/"],
+html.dark [class*="bg-surface-container-high/"],
+html.dark .bg-surface-container-low\/30 {
+    background-color: rgba(15, 23, 42, 0.65) !important;
+}
+
+/* Page-specific overrides for MOD & CIF view (mod_cif_producto.html) */
+html.dark [class*="from-gray-50"].to-white {
+    background-image: linear-gradient(to bottom right, #0f172a, #0f172a) !important;
+    background-color: #0f172a !important;
+}
+html.dark .producto-card {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+html.dark .producto-card:hover {
+    background: #334155 !important;
+    border-color: #FF9F1C !important;
+}
+html.dark .producto-nombre {
+    color: #f1f5f9 !important;
+}
+html.dark .producto-codigo {
+    color: #94a3b8 !important;
+}
+html.dark .table-modern th {
+    background: #0f172a !important;
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+html.dark .table-modern td {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+    color: #cbd5e1 !important;
+}
+html.dark .table-modern tr:hover td {
+    background-color: #334155 !important;
+}
+html.dark .empty-state {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #94a3b8 !important;
+}
+html.dark .scroll-indicator {
+    background: #1e293b !important;
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+    color: #94a3b8 !important;
+}
+
+/* Gradients and borders overrides in mod_cif_producto.html */
+html.dark .bg-gradient-to-r.from-unik-navy.to-unik-navy\/80 {
+    background-image: none !important;
+    background-color: #020617 !important;
+}
+html.dark .bg-gradient-to-r.from-blue-500.to-blue-600 {
+    background-image: none !important;
+    background-color: #020617 !important;
+}
+html.dark .bg-gradient-to-r.from-green-500.to-green-600 {
+    background-image: none !important;
+    background-color: #020617 !important;
+}
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark [class*="border-gray-"] {
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
