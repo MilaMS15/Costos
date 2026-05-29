@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-NGROK_URL = os.getenv("NGROK_URL", "")  # <--- NUEVA VARIABLE DE ENTORNO
+NGROK_URL = os.getenv("NGROK_URL", "")  # Variable de entorno para Ngrok
 
 def register_ia_routes(app):
     
@@ -36,6 +36,7 @@ def register_ia_routes(app):
                 # Usar requests síncrono para simplificar
                 response = requests.post(
                     f"{NGROK_URL}/ask",
+                    headers={"ngrok-skip-browser-warning": "true"},  # ← AGREGADO
                     json={"question": mensaje},
                     timeout=60  # Mayor timeout porque la IA puede tardar
                 )
@@ -94,7 +95,11 @@ def register_ia_routes(app):
             })
         
         try:
-            response = requests.get(f"{NGROK_URL}/health", timeout=5)
+            response = requests.get(
+                f"{NGROK_URL}/health", 
+                headers={"ngrok-skip-browser-warning": "true"},  # ← AGREGADO
+                timeout=5
+            )
             if response.status_code == 200:
                 return jsonify({
                     'disponible': True,
@@ -127,7 +132,7 @@ def register_ia_routes(app):
             mensaje = datos.get('mensaje', '')
             pagina = datos.get('pagina', 'general')
             intentos_previos = datos.get('intentos', 0)
-            modo = datos.get('modo', 'gemini')  # <-- NUEVO: 'gemini' o 'deepseek'
+            modo = datos.get('modo', 'gemini')  # 'gemini' o 'deepseek'
             
             print(f"📨 Modo: {modo} | Pregunta: '{mensaje}'")
             
@@ -144,6 +149,7 @@ def register_ia_routes(app):
                     
                     response = requests.post(
                         f"{NGROK_URL}/ask",
+                        headers={"ngrok-skip-browser-warning": "true"},  # ← AGREGADO
                         json={"question": mensaje},
                         timeout=60
                     )
