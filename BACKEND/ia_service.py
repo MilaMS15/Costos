@@ -1,14 +1,125 @@
-# BACKEND/ia_service.py - PROMPT MEJORADO (AMIGABLE)
+# BACKEND/ia_service.py - VERSIÓN CON DEEPSEEK LOCAL + GEMINI
 import os
 import requests
+import httpx
 from flask import jsonify, request
 from dotenv import load_dotenv
 
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+NGROK_URL = os.getenv("NGROK_URL", "")  # <--- NUEVA VARIABLE DE ENTORNO
 
 def register_ia_routes(app):
+    
+    # ============================================
+    # NUEVO ENDPOINT PARA DEEPSEEK LOCAL (TUS PDFs)
+    # ============================================
+    @app.route('/api/ia/deepseek', methods=['POST'])
+    def ia_deepseek_local():
+        """Usa tu IA local con los PDFs del curso vía Ngrok"""
+        try:
+            datos = request.json
+            mensaje = datos.get('mensaje', '')
+            
+            if not NGROK_URL:
+                return jsonify({
+                    'success': False,
+                    'error': 'DeepSeek local no configurado. Configura NGROK_URL en Render.',
+                    'respuesta': None
+                })
+            
+            print(f"📨 Enviando a DeepSeek local: '{mensaje}'")
+            
+            # Llamar a tu API local via Ngrok
+            try:
+                # Usar requests síncrono para simplificar
+                response = requests.post(
+                    f"{NGROK_URL}/ask",
+                    json={"question": mensaje},
+                    timeout=60  # Mayor timeout porque la IA puede tardar
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    respuesta = data.get('answer', '')
+                    
+                    # Agregar indicador de fuente
+                    sources = data.get('sources', [])
+                    if sources:
+                        respuesta += f"\n\n📚 *Fuente: {', '.join(sources)}*"
+                    else:
+                        respuesta += "\n\n📚 *Respuesta basada en los PDFs de tu curso*"
+                    
+                    print(f"✅ Respuesta DeepSeek: {respuesta[:100]}...")
+                    return jsonify({
+                        'success': True,
+                        'respuesta': respuesta,
+                        'modo': 'deepseek_local'
+                    })
+                else:
+                    return jsonify({
+                        'success': False,
+                        'error': f'Error {response.status_code}: {response.text}',
+                        'respuesta': f"⚠️ No pude conectar con DeepSeek local. ¿Tu PC está encendida y Ngrok corriendo?\n\nError: {response.status_code}"
+                    })
+                    
+            except requests.exceptions.Timeout:
+                return jsonify({
+                    'success': False,
+                    'error': 'Timeout',
+                    'respuesta': "⏰ La IA local tardó demasiado en responder. ¿Tu PC tiene suficientes recursos? Intenta nuevamente."
+                })
+            except requests.exceptions.ConnectionError:
+                return jsonify({
+                    'success': False,
+                    'error': 'ConnectionError',
+                    'respuesta': "🔌 No puedo conectar con DeepSeek local. Asegúrate que:\n1. Tu PC esté encendida\n2. Ngrok esté corriendo (`ngrok http 8000`)\n3. La URL en Render esté actualizada"
+                })
+                
+        except Exception as e:
+            print(f"❌ Error en ia_deepseek_local: {e}")
+            return jsonify({'success': False, 'error': str(e), 'respuesta': None}), 500
+    
+    # ============================================
+    # ENDPOINT PARA VERIFICAR ESTADO DE DEEPSEEK LOCAL
+    # ============================================
+    @app.route('/api/ia/deepseek/estado', methods=['GET'])
+    def ia_deepseek_estado():
+        """Verifica si DeepSeek local está disponible"""
+        if not NGROK_URL:
+            return jsonify({
+                'disponible': False,
+                'mensaje': 'NGROK_URL no configurada en variables de entorno'
+            })
+        
+        try:
+            response = requests.get(f"{NGROK_URL}/health", timeout=5)
+            if response.status_code == 200:
+                return jsonify({
+                    'disponible': True,
+                    'mensaje': '✅ DeepSeek local conectado - Tus PDFs están listos',
+                    'url': NGROK_URL
+                })
+            else:
+                return jsonify({
+                    'disponible': False,
+                    'mensaje': f'⚠️ DeepSeek local responde pero con error {response.status_code}'
+                })
+        except requests.exceptions.ConnectionError:
+            return jsonify({
+                'disponible': False,
+                'mensaje': '❌ DeepSeek local no disponible. ¿Tu PC está encendida y Ngrok corriendo?'
+            })
+        except Exception as e:
+            return jsonify({
+                'disponible': False,
+                'mensaje': f'Error de conexión: {str(e)}'
+            })
+    
+    # ============================================
+    # ENDPOINT ORIGINAL DE GEMINI (MODIFICADO PARA SOPORTAR AMBOS)
+    # ============================================
     @app.route('/api/ia/chat', methods=['POST'])
     def ia_chat():
         try:
@@ -16,9 +127,65 @@ def register_ia_routes(app):
             mensaje = datos.get('mensaje', '')
             pagina = datos.get('pagina', 'general')
             intentos_previos = datos.get('intentos', 0)
+            modo = datos.get('modo', 'gemini')  # <-- NUEVO: 'gemini' o 'deepseek'
             
-            print(f"📨 Pregunta: '{mensaje}' (intento {intentos_previos + 1})")
+            print(f"📨 Modo: {modo} | Pregunta: '{mensaje}'")
             
+            # 🔥 SI EL USUARIO QUIERE DEEPSEEK LOCAL
+            if modo == 'deepseek':
+                # Llamar al endpoint de DeepSeek local
+                try:
+                    if not NGROK_URL:
+                        return jsonify({
+                            'success': True,
+                            'respuesta': "⚠️ DeepSeek local no está configurado. Configura la variable NGROK_URL en Render.\n\n💡 Usa el otro botón para cambiar a modo Gemini.",
+                            'navegar_a': None
+                        })
+                    
+                    response = requests.post(
+                        f"{NGROK_URL}/ask",
+                        json={"question": mensaje},
+                        timeout=60
+                    )
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        respuesta = data.get('answer', '')
+                        sources = data.get('sources', [])
+                        
+                        if sources:
+                            respuesta += f"\n\n📚 *Basado en: {', '.join(sources)}*"
+                        
+                        return jsonify({
+                            'success': True,
+                            'respuesta': respuesta,
+                            'navegar_a': None,
+                            'modo': 'deepseek'
+                        })
+                    else:
+                        return jsonify({
+                            'success': True,
+                            'respuesta': f"❌ Error conectando con DeepSeek local: {response.status_code}\n\n💡 ¿Tu PC está encendida y Ngrok corriendo? Cambia al modo Gemini si no necesitas los PDFs.",
+                            'navegar_a': None
+                        })
+                        
+                except requests.exceptions.ConnectionError:
+                    return jsonify({
+                        'success': True,
+                        'respuesta': "🔌 No puedo conectar con DeepSeek local.\n\n**Posibles causas:**\n- Tu PC está apagada\n- Ngrok no está corriendo\n- La URL de Ngrok cambió\n\n**Solución:** Actualiza NGROK_URL en Render y haz deploy manual.\n\n💡 Mientras tanto, cambia al modo Gemini usando el botón.",
+                        'navegar_a': None
+                    })
+                except Exception as e:
+                    print(f"Error DeepSeek: {e}")
+                    return jsonify({
+                        'success': True,
+                        'respuesta': f"⚠️ Error con DeepSeek local: {str(e)[:100]}\n\nUsando respuesta genérica por ahora...",
+                        'navegar_a': None
+                    })
+            
+            # ============================================
+            # MODO GEMINI (CÓDIGO ORIGINAL)
+            # ============================================
             if not GEMINI_API_KEY:
                 print("❌ No hay API Key de Gemini configurada")
                 return jsonify({
@@ -31,7 +198,6 @@ def register_ia_routes(app):
                 modelo = "gemini-2.5-flash"
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent?key={GEMINI_API_KEY}"
                 
-                # PROMPT MEJORADO - MÁS AMIGABLE
                 prompt = f"""
                 Eres "Uni", una asistente virtual amable, cálida y profesional para un taller textil.
                 
@@ -50,13 +216,6 @@ def register_ia_routes(app):
                 5. Responde en español, con frases consisas y amables
                 6. Sé CONCISO - máximo 2 oraciones
                 7. Puedes hacer preguntas para entender mejor lo que necesita
-                
-                
-                EJEMPLOS DE RESPUESTAS:
-                - Usuario: "Hola" → "¡Hola! ¿Cómo estás? Soy Uni, tu asistente. ¿En qué te ayudo hoy? "
-                - Usuario: "Te quiero" → "¡Qué lindo! Yo también te aprecio mucho. Ahora, ¿en qué puedo ayudarte con tus costos o producción? "
-                - Usuario: "Cómo calculo el costo MOD" → "¡Buena pregunta! El costo MOD se calcula así: (sueldo del trabajador × horas trabajadas) / unidades producidas. ¿Quieres que te ayude a calcular uno en específico?"
-                - Usuario: "Gracias" → "¡De nada! Para eso estoy aquí. ¿Necesitas algo más? "
                 
                 Contexto adicional: El usuario está en la página: {pagina}
                 
@@ -78,12 +237,11 @@ def register_ia_routes(app):
                     result = response.json()
                     respuesta = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "No entendí")
                     
-                    # Limpiar respuestas que empiecen con comillas
                     if respuesta.startswith('"') and respuesta.endswith('"'):
                         respuesta = respuesta[1:-1]
                     
-                    print(f"✅ Respuesta: {respuesta[:100]}...")
-                    return jsonify({'success': True, 'respuesta': respuesta, 'navegar_a': None})
+                    print(f"✅ Respuesta Gemini: {respuesta[:100]}...")
+                    return jsonify({'success': True, 'respuesta': respuesta, 'navegar_a': None, 'modo': 'gemini'})
                     
                 elif response.status_code == 503 and intentos_previos < 2:
                     return jsonify({
@@ -94,7 +252,6 @@ def register_ia_routes(app):
                         'mensaje_original': mensaje
                     })
                 else:
-                    # Respuesta por defecto amigable
                     return jsonify({
                         'success': True,
                         'respuesta': "¡Lo siento! Tuve un pequeño problema técnico. ¿Podrías intentarlo de nuevo? Te estoy esperando para ayudarte 💙",
@@ -102,7 +259,7 @@ def register_ia_routes(app):
                     })
                     
             except Exception as e:
-                print(f"❌ Error: {e}")
+                print(f"❌ Error Gemini: {e}")
                 return jsonify({
                     'success': True,
                     'respuesta': "¡Ay! Algo salió mal. Pero no te preocupes, estoy aquí. ¿Podrías repetir tu pregunta? 🙏",

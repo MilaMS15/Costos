@@ -397,3 +397,176 @@
     
     console.log('Chatbot listo con voz');
 })();
+// FRONTEND/js/chatbot.js - AGREGAR SELECTOR DE MODO
+
+// ... (código existente se mantiene, solo agrega estas líneas)
+
+// ==================== SELECTOR DE MODO ====================
+let modoIA = localStorage.getItem('modoIA') || 'gemini'; // 'gemini' o 'deepseek'
+
+function actualizarIndicadorModo() {
+    const modoBtn = document.getElementById('modoIaBtn');
+    const modoTexto = document.getElementById('modoTexto');
+    if (modoBtn) {
+        if (modoIA === 'deepseek') {
+            modoBtn.textContent = '🧠';
+            modoBtn.title = 'Modo: DeepSeek (Tus PDFs) - Cambiar a Gemini';
+            modoBtn.style.background = '#10b981';
+        } else {
+            modoBtn.textContent = '✨';
+            modoBtn.title = 'Modo: Gemini (General) - Cambiar a DeepSeek';
+            modoBtn.style.background = '#1B263B';
+        }
+    }
+    if (modoTexto) {
+        modoTexto.textContent = modoIA === 'deepseek' ? '📚 Modo Curso' : '✨ Modo General';
+    }
+}
+
+async function verificarEstadoDeepSeek() {
+    try {
+        const response = await fetch('/api/ia/deepseek/estado');
+        const data = await response.json();
+        const estadoDeepseek = document.getElementById('estadoDeepseek');
+        if (estadoDeepseek) {
+            if (data.disponible) {
+                estadoDeepseek.innerHTML = '🟢';
+                estadoDeepseek.title = data.mensaje;
+            } else {
+                estadoDeepseek.innerHTML = '🔴';
+                estadoDeepseek.title = data.mensaje;
+            }
+        }
+    } catch (error) {
+        console.error('Error verificando DeepSeek:', error);
+    }
+}
+
+function cambiarModo() {
+    modoIA = modoIA === 'gemini' ? 'deepseek' : 'gemini';
+    localStorage.setItem('modoIA', modoIA);
+    actualizarIndicadorModo();
+    
+    // Mostrar mensaje de confirmación
+    const modoMsg = modoIA === 'deepseek' 
+        ? '✅ Cambiaste a modo DEEPSEEK. Ahora responderé usando los PDFs de tu curso.' 
+        : '✅ Cambiaste a modo GEMINI. Ahora responderé como Uni, tu asistente general.';
+    
+    agregarMensaje(modoMsg, 'bot');
+    verificarEstadoDeepSeek();
+}
+
+// Modificar la función enviarMensaje para usar el modo seleccionado
+async function enviarMensaje() {
+    if (reintentando) {
+        agregarMensaje("⚠️ Ya estoy procesando una consulta, espera un momento...", 'bot');
+        return;
+    }
+    
+    const mensaje = input.value.trim();
+    if (!mensaje) return;
+    
+    agregarMensaje(mensaje, 'user');
+    input.value = '';
+    
+    reintentando = true;
+    
+    async function hacerPeticion(texto, intentos = 0) {
+        const thinkingDiv = mostrarPensando();
+        
+        try {
+            // 🔥 ENVIAR EL MODO SELECCIONADO
+            const response = await fetch('/api/ia/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mensaje: texto,
+                    pagina: window.location.pathname,
+                    intentos: intentos,
+                    modo: modoIA  // <-- NUEVO: enviar el modo actual
+                })
+            });
+            
+            const result = await response.json();
+            eliminarPensando();
+            
+            if (result.success) {
+                if (result.reintentar && intentos < 3) {
+                    const esperaMsg = agregarMensaje(result.respuesta, 'bot', true);
+                    setTimeout(async () => {
+                        esperaMsg.remove();
+                        await hacerPeticion(result.mensaje_original, intentos + 1);
+                    }, 3000);
+                    return;
+                }
+                
+                let respuesta = result.respuesta;
+                
+                // Si es modo deepseek y no hay conexión, sugerir cambiar de modo
+                if (modoIA === 'deepseek' && respuesta.includes('No puedo conectar')) {
+                    respuesta += '\n\n💡 **¿Probar con modo Gemini?** Haz clic en el botón ✨/🧠 para cambiar.';
+                }
+                
+                agregarMensaje(respuesta, 'bot');
+                hablar(respuesta);
+                
+                if (result.navegar_a) {
+                    setTimeout(() => {
+                        window.location.href = result.navegar_a;
+                    }, 1500);
+                }
+            } else {
+                agregarMensaje('Error: ' + result.error, 'bot');
+            }
+        } catch (error) {
+            eliminarPensando();
+            agregarMensaje('Error de conexión. Por favor, intenta de nuevo.', 'bot');
+        } finally {
+            reintentando = false;
+        }
+    }
+    
+    await hacerPeticion(mensaje);
+}
+
+// Modificar el HTML del chatbot para agregar el selector y estado
+function generarHTML() {
+    return `
+        <div class="chatbot-container">
+            <div class="chatbot-button" id="chatbotButton">
+                <span style="font-size: 28px;">🤖</span>
+            </div>
+            <div class="chatbot-window" id="chatbotWindow">
+                <div class="chatbot-header">
+                    <span>🤖 Asistente Unik'a</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span id="estadoDeepseek" style="font-size: 12px;" title="Estado DeepSeek">🔄</span>
+                        <button id="modoIaBtn" style="background: #1B263B; border: none; color: white; border-radius: 20px; padding: 4px 10px; cursor: pointer; font-size: 12px;">✨</button>
+                        <span id="closeChatbot" style="cursor: pointer;">✕</span>
+                    </div>
+                </div>
+                <div class="chatbot-messages" id="chatbotMessages">
+                    <div class="message bot">
+                        <div class="message-bubble">¡Hola! Soy Uni, tu asistente. 🌟<br><br>
+                        <span id="modoTexto" style="font-weight: bold;">✨ Modo General</span><br><br>
+                        Puedo ayudarte con:<br>
+                        • Costos de producción<br>
+                        • Materiales y productos<br>
+                        • Mano de obra<br>
+                        • Órdenes de trabajo<br><br>
+                        💡 **NUEVO:** Haz clic en el botón ✨/🧠 para cambiar al modo DEEPSEEK y responderé SOLO con el contenido de los PDFs que subiste a tu curso.<br><br>
+                        ¿En qué te ayudo hoy? 😊</div>
+                    </div>
+                </div>
+                <div class="chatbot-input">
+                    <input type="text" id="chatbotInput" placeholder="Escribe tu pregunta...">
+                    <button id="sendMessage">➤</button>
+                    <button id="voiceInputBtn" class="voice-button" title="Hablar en lugar de escribir">🎤</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Al inicializar, reemplazar el HTML y configurar eventos
+// (modifica donde insertas el HTML para usar generarHTML())
