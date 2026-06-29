@@ -265,6 +265,13 @@ function cargarNavbar() {
                 items: [
                     { nombre: "📈 Estado de Resultados", href: "estado_resultados.html" }
                 ]
+            },
+            // 🔥 NUEVA SECCIÓN: Costeo ABC
+            {
+                titulo: "Costeo ABC",
+                items: [
+                    { nombre: "🎯 Análisis ABC", href: "costeo_abc.html" }
+                ]
             }
         ];
 

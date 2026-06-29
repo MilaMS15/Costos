@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unik'a | Costeo ABC</title>
 
 <!-- ===========================================================
-  Mantén las mismas hojas de estilo que usan tus otros menuN.html
-  (ajusta las rutas si tu estructura real difiere, p.ej. "../css/").
+  HOJAS DE ESTILO - Mismas que usan tus otros menuN.html
 =========================================================== -->
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/patterns.css">
@@ -16,213 +16,645 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
 <style>
-  /* Estilos propios de este módulo. Si quieres unificar con tu sistema,
-     puedes mover estas reglas a css/style.css (usan las mismas variables
-     de color que tus otros dashboards: navy + naranja). */
+  /* Estilos propios del módulo Costeo ABC */
   :root{
-    --abc-navy:#0d1426; --abc-orange:#f59e0b; --abc-orange-d:#c2680a;
-    --abc-bg:#f3f5f9; --abc-card:#ffffff; --abc-text:#1b2030; --abc-muted:#6b7280; --abc-border:#e7eaf0;
-    --blue-bg:#eaf1ff; --blue-tx:#2563eb;
-    --green-bg:#e9faf0; --green-tx:#15803d;
-    --orange-bg:#fff4e6; --orange-tx:#c2680a;
-    --purple-bg:#f4eeff; --purple-tx:#7c3aed;
-    --red-bg:#fdeceb; --red-tx:#c0291c;
+    --abc-navy:#0d1426; 
+    --abc-orange:#f59e0b; 
+    --abc-orange-d:#c2680a;
+    --abc-bg:#f3f5f9; 
+    --abc-card:#ffffff; 
+    --abc-text:#1b2030; 
+    --abc-muted:#6b7280; 
+    --abc-border:#e7eaf0;
+    --blue-bg:#eaf1ff; 
+    --blue-tx:#2563eb;
+    --green-bg:#e9faf0; 
+    --green-tx:#15803d;
+    --orange-bg:#fff4e6; 
+    --orange-tx:#c2680a;
+    --purple-bg:#f4eeff; 
+    --purple-tx:#7c3aed;
+    --red-bg:#fdeceb; 
+    --red-tx:#c0291c;
   }
-  .abc-main{flex:1;padding:26px 32px 60px;max-width:1220px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--abc-text);background:var(--abc-bg);}
-  .abc-topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px;flex-wrap:wrap;}
-  .abc-topbar h1{font-size:21px;margin:0 0 4px;display:flex;align-items:center;gap:9px;}
-  .abc-topbar p{margin:0;color:var(--abc-muted);font-size:13px;}
-  .badge-live{background:var(--green-bg);color:var(--green-tx);font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;}
-  .topbar-actions{display:flex;gap:10px;align-items:center;}
-  .period{background:#fff;border:1px solid var(--abc-border);border-radius:9px;padding:9px 13px;font-size:12.5px;font-weight:600;}
-  .btn{border:none;border-radius:9px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;}
-  .btn-primary{background:var(--abc-orange);color:#fff;}
-  .btn-primary:hover{background:var(--abc-orange-d);}
-  .btn-ghost{background:#fff;border:1px solid var(--abc-border);color:var(--abc-text);}
-  .btn-ghost:hover{background:#f6f7fa;}
+  
+  .abc-main{
+    flex:1;
+    padding:26px 32px 60px;
+    max-width:1220px;
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--abc-text);
+    background:var(--abc-bg);
+  }
+  
+  .abc-topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:20px;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  
+  .abc-topbar h1{
+    font-size:21px;
+    margin:0 0 4px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  
+  .abc-topbar p{
+    margin:0;
+    color:var(--abc-muted);
+    font-size:13px;
+  }
+  
+  .badge-live{
+    background:var(--green-bg);
+    color:var(--green-tx);
+    font-size:10.5px;
+    font-weight:700;
+    padding:3px 9px;
+    border-radius:20px;
+  }
+  
+  .topbar-actions{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  
+  .period{
+    background:#fff;
+    border:1px solid var(--abc-border);
+    border-radius:9px;
+    padding:9px 13px;
+    font-size:12.5px;
+    font-weight:600;
+  }
+  
+  .btn{
+    border:none;
+    border-radius:9px;
+    padding:9px 16px;
+    font-size:12.5px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-primary{
+    background:var(--abc-orange);
+    color:#fff;
+  }
+  
+  .btn-primary:hover{
+    background:var(--abc-orange-d);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+  
+  .btn-ghost{
+    background:#fff;
+    border:1px solid var(--abc-border);
+    color:var(--abc-text);
+  }
+  
+  .btn-ghost:hover{
+    background:#f6f7fa;
+    border-color:#c5c9d4;
+  }
 
-  .card{background:var(--abc-card);border:1px solid var(--abc-border);border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(20,25,40,.03);}
-  .card h2{font-size:14.5px;margin:0 0 3px;display:flex;align-items:center;gap:7px;}
-  .card .desc{font-size:12px;color:var(--abc-muted);margin:0 0 14px;}
+  .card{
+    background:var(--abc-card);
+    border:1px solid var(--abc-border);
+    border-radius:14px;
+    padding:20px 22px;
+    margin-bottom:18px;
+    box-shadow:0 1px 2px rgba(20,25,40,.03);
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .card:hover{
+    box-shadow:0 4px 12px rgba(20,25,40,.06);
+  }
+  
+  .card h2{
+    font-size:14.5px;
+    margin:0 0 3px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  
+  .card .desc{
+    font-size:12px;
+    color:var(--abc-muted);
+    margin:0 0 14px;
+  }
 
-  .exec-summary{background:linear-gradient(135deg,#101a32,#1b2747);color:#dfe4ee;border-radius:14px;padding:24px 26px;margin-bottom:18px;border:1px solid #25325a;}
-  .exec-summary .eyebrow{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9aa6c4;font-weight:700;margin-bottom:8px;}
-  .exec-summary p{font-size:13.5px;line-height:1.65;margin:0 0 14px;max-width:880px;}
-  .exec-findings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-  .finding{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;}
-  .finding .f-val{font-size:18px;font-weight:700;color:#fff;}
-  .finding .f-lbl{font-size:11px;color:#aab4cf;margin-top:3px;line-height:1.3;}
+  .exec-summary{
+    background:linear-gradient(135deg,#101a32,#1b2747);
+    color:#dfe4ee;
+    border-radius:14px;
+    padding:24px 26px;
+    margin-bottom:18px;
+    border:1px solid #25325a;
+  }
+  
+  .exec-summary .eyebrow{
+    font-size:10.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#9aa6c4;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  
+  .exec-summary p{
+    font-size:13.5px;
+    line-height:1.65;
+    margin:0 0 14px;
+    max-width:880px;
+  }
+  
+  .exec-summary p b{
+    color:#fbbf24;
+  }
+  
+  .exec-findings{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+  }
+  
+  .finding{
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:10px;
+    padding:12px 14px;
+  }
+  
+  .finding .f-val{
+    font-size:18px;
+    font-weight:700;
+    color:#fff;
+  }
+  
+  .finding .f-lbl{
+    font-size:11px;
+    color:#aab4cf;
+    margin-top:3px;
+    line-height:1.3;
+  }
 
-  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
-  .kpi{border-radius:12px;padding:14px 16px;}
-  .kpi .lbl{font-size:11px;font-weight:600;opacity:.85;margin-bottom:6px;}
-  .kpi .val{font-size:19px;font-weight:700;}
-  .kpi .sub{font-size:10.5px;margin-top:3px;opacity:.85;}
+  .kpi-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:18px;
+  }
+  
+  .kpi{
+    border-radius:12px;
+    padding:14px 16px;
+    transition: transform 0.2s ease;
+  }
+  
+  .kpi:hover{
+    transform: translateY(-2px);
+  }
+  
+  .kpi .lbl{
+    font-size:11px;
+    font-weight:600;
+    opacity:.85;
+    margin-bottom:6px;
+  }
+  
+  .kpi .val{
+    font-size:19px;
+    font-weight:700;
+  }
+  
+  .kpi .sub{
+    font-size:10.5px;
+    margin-top:3px;
+    opacity:.85;
+  }
+  
   .kpi.blue{background:var(--blue-bg);color:var(--blue-tx);}
   .kpi.orange{background:var(--orange-bg);color:var(--orange-tx);}
   .kpi.green{background:var(--green-bg);color:var(--green-tx);}
   .kpi.red{background:var(--red-bg);color:var(--red-tx);}
 
-  table{width:100%;border-collapse:collapse;font-size:12.5px;}
-  th{text-align:left;background:#f8fafc;color:#5b6473;font-weight:600;padding:9px 10px;border-bottom:1px solid var(--abc-border);font-size:11.5px;text-transform:uppercase;letter-spacing:.02em;}
-  td{padding:9px 10px;border-bottom:1px solid #f0f2f6;vertical-align:middle;}
-  tr:last-child td{border-bottom:none;}
-  .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+  }
+  
+  th{
+    text-align:left;
+    background:#f8fafc;
+    color:#5b6473;
+    font-weight:600;
+    padding:9px 10px;
+    border-bottom:1px solid var(--abc-border);
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+  }
+  
+  td{
+    padding:9px 10px;
+    border-bottom:1px solid #f0f2f6;
+    vertical-align:middle;
+  }
+  
+  tr:last-child td{
+    border-bottom:none;
+  }
+  
+  .pill{
+    display:inline-block;
+    font-size:10.5px;
+    font-weight:700;
+    padding:3px 9px;
+    border-radius:20px;
+  }
+  
   .pill.blue{background:var(--blue-bg);color:var(--blue-tx);}
   .pill.green{background:var(--green-bg);color:var(--green-tx);}
   .pill.purple{background:var(--purple-bg);color:var(--purple-tx);}
   .pill.red{background:var(--red-bg);color:var(--red-tx);}
-  .bar-mini{height:5px;border-radius:3px;background:#eef0f4;margin-top:5px;overflow:hidden;}
-  .bar-mini i{display:block;height:100%;background:var(--abc-orange);}
+  
+  .bar-mini{
+    height:5px;
+    border-radius:3px;
+    background:#eef0f4;
+    margin-top:5px;
+    overflow:hidden;
+  }
+  
+  .bar-mini i{
+    display:block;
+    height:100%;
+    background:var(--abc-orange);
+    transition: width 0.6s ease;
+  }
 
-  .two-col{display:grid;grid-template-columns:1.25fr .9fr;gap:18px;align-items:start;}
-  .chart-wrap{height:260px;}
-  .chart-wrap-sm{height:230px;}
+  .two-col{
+    display:grid;
+    grid-template-columns:1.25fr .9fr;
+    gap:18px;
+    align-items:start;
+  }
+  
+  .chart-wrap{
+    height:260px;
+    position:relative;
+  }
+  
+  .chart-wrap-sm{
+    height:230px;
+    position:relative;
+  }
 
-  .action-list{display:flex;flex-direction:column;gap:10px;}
-  .action{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border:1px solid var(--abc-border);border-radius:10px;}
-  .action .pr{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+  .action-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  
+  .action{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    padding:13px 14px;
+    border:1px solid var(--abc-border);
+    border-radius:10px;
+    transition: all 0.2s ease;
+  }
+  
+  .action:hover{
+    background:#fafbfd;
+    border-color:#d0d4de;
+  }
+  
+  .action .pr{
+    width:26px;
+    height:26px;
+    border-radius:7px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:700;
+    flex-shrink:0;
+  }
+  
   .action .pr.high{background:var(--red-bg);color:var(--red-tx);}
   .action .pr.med{background:var(--orange-bg);color:var(--orange-tx);}
   .action .pr.low{background:var(--green-bg);color:var(--green-tx);}
-  .action b{font-size:12.8px;display:block;margin-bottom:2px;}
-  .action span.note{font-size:12px;color:var(--abc-muted);}
+  
+  .action b{
+    font-size:12.8px;
+    display:block;
+    margin-bottom:2px;
+  }
+  
+  .action span.note{
+    font-size:12px;
+    color:var(--abc-muted);
+  }
 
-  .toggle-row{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
-  .toggle-row .chev{transition:transform .2s;font-size:12px;color:var(--abc-muted);}
-  .chev.open{transform:rotate(180deg);}
-  .assumptions{display:none;margin-top:16px;border-top:1px solid var(--abc-border);padding-top:16px;}
-  .assumptions.open{display:block;}
-  input.cell-input{width:78px;padding:5px 7px;border:1px solid var(--abc-border);border-radius:6px;font-size:12.5px;text-align:right;}
-  input.cell-input:focus{outline:none;border-color:var(--abc-orange);}
-  .sub-h{font-size:12.5px;font-weight:700;margin:18px 0 8px;}
-  .sub-h:first-child{margin-top:0;}
-  .footer-note{font-size:11px;color:var(--abc-muted);text-align:center;margin-top:18px;}
+  .toggle-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    padding:4px 0;
+    user-select:none;
+  }
+  
+  .toggle-row:hover{
+    color:var(--abc-orange);
+  }
+  
+  .toggle-row .chev{
+    transition:transform .3s ease;
+    font-size:14px;
+    color:var(--abc-muted);
+  }
+  
+  .chev.open{
+    transform:rotate(180deg);
+  }
+  
+  .assumptions{
+    display:none;
+    margin-top:16px;
+    border-top:1px solid var(--abc-border);
+    padding-top:16px;
+    animation: fadeSlide 0.3s ease;
+  }
+  
+  .assumptions.open{
+    display:block;
+  }
+  
+  @keyframes fadeSlide{
+    from{ opacity:0; transform:translateY(-8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  
+  input.cell-input{
+    width:78px;
+    padding:5px 7px;
+    border:1px solid var(--abc-border);
+    border-radius:6px;
+    font-size:12.5px;
+    text-align:right;
+    transition: border-color 0.2s ease;
+    background:#fff;
+  }
+  
+  input.cell-input:focus{
+    outline:none;
+    border-color:var(--abc-orange);
+    box-shadow:0 0 0 3px rgba(245,158,11,0.15);
+  }
+  
+  input.cell-input:hover{
+    border-color:#b0b8c5;
+  }
+  
+  .sub-h{
+    font-size:12.5px;
+    font-weight:700;
+    margin:18px 0 8px;
+    color:var(--abc-text);
+  }
+  
+  .sub-h:first-child{
+    margin-top:0;
+  }
+  
+  .footer-note{
+    font-size:11px;
+    color:var(--abc-muted);
+    text-align:center;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid var(--abc-border);
+  }
 
+  /* Responsive */
   @media print{
     #sidebar, .topbar-actions{display:none !important;}
     .abc-main{padding:0 10px;max-width:100%;}
     .card{box-shadow:none;break-inside:avoid;}
+    .exec-summary{background:#f3f5f9 !important;color:#1b2030 !important;border:1px solid #ddd;}
+    .exec-summary .eyebrow{color:#6b7280;}
+    .exec-summary p b{color:var(--abc-orange);}
+    .finding{background:#f8fafc !important;border-color:#ddd !important;}
+    .finding .f-val{color:#1b2030 !important;}
+    .finding .f-lbl{color:#6b7280 !important;}
   }
+  
   @media (max-width:1000px){
     .kpi-row{grid-template-columns:repeat(2,1fr);}
     .two-col{grid-template-columns:1fr;}
     .exec-findings{grid-template-columns:1fr;}
+    .abc-main{padding:16px;}
+    .abc-topbar h1{font-size:18px;}
+    .topbar-actions .btn span{display:none;}
+  }
+  
+  @media (max-width:640px){
+    .kpi-row{grid-template-columns:1fr;}
+    .abc-topbar{flex-direction:column;}
+    .topbar-actions{width:100%;justify-content:stretch;}
+    .topbar-actions .btn{flex:1;justify-content:center;}
+    .topbar-actions .period{flex:1;text-align:center;}
+    .card{padding:14px;}
+    table{font-size:11px;}
+    th, td{padding:6px 8px;}
+    input.cell-input{width:60px;font-size:11px;padding:4px 5px;}
+    .exec-summary{padding:16px;}
   }
 </style>
 </head>
 <body>
 
 <!-- ===========================================================
-  TODO: reemplaza este bloque por el include/inyección real de tu
-  navbar (el mismo que usan menu1.html ... menu7.html). Si tu
-  navbar.js inyecta el sidebar dentro de un contenedor con id
-  "sidebar" o similar, deja ese div vacío aquí y elimina el resto
-  de este comentario.
+  SIDEBAR - Navbar inyectada por navbar.js
 =========================================================== -->
-<div id="sidebar">
-  <!-- navbar.js debería poblar esto igual que en tus otros menuN.html -->
-</div>
+<div id="sidebar"></div>
 
+<!-- ===========================================================
+  CONTENIDO PRINCIPAL
+=========================================================== -->
 <div class="abc-main">
 
+  <!-- TOPBAR -->
   <div class="abc-topbar">
     <div>
-      <h1>Costeo ABC <span class="badge-live">● En vivo</span></h1>
+      <h1>📊 Costeo ABC <span class="badge-live">● En vivo</span></h1>
       <p>Rentabilidad real por producto según consumo de actividades de planta</p>
     </div>
     <div class="topbar-actions">
-      <div class="period">📅 Abril 2026</div>
-      <button class="btn btn-ghost" onclick="window.print()">⬇ Exportar PDF</button>
-      <button class="btn btn-primary" id="btnToggleAssumptions">⚙ Editar supuestos</button>
+      <div class="period">📅 Cargando...</div>
+      <button class="btn btn-ghost" onclick="window.print()">⬇ <span>Exportar PDF</span></button>
+      <button class="btn btn-primary" id="btnToggleAssumptions">⚙ <span>Editar supuestos</span></button>
     </div>
   </div>
 
+  <!-- RESUMEN EJECUTIVO -->
   <div class="exec-summary">
-    <div class="eyebrow">Resumen ejecutivo</div>
-    <p id="execNarrative">Cargando datos del backend…</p>
+    <div class="eyebrow">📌 Resumen ejecutivo</div>
+    <p id="execNarrative">Cargando datos del backend...</p>
     <div class="exec-findings" id="execFindings"></div>
   </div>
 
+  <!-- KPIS -->
   <div class="kpi-row">
     <div class="kpi blue">
-      <div class="lbl">CIF GESTIONADO</div>
+      <div class="lbl">🏦 CIF GESTIONADO</div>
       <div class="val" id="kpiTotalCIF">—</div>
       <div class="sub">Costos indirectos del periodo</div>
     </div>
     <div class="kpi red">
-      <div class="lbl">CIF MAL ASIGNADO (TRADICIONAL)</div>
+      <div class="lbl">⚠️ CIF MAL ASIGNADO</div>
       <div class="val" id="kpiMisallocated">—</div>
       <div class="sub">Monto que cambia de producto con ABC</div>
     </div>
     <div class="kpi orange">
-      <div class="lbl">PRODUCTO DE MAYOR RIESGO</div>
+      <div class="lbl">🔴 PRODUCTO DE MAYOR RIESGO</div>
       <div class="val" id="kpiWorst">—</div>
       <div class="sub" id="kpiWorstSub">Mayor subcosteo detectado</div>
     </div>
     <div class="kpi green">
-      <div class="lbl">PRODUCTO MEJOR PRICEADO</div>
+      <div class="lbl">🟢 PRODUCTO MEJOR PRICEADO</div>
       <div class="val" id="kpiBest">—</div>
       <div class="sub" id="kpiBestSub">Costo real menor al asignado hoy</div>
     </div>
   </div>
 
+  <!-- TABLA EJECUTIVA + GRÁFICO DE ACTIVIDADES -->
   <div class="two-col">
     <div class="card">
       <h2>📋 Costo real por producto — Tradicional vs. ABC</h2>
       <p class="desc">Costo indirecto unitario asignado hoy frente al costo real según consumo de actividades.</p>
-      <table>
-        <thead><tr><th>Producto</th><th>CIF/u Actual</th><th>CIF/u Real (ABC)</th><th>Impacto</th><th>Estado</th></tr></thead>
-        <tbody id="tblEjecutiva"></tbody>
-      </table>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>CIF/u Actual</th>
+              <th>CIF/u Real (ABC)</th>
+              <th>Impacto</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tblEjecutiva">
+            <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:20px;">Cargando datos...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="card">
       <h2>🏗️ Costo por actividad (planta)</h2>
       <p class="desc">En qué se concentra el gasto indirecto.</p>
-      <div class="chart-wrap-sm"><canvas id="chartActividades"></canvas></div>
+      <div class="chart-wrap-sm">
+        <canvas id="chartActividades"></canvas>
+      </div>
     </div>
   </div>
 
+  <!-- GRÁFICO DE COMPARACIÓN -->
   <div class="card">
     <h2>📊 CIF unitario — Tradicional vs. ABC por producto</h2>
-    <div class="chart-wrap"><canvas id="chartComparacion"></canvas></div>
+    <p class="desc">Comparación visual del costo indirecto asignado por cada método.</p>
+    <div class="chart-wrap">
+      <canvas id="chartComparacion"></canvas>
+    </div>
   </div>
 
+  <!-- PLAN DE ACCIÓN -->
   <div class="card">
     <h2>✅ Plan de acción recomendado</h2>
     <p class="desc">Priorizado según el impacto económico detectado.</p>
-    <div class="action-list" id="planAccion"></div>
+    <div class="action-list" id="planAccion">
+      <div style="text-align:center;color:#94a3b8;padding:20px;">Cargando recomendaciones...</div>
+    </div>
   </div>
 
+  <!-- PANEL DE SUPUESTOS (EDITABLE) -->
   <div class="card">
     <div class="toggle-row" id="toggleRow">
-      <h2 style="margin:0">⚙ Supuestos del modelo (actividades, drivers y consumo)</h2>
+      <h2 style="margin:0;">⚙ Supuestos del modelo</h2>
       <span class="chev" id="chev">▼</span>
     </div>
-    <p class="desc">Editable: los cambios se guardan en tu base de datos (tabla tablaconsumoactividad) y recalculan el modelo al instante.</p>
+    <p class="desc">Actividades, drivers y consumo por producto. Los cambios se guardan en la base de datos y recalculan el modelo al instante.</p>
     <div class="assumptions" id="assumptionsPanel">
-      <div class="sub-h">Actividades y costo del periodo</div>
-      <table>
-        <thead><tr><th>Actividad</th><th>Generador de costo</th><th>Costo (S/)</th><th>Unidades totales</th><th>Tasa</th></tr></thead>
-        <tbody id="tblActividades"></tbody>
-        <tbody><tr style="font-weight:700;background:#fafbfd"><td colspan="2">CIF TOTAL</td><td id="totalActCost">—</td><td colspan="2"></td></tr></tbody>
-      </table>
+      
+      <div class="sub-h">📌 Actividades y costo del periodo</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Actividad</th>
+              <th>Generador de costo</th>
+              <th>Costo (S/)</th>
+              <th>Unidades totales</th>
+              <th>Tasa</th>
+            </tr>
+          </thead>
+          <tbody id="tblActividades">
+            <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:20px;">Cargando actividades...</td></tr>
+          </tbody>
+          <tfoot>
+            <tr style="font-weight:700;background:#fafbfd;">
+              <td colspan="2">CIF TOTAL</td>
+              <td id="totalActCost">—</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
-      <div class="sub-h">Consumo de cada actividad por producto (total del periodo)</div>
-      <div style="overflow-x:auto"><table id="tblMatriz"></table></div>
+      <div class="sub-h">📦 Consumo de cada actividad por producto</div>
+      <p style="font-size:11px;color:var(--abc-muted);margin:-4px 0 10px;">Edita las cantidades para actualizar el modelo. Los cambios son en tiempo real.</p>
+      <div style="overflow-x:auto;">
+        <table id="tblMatriz">
+          <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:20px;">Cargando matriz de consumo...</td></tr>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div class="footer-note">Unik'a · Sistema de Gestión de Costos Industriales — Módulo de Costeo ABC · Generado el <span id="genDate"></span></div>
+  <!-- FOOTER -->
+  <div class="footer-note">
+    Unik'a · Sistema de Gestión de Costos Industriales — Módulo de Costeo ABC · Generado el <span id="genDate"></span>
+  </div>
+
 </div>
 
 <!-- ===========================================================
-  Mismos scripts base que usan tus otros menuN.html, + el nuevo
-  costeo_abc.js al final.
+  SCRIPTS - Mismos que usan tus otros menuN.html
+  🔥 IMPORTANTE: El orden de carga es crítico
 =========================================================== -->
 <script src="js/config.js"></script>
 <script src="js/theme-manager.js"></script>
 <script src="js/navbar.js"></script>
-<script src="../js/costeo_abc.js"></script>
+<script src="js/costeo_abc.js"></script>
+
 </body>
 </html>
