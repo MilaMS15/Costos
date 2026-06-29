@@ -197,9 +197,10 @@ def actualizar_consumo():
         supabase.table('tablaconsumoactividad').update(
             {'cantidad': data['cantidad']}
         ).eq('id', existente[0]['id']).execute()
+        return jsonify({'ok': True, 'id': existente[0]['id']})
     else:
-        supabase.table('tablaconsumoactividad').insert(data).execute()
-    return jsonify({'ok': True})
+        result = supabase.table('tablaconsumoactividad').insert(data).execute()
+        return jsonify({'ok': True, 'id': result.data[0]['id']})
 
 
 @abc_bp.route('/costeo', methods=['GET'])
