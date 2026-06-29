@@ -15,16 +15,205 @@
     let recognition = null;
     
     // ==================== FUNCIÓN DE VOZ ====================
+    // ==================== LIMPIAR TEXTO PARA VOZ ====================
+    // ==================== LIMPIAR TEXTO PARA VOZ ====================
+    function limpiarTextoParaVoz(texto) {
+        if (!texto) return "";
+        
+        let limpio = texto;
+        
+        // 1. Eliminar markdown
+        limpio = limpio.replace(/\*\*(.*?)\*\*/g, '$1');
+        limpio = limpio.replace(/\*(.*?)\*/g, '$1');
+        limpio = limpio.replace(/`(.*?)`/g, '$1');
+        
+        // 2. Eliminar emojis
+        limpio = limpio.replace(/[📚💰🔌⚠️❌✅💡🤖👥📦🏭🛒📋📊💵⏰🙏😊😉💙✨🧠🟢🔴🔄🎤🎙️✕➤🌟]/g, '');
+        
+        // 3. Formatear números con S/ (moneda)
+        limpio = limpio.replace(/S\/\s*([\d,]+(?:\.\d+)?)/gi, function(match, numero) {
+            const numeroLimpio = numero.replace(/,/g, '');
+            return convertirNumeroALetrasNatural(parseFloat(numeroLimpio));
+        });
+        
+        // 4. Formatear números decimales sueltos
+        limpio = limpio.replace(/\b(\d+(?:\.\d+)?)\b/g, function(match) {
+            const num = parseFloat(match);
+            if (!isNaN(num)) {
+                // Códigos de producto (5+ dígitos sin decimal)
+                if (!match.includes('.') && match.length >= 5) {
+                    return match.split('').join(' ');
+                }
+                // Números con decimales
+                if (match.includes('.')) {
+                    return convertirDecimalNatural(num);
+                }
+            }
+            return match;
+        });
+        
+        // 5. Limpiar caracteres especiales
+        limpio = limpio.replace(/[&<>@#$%^&*()_+=[\]{};:'"\\|,]/g, ' ');
+        limpio = limpio.replace(/\s+/g, ' ');
+        limpio = limpio.trim();
+        
+        return limpio;
+    }
+
+    function convertirNumeroALetrasNatural(numero) {
+        if (isNaN(numero)) return numero.toString();
+        
+        // Redondear a 2 decimales para montos de dinero
+        const numeroRedondeado = Math.round(numero * 100) / 100;
+        const soles = Math.floor(numeroRedondeado);
+        const centavos = Math.round((numeroRedondeado - soles) * 100);
+        
+        const unidades = ['', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
+        const especiales = ['diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciseis', 'diecisiete', 'dieciocho', 'diecinueve'];
+        const decenas = ['', '', 'veinti', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'];
+        const centenas = ['', 'cien', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'];
+        
+        function convertirTresDigitos(n) {
+            if (n === 0) return '';
+            if (n === 100) return 'cien';
+            
+            let resultado = '';
+            const c = Math.floor(n / 100);
+            const resto = n % 100;
+            
+            if (c > 0) {
+                resultado += centenas[c];
+            }
+            
+            if (resto === 0) return resultado;
+            
+            if (resultado) resultado += ' ';
+            
+            if (resto < 10) {
+                resultado += unidades[resto];
+            } else if (resto < 20) {
+                resultado += especiales[resto - 10];
+            } else {
+                const d = Math.floor(resto / 10);
+                const u = resto % 10;
+                if (u === 0) {
+                    resultado += decenas[d];
+                } else {
+                    resultado += decenas[d] + ' y ' + unidades[u];
+                }
+            }
+            
+            return resultado;
+        }
+        
+        let resultado = '';
+        
+        if (soles === 0) {
+            resultado = 'cero';
+        } else if (soles >= 1000000) {
+            const millones = Math.floor(soles / 1000000);
+            const resto = soles % 1000000;
+            if (millones === 1) {
+                resultado = 'un millón';
+            } else {
+                resultado = convertirTresDigitos(millones) + ' millones';
+            }
+            if (resto > 0) {
+                resultado += ' ' + convertirTresDigitos(resto);
+            }
+        } else if (soles >= 1000) {
+            const miles = Math.floor(soles / 1000);
+            const resto = soles % 1000;
+            if (miles === 1) {
+                resultado = 'mil';
+            } else {
+                resultado = convertirTresDigitos(miles) + ' mil';
+            }
+            if (resto > 0) {
+                resultado += ' ' + convertirTresDigitos(resto);
+            }
+        } else {
+            resultado = convertirTresDigitos(soles);
+        }
+        
+        if (centavos > 0) {
+            resultado += ' con ' + convertirTresDigitos(centavos) + ' centavos';
+        }
+        
+        resultado += ' soles';
+        
+        return resultado;
+    }
+
+    function convertirDecimalNatural(numero) {
+        // Redondear a 4 decimales máximo para evitar decimales largos
+        let numeroStr = numero.toString();
+        
+        // Si es un número como 1.0500, convertirlo a 1.05
+        if (numeroStr.includes('.')) {
+            // Eliminar ceros innecesarios al final
+            numeroStr = numeroStr.replace(/\.?0+$/, '');
+            // Si después de eliminar ceros queda solo el punto, eliminarlo
+            if (numeroStr.endsWith('.')) {
+                numeroStr = numeroStr.slice(0, -1);
+            }
+        }
+        
+        // Si ya no tiene decimales, es un entero
+        if (!numeroStr.includes('.')) {
+            return convertirNumeroALetrasNatural(parseInt(numeroStr));
+        }
+        
+        const partes = numeroStr.split('.');
+        const enteros = parseInt(partes[0]);
+        let decimales = partes[1];
+        
+        // Limitar decimales a 4 para voz
+        if (decimales && decimales.length > 4) {
+            decimales = decimales.substring(0, 4);
+        }
+        
+        let resultado = '';
+        if (enteros > 0) {
+            resultado += convertirNumeroALetrasNatural(enteros);
+        } else {
+            resultado += 'cero';
+        }
+        
+        if (decimales && parseInt(decimales) > 0) {
+            resultado += ' punto';
+            for (let i = 0; i < decimales.length; i++) {
+                const digito = parseInt(decimales[i]);
+                if (digito === 0) {
+                    resultado += ' cero';
+                } else {
+                    const unidades = ['', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
+                    resultado += ' ' + unidades[digito];
+                }
+            }
+        }
+        
+        return resultado;
+    }
+    // ==================== FUNCIÓN DE VOZ MEJORADA ====================
     function hablar(texto) {
         if (!texto || texto.length === 0) return;
+        
+        // 🔥 LIMPIAR EL TEXTO ANTES DE HABLARLO
+        const textoLimpio = limpiarTextoParaVoz(texto);
+        
+        console.log('🗣️ Original:', texto.substring(0, 100));
+        console.log('🗣️ Limpio para voz:', textoLimpio.substring(0, 100));
+        
         if (vozActiva) {
             window.speechSynthesis.cancel();
             vozActiva = false;
         }
+        
         if (!('speechSynthesis' in window)) return;
         
         vozActiva = true;
-        const utterance = new SpeechSynthesisUtterance(texto);
+        const utterance = new SpeechSynthesisUtterance(textoLimpio);
         utterance.rate = 0.9;
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
