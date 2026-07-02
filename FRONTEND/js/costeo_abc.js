@@ -4,7 +4,7 @@
    ======================================================================= */
 
 // Usa la misma URL base que el resto de tus módulos (config.js)
-const ABC_API = (window.CONFIG?.API_BASE_URL || 'http://localhost:5000');
+const ABC_API = (typeof API_URL !== 'undefined') ? API_URL : 'http://localhost:5000/api';
 
 let _data       = null;
 let _chartComp  = null;
@@ -16,7 +16,7 @@ const fmt4 = n => 'S/ ' + Number(n).toFixed(4);
 /* ─── CARGA INICIAL ─────────────────────────────────────────────────── */
 async function abcCargar(periodo = '2026-04') {
     try {
-        const res  = await fetch(`${ABC_API}/api/abc/costeo?periodo=${periodo}`);
+        const res = await fetch(`${ABC_API}/abc/costeo?periodo=${periodo}`);
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         _data = json.data;
