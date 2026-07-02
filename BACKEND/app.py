@@ -23,7 +23,7 @@ from datetime import date, datetime
 from database import SupabaseBrain  # ← Agregar esta línea
 import traceback
 import os
-from costeo_abc_backend import abc_bp
+from costeo_abc_backend import register_abc_routes
 app = Flask(__name__)
 app.register_blueprint(abc_bp)
 # ✅ Crear el cliente de Supabase correctamente
