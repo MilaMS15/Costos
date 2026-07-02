@@ -1,4 +1,4 @@
-// FRONTEND/js/chatbot.js - CON VOZ Y SELECTOR DE MODO
+// FRONTEND/js/chatbot.js - CORREGIDO (EVITA DOBLE LECTURA DE VOZ)
 (function() {
     if (document.querySelector('.chatbot-container')) return;
     
@@ -13,9 +13,72 @@
     let isOpen = false;
     let reintentando = false;
     let recognition = null;
+    let ultimoMensajeHablado = ''; // 🔥 NUEVO: para evitar duplicados
     
-    // ==================== FUNCIÓN DE VOZ ====================
-    // ==================== LIMPIAR TEXTO PARA VOZ ====================
+    // ==================== FUNCIÓN DE VOZ MEJORADA CON CONTROL DE DUPLICADOS ====================
+    function hablar(texto) {
+        if (!texto || texto.length === 0) return;
+        
+        // 🔥 EVITAR DUPLICADOS: Si ya estamos hablando el mismo mensaje, ignorar
+        if (vozActiva && texto === ultimoMensajeHablado) {
+            console.log('🗣️ Ignorando duplicado de voz:', texto.substring(0, 50));
+            return;
+        }
+        
+        // Si ya está sonando, cancelar
+        if (vozActiva) {
+            window.speechSynthesis.cancel();
+            vozActiva = false;
+        }
+        
+        // 🔥 GUARDAR EL MENSAJE PARA DETECTAR DUPLICADOS
+        ultimoMensajeHablado = texto;
+        
+        // Limpiar el texto para voz
+        const textoLimpio = limpiarTextoParaVoz(texto);
+        
+        console.log('🗣️ Original:', texto.substring(0, 100));
+        console.log('🗣️ Limpio para voz:', textoLimpio.substring(0, 100));
+        
+        if (!('speechSynthesis' in window)) return;
+        
+        vozActiva = true;
+        const utterance = new SpeechSynthesisUtterance(textoLimpio);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        function hablarConVoz() {
+            const voices = window.speechSynthesis.getVoices();
+            let selectedVoice = voices.find(v => v.name === 'Microsoft Sabina - Spanish (Mexico)');
+            if (!selectedVoice) {
+                selectedVoice = voices.find(v => v.name === 'Google español');
+            }
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+                console.log('🎤 Usando voz:', selectedVoice.name);
+            }
+            utterance.lang = 'es-MX';
+            utterance.onend = () => { 
+                vozActiva = false; 
+                ultimoMensajeHablado = ''; // Limpiar al terminar
+            };
+            utterance.onerror = () => { 
+                vozActiva = false; 
+                ultimoMensajeHablado = '';
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        if (window.speechSynthesis.getVoices().length === 0) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                setTimeout(hablarConVoz, 100);
+            };
+        } else {
+            setTimeout(hablarConVoz, 100);
+        }
+    }
+    
     // ==================== LIMPIAR TEXTO PARA VOZ ====================
     function limpiarTextoParaVoz(texto) {
         if (!texto) return "";
@@ -146,20 +209,15 @@
     }
 
     function convertirDecimalNatural(numero) {
-        // Redondear a 4 decimales máximo para evitar decimales largos
         let numeroStr = numero.toString();
         
-        // Si es un número como 1.0500, convertirlo a 1.05
         if (numeroStr.includes('.')) {
-            // Eliminar ceros innecesarios al final
             numeroStr = numeroStr.replace(/\.?0+$/, '');
-            // Si después de eliminar ceros queda solo el punto, eliminarlo
             if (numeroStr.endsWith('.')) {
                 numeroStr = numeroStr.slice(0, -1);
             }
         }
         
-        // Si ya no tiene decimales, es un entero
         if (!numeroStr.includes('.')) {
             return convertirNumeroALetrasNatural(parseInt(numeroStr));
         }
@@ -168,7 +226,6 @@
         const enteros = parseInt(partes[0]);
         let decimales = partes[1];
         
-        // Limitar decimales a 4 para voz
         if (decimales && decimales.length > 4) {
             decimales = decimales.substring(0, 4);
         }
@@ -194,53 +251,6 @@
         }
         
         return resultado;
-    }
-    // ==================== FUNCIÓN DE VOZ MEJORADA ====================
-    function hablar(texto) {
-        if (!texto || texto.length === 0) return;
-        
-        // 🔥 LIMPIAR EL TEXTO ANTES DE HABLARLO
-        const textoLimpio = limpiarTextoParaVoz(texto);
-        
-        console.log('🗣️ Original:', texto.substring(0, 100));
-        console.log('🗣️ Limpio para voz:', textoLimpio.substring(0, 100));
-        
-        if (vozActiva) {
-            window.speechSynthesis.cancel();
-            vozActiva = false;
-        }
-        
-        if (!('speechSynthesis' in window)) return;
-        
-        vozActiva = true;
-        const utterance = new SpeechSynthesisUtterance(textoLimpio);
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-        
-        function hablarConVoz() {
-            const voices = window.speechSynthesis.getVoices();
-            let selectedVoice = voices.find(v => v.name === 'Microsoft Sabina - Spanish (Mexico)');
-            if (!selectedVoice) {
-                selectedVoice = voices.find(v => v.name === 'Google español');
-            }
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-                console.log('🎤 Usando voz:', selectedVoice.name);
-            }
-            utterance.lang = 'es-MX';
-            utterance.onend = () => { vozActiva = false; };
-            utterance.onerror = () => { vozActiva = false; };
-            window.speechSynthesis.speak(utterance);
-        }
-        
-        if (window.speechSynthesis.getVoices().length === 0) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                setTimeout(hablarConVoz, 100);
-            };
-        } else {
-            setTimeout(hablarConVoz, 100);
-        }
     }
     
     // ==================== ESTILOS ====================
@@ -527,7 +537,10 @@
                     
                     if (respuesta) {
                         agregarMensaje(respuesta, 'bot');
-                        hablar(respuesta);
+                        // 🔥 SOLO LLAMAR A hablar() UNA VEZ
+                        setTimeout(() => {
+                            hablar(respuesta);
+                        }, 100); // Pequeño delay para asegurar que el DOM se actualice
                     }
                     
                     if (result.navegar_a) {
