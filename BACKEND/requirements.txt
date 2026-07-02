@@ -8,7 +8,7 @@ google-generativeai==0.8.4
 google-api-core==2.19.0
 grpcio==1.70.0
 grpcio-status==1.70.0
-protobuf==5.29.3
+protobuf==4.25.5
 typing-extensions==4.12.2
 setuptools==75.8.2
 wheel==0.45.1
