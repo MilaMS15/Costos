@@ -19,6 +19,7 @@ from menu4_backend import register_menu4_routes
 from menu5_backend import register_menu5_routes
 from menu6_backend import register_menu6_routes
 from menu7_backend import register_menu7_routes
+from costeo_abc_backend import register_abc_routes
 from datetime import date, datetime
 from database import SupabaseBrain  # ← Agregar esta línea
 import traceback
@@ -1911,7 +1912,7 @@ register_menu5_routes(app)
 register_menu6_routes(app)
 register_menu7_routes(app)
 register_ia_routes(app)
-
+register_abc_routes(app)
 
 # ============================================
 # ENRUTAMIENTO DEL FRONTEND
