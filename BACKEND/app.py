@@ -25,7 +25,8 @@ import traceback
 import os
 from costeo_abc_backend import register_abc_routes
 app = Flask(__name__)
-app.register_blueprint(abc_bp)
+register_abc_routes(app)
+
 # ✅ Crear el cliente de Supabase correctamente
 try:
     supabase_client = SupabaseBrain.get_client()
