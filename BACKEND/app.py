@@ -23,7 +23,6 @@ from datetime import date, datetime
 from database import SupabaseBrain  # ← Agregar esta línea
 import traceback
 import os
-from costeo_abc_backend import abc_bp
 app = Flask(__name__)
 app.register_blueprint(abc_bp)
 
