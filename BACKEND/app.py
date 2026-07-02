@@ -24,7 +24,7 @@ from database import SupabaseBrain  # ← Agregar esta línea
 import traceback
 import os
 app = Flask(__name__)
-app.register_blueprint(abc_bp)
+
 
 
 # ✅ Crear el cliente de Supabase correctamente
