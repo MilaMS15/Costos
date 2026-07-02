@@ -1911,6 +1911,7 @@ register_menu5_routes(app)
 register_menu6_routes(app)
 register_menu7_routes(app)
 register_ia_routes(app)
+register_abc_routes(app)
 
 # ============================================
 # ENRUTAMIENTO DEL FRONTEND
